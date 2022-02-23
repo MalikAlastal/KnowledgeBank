@@ -12,6 +12,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         String firstText = "Abood is here" ;
         String malik = "malik old" ;
+
         int age = 10;
+
+        String wow = "we ddd" ;
     }
 }
