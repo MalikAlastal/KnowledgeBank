@@ -13,5 +13,6 @@ public class MainActivity extends AppCompatActivity {
         String firstText = "Abood is here" ;
         String malik = "malik old" ;
         String you = "i cant love you " ;
+        String me = "fk u";
     }
 }
