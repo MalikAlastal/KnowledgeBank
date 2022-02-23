@@ -11,6 +11,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         String firstText = "Abood is here" ;
-        String malik = "new malik" ;
+        String malik = "malik old" ;
     }
 }
