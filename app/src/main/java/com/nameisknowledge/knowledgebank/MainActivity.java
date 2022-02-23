@@ -10,11 +10,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String firstText = "Abood is here" ;
-        String malik = "malik old" ;
-
+        String first = "Abood";
+        String last = "Emad";
         int age = 10;
-
-        String wow = "we ddd" ;
     }
 }
