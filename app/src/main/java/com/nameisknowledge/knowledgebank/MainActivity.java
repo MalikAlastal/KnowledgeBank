@@ -10,10 +10,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        String first = "Abood";
-        String last = "Emad";
-        int age = 10;
-        int ss = 100;
-        String soso = "sasa" ;
+        // clear
     }
 }
