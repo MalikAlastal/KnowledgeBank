@@ -15,6 +15,8 @@ public class MainActivity extends AppCompatActivity {
         String last = "Emad";
         int age = 10;
 
+        int hassan_salary = 10 ;
+
         String soso = "sasa" ;
     }
 }
