@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         String first = "Abood";
         String last = "Emad";
         int age = 10;
-
+        int ss = 100;
         String soso = "sasa" ;
     }
 }
