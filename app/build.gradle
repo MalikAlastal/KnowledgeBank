@@ -7,6 +7,10 @@ apply plugin: 'com.google.gms.google-services'
 android {
     compileSdk 31
 
+    buildFeatures{
+        viewBinding true
+    }
+
     defaultConfig {
         applicationId "com.nameisknowledge.knowledgebank"
         minSdk 21
@@ -43,4 +47,8 @@ dependencies {
     // firebase
     implementation platform('com.google.firebase:firebase-bom:29.1.0')
     implementation 'com.google.firebase:firebase-analytics'
+
+    //intuit library (for support multiple screen size and font)
+    implementation 'com.intuit.sdp:sdp-android:1.0.6'
+    implementation 'com.intuit.ssp:ssp-android:1.0.6'
 }
