@@ -43,14 +43,15 @@ public class UsersActivity extends AppCompatActivity {
                     }
                     binding.rv.setAdapter(new UsersAdapter(MDUsers, new RequestListener() {
                         @Override
-                        public void request(String id) {
+                        public void request(String id,String name) {
                             Map<String,String> test = new HashMap<>();
                             test.put("ReqId", FirebaseAuth.getInstance().getUid());
+                            test.put("ReqName",FirebaseAuth.getInstance().getCurrentUser().getEmail());
                             test.put("ResId",id);
                             FirebaseFirestore.getInstance().collection("Requests").document(id).set(test).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
-                                    Toast.makeText(UsersActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(UsersActivity.this, id, Toast.LENGTH_SHORT).show();
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override

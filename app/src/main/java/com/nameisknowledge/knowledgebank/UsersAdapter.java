@@ -38,18 +38,19 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
 
     class Holder extends RecyclerView.ViewHolder {
         private CustomItemUsersBinding binding;
-        private String id;
+        private String id,name;
         public Holder(@NonNull View itemView) {
             super(itemView);
             binding = CustomItemUsersBinding.bind(itemView);
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    requestListener.request(id);
+                    requestListener.request(id,name);
                 }
             });
         }
         private void Bind(MD_User MDUser){
+            this.name = MDUser.getFullName();
             this.id = MDUser.getId();
             binding.txvEmail.setText(MDUser.getEmail());
             binding.txvFullName.setText(MDUser.getFullName());

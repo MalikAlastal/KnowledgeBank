@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null){
                     if (value!=null && value.exists()){
-                        Log.d("test",value.getData().toString());
+                        Log.d("MyID","My Id"+FirebaseAuth.getInstance().getUid());
+                        Log.d("test","ReqName :"+value.getString("ReqName")+" | "+"RequestId :"+value.getString("ReqId")+" | "+"ResponseId :"+value.getString("ResId"));
                     }
                 }else {
                     Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -48,19 +49,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         // to get count of documents if collection
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                Toast.makeText(MainActivity.this,task.getResult().size()+"", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(MainActivity.this,task.getResult().size()+"", Toast.LENGTH_SHORT).show();
 
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
+                Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -68,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
         binding.show.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddQuestionDialog changePasswordDialog = AddQuestionDialog.newInstance();
-                changePasswordDialog.show(MainActivity.this.getSupportFragmentManager(), null);
+                Toast.makeText(MainActivity.this, "My Id"+FirebaseAuth.getInstance().getUid(), Toast.LENGTH_SHORT).show();
+//                AddQuestionDialog changePasswordDialog = AddQuestionDialog.newInstance();
+//                changePasswordDialog.show(MainActivity.this.getSupportFragmentManager(), null);
             }
         });
 
@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null){
-                    Toast.makeText(MainActivity.this, value.get("fullName").toString(), Toast.LENGTH_SHORT).show();
+                    assert value != null;
+                    Toast.makeText(MainActivity.this, value.getString("fullName"), Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 }
