@@ -2,17 +2,17 @@ package com.nameisknowledge.knowledgebank;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class User {
+public class MD_User {
     private String id,fullName,email,password,rePassword;
 
-    public User(String fullName, String email, String password,String rePassword) {
+    public MD_User(String fullName, String email, String password, String rePassword) {
         this.rePassword = rePassword;
         this.fullName = fullName;
         this.email = email;
         this.password = password;
     }
 
-    public User() {
+    public MD_User() {
     }
 
     public String getId() {

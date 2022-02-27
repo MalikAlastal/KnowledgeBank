@@ -9,14 +9,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nameisknowledge.knowledgebank.databinding.CustomItemUsersBinding;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
-    private List<User> users;
+    private List<MD_User> MDUsers;
+    private RequestListener requestListener;
 
-    public UsersAdapter(List<User> users) {
-        this.users = users;
+    public UsersAdapter(List<MD_User> MDUsers,RequestListener requestListener) {
+        this.MDUsers = MDUsers;
+        this.requestListener = requestListener;
     }
 
     @NonNull
@@ -27,23 +28,31 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-        holder.Bind(users.get(position));
+        holder.Bind(MDUsers.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return users.size();
+        return MDUsers.size();
     }
 
     class Holder extends RecyclerView.ViewHolder {
-        CustomItemUsersBinding binding;
+        private CustomItemUsersBinding binding;
+        private String id;
         public Holder(@NonNull View itemView) {
             super(itemView);
             binding = CustomItemUsersBinding.bind(itemView);
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    requestListener.request(id);
+                }
+            });
         }
-        private void Bind(User user){
-            binding.txvEmail.setText(user.getEmail());
-            binding.txvFullName.setText(user.getFullName());
+        private void Bind(MD_User MDUser){
+            this.id = MDUser.getId();
+            binding.txvEmail.setText(MDUser.getEmail());
+            binding.txvFullName.setText(MDUser.getFullName());
         }
     }
 }

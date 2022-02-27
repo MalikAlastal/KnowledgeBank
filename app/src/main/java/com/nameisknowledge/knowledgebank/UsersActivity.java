@@ -9,14 +9,18 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.databinding.ActivityUsersBinding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UsersActivity extends AppCompatActivity {
     ActivityUsersBinding binding;
@@ -32,12 +36,30 @@ public class UsersActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("Users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                List<User> users = new ArrayList<>();
+                List<MD_User> MDUsers = new ArrayList<>();
                 if (task.isSuccessful()){
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()){
-                        users.add(documentSnapshot.toObject(User.class));
+                        MDUsers.add(documentSnapshot.toObject(MD_User.class));
                     }
-                    binding.rv.setAdapter(new UsersAdapter(users));
+                    binding.rv.setAdapter(new UsersAdapter(MDUsers, new RequestListener() {
+                        @Override
+                        public void request(String id) {
+                            Map<String,String> test = new HashMap<>();
+                            test.put("ReqId", FirebaseAuth.getInstance().getUid());
+                            test.put("ResId",id);
+                            FirebaseFirestore.getInstance().collection("Requests").document(id).set(test).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    Toast.makeText(UsersActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(UsersActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }));
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

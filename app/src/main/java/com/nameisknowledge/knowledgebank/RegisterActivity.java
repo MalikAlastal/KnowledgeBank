@@ -36,7 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    setDataForRegister(new User(binding.etFullName.getText().toString(),binding.etEmail.getText().toString(),binding.etPassword.getText().toString(),binding.etRePassword.getText().toString()));
+                    setDataForRegister(new MD_User(binding.etFullName.getText().toString(),binding.etEmail.getText().toString(),binding.etPassword.getText().toString(),binding.etRePassword.getText().toString()));
                 } catch (Exception e) {
                     Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
@@ -44,15 +44,15 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void setDataForRegister(User user) throws Exception {
-        checkMatching(user.getPassword(),user.getRePassword());
-        auth.createUserWithEmailAndPassword(user.getEmail(),user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+    private void setDataForRegister(MD_User MDUser) throws Exception {
+        checkMatching(MDUser.getPassword(), MDUser.getRePassword());
+        auth.createUserWithEmailAndPassword(MDUser.getEmail(), MDUser.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
             @Override
             public void onSuccess(AuthResult authResult) {
                 // here we set authUid as the Id for the User
-                user.setId(Objects.requireNonNull(authResult.getUser()).getUid());
+                MDUser.setId(Objects.requireNonNull(authResult.getUser()).getUid());
                 // here we send Data to fire Store
-                setUserDataForFireStore(user);
+                setUserDataForFireStore(MDUser);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -69,13 +69,15 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     // set Data for FireStore
-    private void setUserDataForFireStore(User user){
-        fireStore.collection("Users").document(user.getId()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+    private void setUserDataForFireStore(MD_User MDUser){
+        fireStore.collection("Users").document(MDUser.getId()).set(MDUser).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 Toast.makeText(RegisterActivity.this, "Congrats!", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RegisterActivity.this,MainActivity.class));
-                finish();
+                // create a document for requests which player will receive
+                fireStore.collection("Requests").document(MDUser.getId());
+//                startActivity(new Intent(RegisterActivity.this,MainActivity.class));
+//                finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
