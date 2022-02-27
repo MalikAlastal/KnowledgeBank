@@ -1,4 +1,4 @@
-package com.nameisknowledge.knowledgebank;
+package com.nameisknowledge.knowledgebank.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -14,11 +14,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         binding.btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
         });
+
     }
 }
