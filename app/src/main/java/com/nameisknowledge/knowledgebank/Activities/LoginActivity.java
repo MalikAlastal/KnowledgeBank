@@ -1,4 +1,4 @@
-package com.nameisknowledge.knowledgebank;
+package com.nameisknowledge.knowledgebank.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,11 +15,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getBaseContext(),RegisterActivity.class));
+                startActivity(new Intent(getBaseContext(), RegisterActivity.class));
             }
         });
+
     }
 }
