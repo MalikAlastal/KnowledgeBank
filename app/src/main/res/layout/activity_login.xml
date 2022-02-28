@@ -34,14 +34,26 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btn_login"
+    android:id="@+id/btn_login"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Login"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.5"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@+id/ed_password"
+    app:layout_constraintVertical_bias="0.1" />
+
+    <Button
+        android:id="@+id/btn_register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Register"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ed_password"
-        app:layout_constraintVertical_bias="0.1" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_login"
+        app:layout_constraintVertical_bias="0.05" />
 </androidx.constraintlayout.widget.ConstraintLayout>
