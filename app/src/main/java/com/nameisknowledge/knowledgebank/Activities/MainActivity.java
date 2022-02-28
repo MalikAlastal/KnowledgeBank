@@ -62,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         if (value.getDocumentChanges().size() == 1){
-                            TestDialog newFragment = TestDialog.newInstance(value.getDocumentChanges().get(0).getDocument().getId());
+                            Log.d("docId",value.getDocumentChanges().get(0).getDocument().getId());
+                            TestDialog newFragment = TestDialog.newInstance(value.getDocumentChanges().get(0).getDocument().getReference());
                             newFragment.show(getSupportFragmentManager(), "missiles");
                         }
                     }
