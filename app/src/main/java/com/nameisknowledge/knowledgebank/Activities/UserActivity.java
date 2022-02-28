@@ -60,19 +60,10 @@ public class UserActivity extends AppCompatActivity {
                         Map<String,String> map = new HashMap<>();
                         map.put("ReqEmail",FirebaseAuth.getInstance().getCurrentUser().getEmail());
                         map.put("ReqUid",FirebaseAuth.getInstance().getUid());
-                        map.put("Request","");
                         FirebaseFirestore.getInstance().collection("Requests").document(userMD.getUid()).collection("container").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Toast.makeText(UserActivity.this, "Done!", Toast.LENGTH_SHORT).show();
-                                documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                                        if (TextUtils.equals(Objects.requireNonNull(value).getString("Request"),"accepted")){
-                                            Toast.makeText(UserActivity.this, "YO YO DONE!!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
