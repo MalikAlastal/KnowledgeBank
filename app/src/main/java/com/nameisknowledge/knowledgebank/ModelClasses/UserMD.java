@@ -7,8 +7,7 @@ public class UserMD {
     private String uid , username , email , password , gender , avatar ;
     private Date birthdate , creationDate ;
 
-    public UserMD(String uid, String username, String email, String password, String gender, String avatar, Date birthdate, Date creationDate) {
-        this.uid = uid;
+    public UserMD(String username, String email, String password, String gender, String avatar, Date birthdate, Date creationDate) {
         this.username = username;
         this.email = email;
         this.password = password;
