@@ -4,6 +4,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,11 +31,14 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     ActivityMainBinding binding;
+    public static Context context;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        context = this;
 
         binding.clickBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseFirestore.getInstance().collection("Request").document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection("container").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection("Requests").document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection("container").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null){
