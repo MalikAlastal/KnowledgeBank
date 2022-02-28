@@ -4,21 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.LoginActivity">
+    tools:context=".Activities.LoginActivity"
+    android:background="@color/main_color"
+    >
 
-    <EditText
-        android:id="@+id/ed_email"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/_100sdp"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textWebEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/ed_password"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.884" />
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_email"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textWebEmailAddress"
+            app:layout_constraintBottom_toTopOf="@+id/ed_password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.884" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <EditText
         android:id="@+id/ed_password"
