@@ -27,8 +27,7 @@ public class GameActivity extends AppCompatActivity {
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                int[] data = (int[]) Objects.requireNonNull(documentSnapshot.getData()).get("questionsIndex");
-                binding.txvQuestion.setText(String.valueOf(Objects.requireNonNull(data)[0]));
+                binding.txvQuestion.setText(documentSnapshot.getId());
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

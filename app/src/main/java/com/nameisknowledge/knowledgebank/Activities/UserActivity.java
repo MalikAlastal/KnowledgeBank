@@ -64,6 +64,7 @@ public class UserActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Toast.makeText(UserActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                finish();
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
