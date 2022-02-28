@@ -1,11 +1,13 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -13,7 +15,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
@@ -55,10 +60,19 @@ public class UserActivity extends AppCompatActivity {
                         Map<String,String> map = new HashMap<>();
                         map.put("ReqEmail",FirebaseAuth.getInstance().getCurrentUser().getEmail());
                         map.put("ReqUid",FirebaseAuth.getInstance().getUid());
+                        map.put("Request","");
                         FirebaseFirestore.getInstance().collection("Requests").document(userMD.getUid()).collection("container").add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                             @Override
                             public void onSuccess(DocumentReference documentReference) {
                                 Toast.makeText(UserActivity.this, "Done!", Toast.LENGTH_SHORT).show();
+                                documentReference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                                        if (TextUtils.equals(Objects.requireNonNull(value).getString("Request"),"accepted")){
+                                            Toast.makeText(UserActivity.this, "YO YO DONE!!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

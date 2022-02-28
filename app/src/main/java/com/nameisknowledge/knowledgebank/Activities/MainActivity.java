@@ -21,6 +21,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 import com.nameisknowledge.knowledgebank.R;
+import com.nameisknowledge.knowledgebank.TestDialog;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 
 import java.util.List;
@@ -59,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
                                     Log.d("RemoveChange",documentChange.getDocument().getData().toString());
                                     break;
                             }
+                        }
+                        if (value.getDocumentChanges().size() == 1){
+                            TestDialog newFragment = TestDialog.newInstance(value.getDocumentChanges().get(0).getDocument().getId());
+                            newFragment.show(getSupportFragmentManager(), "missiles");
                         }
                     }
                 }else {
