@@ -43,27 +43,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseFirestore.getInstance().collection("Requests").document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection("container").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection("Request").document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection("container").addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null){
                     if (value!=null){
-                        for (DocumentChange documentChange:value.getDocumentChanges()){
-                            switch (documentChange.getType()){
-                                case ADDED:
-                                    Log.d("AddChange",documentChange.getDocument().getData().toString());
-                                    break;
-                                case MODIFIED:
-                                    Log.d("UpdateChange",documentChange.getDocument().getData().toString());
-                                    break;
-                                case REMOVED:
-                                    Log.d("RemoveChange",documentChange.getDocument().getData().toString());
-                                    break;
-                            }
-                        }
-                        if (value.getDocumentChanges().size() == 1){
+                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.MODIFIED){
                             Log.d("docId",value.getDocumentChanges().get(0).getDocument().getId());
-                            TestDialog newFragment = TestDialog.newInstance(value.getDocumentChanges().get(0).getDocument().getReference());
+                            TestDialog newFragment = TestDialog.newInstance(value.getDocumentChanges().get(0).getDocument().getReference(),value.getDocumentChanges().get(0).getDocument().getString("ReqUid"));
                             newFragment.show(getSupportFragmentManager(), "missiles");
                         }
                     }
@@ -73,5 +60,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        FirebaseFirestore.getInstance().collection("Response").document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection("container").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error == null){
+                    if (value!=null){
+                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.MODIFIED){
+                            startActivity(new Intent(MainActivity.this,GameActivity.class).putExtra("RoomId",value.getDocumentChanges().get(0).getDocument().getString("RoomId")));
+                        }
+                    }
+                }else {
+                    Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 }
