@@ -46,7 +46,6 @@ public class TestDialog extends DialogFragment {
         builder.setMessage("Request")
                 .setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
                                 FirebaseFirestore.getInstance().collection("Questions").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {

@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null){
                     if (value!=null){
-                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.MODIFIED){
+                        if (value.getDocumentChanges().size() == 1 && (value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.MODIFIED || value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.REMOVED)){
                             Log.d("docId",value.getDocumentChanges().get(0).getDocument().getId());
                             TestDialog newFragment = TestDialog.newInstance(value.getDocumentChanges().get(0).getDocument().getReference(),value.getDocumentChanges().get(0).getDocument().getString("ReqUid"));
                             newFragment.show(getSupportFragmentManager(), "missiles");
@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null){
                     if (value!=null){
-                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.MODIFIED){
+                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType()!= DocumentChange.Type.REMOVED){
                             startActivity(new Intent(MainActivity.this,GameActivity.class).putExtra("RoomId",value.getDocumentChanges().get(0).getDocument().getString("RoomId")));
                         }
                     }
@@ -79,4 +79,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
