@@ -8,6 +8,15 @@
     android:background="@color/light_main_color"
     >
 
+    <ImageView
+        android:layout_width="@dimen/_360sdp"
+        android:layout_height="@dimen/_360sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:src="@drawable/rain"
+        android:foreground="@drawable/shape_shafaf_to_lightmain"
+
+        />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/ed_email_layout"
@@ -88,13 +97,21 @@
         android:scaleType="fitXY"
          />
 
-    <Button
+
+
+    <ImageButton
         android:id="@+id/btn_register"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Register"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="@dimen/_70sdp"
+        android:layout_height="@dimen/_70sdp"
+        android:text="@string/new_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ed_password_layout"
+        android:layout_marginTop="@dimen/_60sdp"
+        android:src="@drawable/ic_new_account"
+        android:background="@drawable/ic_empty_circle"
+        android:backgroundTint="@color/white"
+        app:tint="@color/dark_main_color"
         />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
