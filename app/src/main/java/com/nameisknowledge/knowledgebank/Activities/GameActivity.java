@@ -23,7 +23,9 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityGameBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
         DocumentReference documentReference = FirebaseFirestore.getInstance().collection("GamePlay").document(getIntent().getStringExtra("RoomId"));
+
         documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -36,5 +38,6 @@ public class GameActivity extends AppCompatActivity {
                 Toast.makeText(GameActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+        
     }
 }
