@@ -4,8 +4,14 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_game.xml" value="0.2296195652173913" />
-        <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_login.xml" value="0.21784420289855072" />
-        <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_at_email.xml" value="0.18270042194092828" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_next_arrow.xml" value="0.18270042194092828" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/shape_shafaf_to_lightmain.xml" value="0.18270042194092828" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/activity_login.xml" value="0.12" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/activity_main.xml" value="0.1648148148148148" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/shape_shafaf_to_lightmain.xml" value="0.1717948717948718" />
+        <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_login.xml" value="0.4" />
+        <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_main.xml" value="0.72" />
         <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_register.xml" value="0.21784420289855072" />
         <entry key="..\:/KnowledgeBank/app/src/main/res/layout/activity_user.xml" value="0.2296195652173913" />
         <entry key="..\:/KnowledgeBank/app/src/main/res/layout/custom_item_user.xml" value="0.2296195652173913" />
