@@ -15,7 +15,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         android:src="@drawable/rain"
         android:foreground="@drawable/shape_shafaf_to_lightmain"
-
         />
 
     <com.google.android.material.textfield.TextInputLayout
