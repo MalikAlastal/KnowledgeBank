@@ -10,12 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
         <activity
-            android:name=".Activities.GameActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activities.UserActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
@@ -24,9 +18,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.RegisterActivity"
-            android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true" />
