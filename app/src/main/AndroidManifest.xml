@@ -10,6 +10,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
         <activity
+            android:name=".Activities.SoloModeActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
