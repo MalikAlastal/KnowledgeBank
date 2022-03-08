@@ -28,8 +28,8 @@ public class LoginActivity extends AppCompatActivity {
 
     // حالة الواجهة : تسجيل دخول أو تسجيل مستخدم جديد
     private String state ;
-    private String login_state = "login_state" ;
-    private String register_state = "register_state" ;
+    private final String login_state = "login_state" ;
+    private final String register_state = "register_state" ;
 
 
     FirebaseAuth auth ;
@@ -46,42 +46,52 @@ public class LoginActivity extends AppCompatActivity {
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(binding.edEmail.getText().toString(),binding.edPassword.getText().toString()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                    @Override
-                    public void onSuccess(AuthResult authResult) {
-                        startActivity(new Intent(getBaseContext(),MainActivity.class));
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                UserMD user = getEnteredData();
+
+//                FirebaseAuth.getInstance().signInWithEmailAndPassword(user.getEmail() , user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+//                    @Override
+//                    public void onSuccess(AuthResult authResult) {
+//                        startActivity(new Intent(getBaseContext(),MainActivity.class));
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+            }
+        });
+
+        binding.btnPrepareRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                prepareForRegister();
             }
         });
 
         binding.btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (state.equals(login_state))
-                    prepareForRegister();
 
-                else if (state.equals(register_state))
-                    prepareForLogin();
+            }
+        });
 
-                changeState();
+        binding.btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                prepareForLogin();
             }
         });
     }
 
     private void prepareActivity(){
-        ViewMethods.goneView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout , binding.rbGenderLayout);
+        ViewMethods.goneView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout
+                , binding.rbGenderLayout , binding.btnRegister , binding.btnCancel);
 
         auth = FirebaseAuth.getInstance() ;
         firestore = FirebaseFirestore.getInstance() ;
 
         state = login_state ;
-
     }
 
     private void prepareForRegister() {
@@ -89,26 +99,31 @@ public class LoginActivity extends AppCompatActivity {
         // Animations
         AnimationMethods.slideOutRight(DurationConstants.DURATION_SHORT , binding.btnLogin);
 
-        ViewMethods.visibleView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout , binding.rbGenderLayout);
+        ViewMethods.visibleView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout
+                , binding.rbGenderLayout , binding.btnRegister , binding.btnCancel);
+        ViewMethods.goneView(binding.btnPrepareRegister);
         AnimationMethods.flipInX(DurationConstants.DURATION_SHORT , binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout , binding.rbGenderLayout);
 
-        AnimationMethods.bounceInDown(DurationConstants.DURATION_SHORT , binding.btnRegister);
+        AnimationMethods.bounceInDown(DurationConstants.DURATION_SHORT , binding.btnRegister , binding.btnCancel);
+
+        changeState();
     }
 
     private void prepareForLogin(){
 
         // Animations
         AnimationMethods.slideInRight(DurationConstants.DURATION_SHORT, binding.btnLogin);
-        AnimationMethods.flipOutX(DurationConstants.DURATION_SHORT, new YoYo.AnimatorCallback() {
+        AnimationMethods.flipOutX(DurationConstants.DURATION_SO_SHORT, new YoYo.AnimatorCallback() {
             @Override
             public void call(Animator animator) {
-                ViewMethods.goneView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout , binding.rbGenderLayout);
-                AnimationMethods.bounceInUp(DurationConstants.DURATION_SHORT , binding.btnRegister);
-
+                ViewMethods.goneView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout
+                        , binding.rbGenderLayout, binding.btnRegister , binding.btnCancel);
+                AnimationMethods.bounceInUp(DurationConstants.DURATION_SHORT , binding.btnPrepareRegister);
+                ViewMethods.visibleView(binding.btnPrepareRegister);
             }
         }, binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout, binding.rbGenderLayout);
 
-
+        changeState();
     }
 
     private void changeState(){
@@ -122,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private UserMD getEnteredData(){
 
-        if (!ViewMethods.isEditTextEmpty(binding.edEmail , binding.edPassword , binding.edRePassword ,binding.edUsername)){
+        if (!ViewMethods.isTextInputEmpty(binding.edEmail , binding.edPassword , binding.edRePassword ,binding.edUsername)){
 
         }
 

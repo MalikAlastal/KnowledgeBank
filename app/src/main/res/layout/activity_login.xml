@@ -252,7 +252,7 @@
          />
 
     <ImageButton
-        android:id="@+id/btn_register"
+        android:id="@+id/btn_prepare_register"
         android:layout_width="@dimen/_55sdp"
         android:layout_height="@dimen/_55sdp"
         android:text="@string/new_account"
@@ -264,6 +264,38 @@
         android:background="@drawable/ic_empty_circle"
         android:backgroundTint="@color/white"
         app:tint="@color/dark_main_color"
+        />
+
+    <ImageButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_55sdp"
+        android:text="@string/new_account"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_register"
+        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:src="@drawable/ic_cancel"
+        android:background="@drawable/ic_empty_circle"
+        android:backgroundTint="@color/white"
+        app:tint="@color/dark_main_color"
+        android:scaleType="centerInside"
+        />
+
+    <ImageButton
+        android:id="@+id/btn_register"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_55sdp"
+        android:text="@string/new_account"
+        app:layout_constraintEnd_toStartOf="@id/btn_cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:src="@drawable/ic_check"
+        android:background="@drawable/ic_empty_circle"
+        android:backgroundTint="@color/white"
+        app:tint="@color/dark_main_color"
+        android:scaleType="centerInside"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
