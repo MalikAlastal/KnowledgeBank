@@ -14,12 +14,10 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.databinding.ActivityLoginBinding;
 
 import java.util.Calendar;
-import java.util.Objects;
 
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
