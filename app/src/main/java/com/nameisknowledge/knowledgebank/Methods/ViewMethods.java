@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 
 public class ViewMethods {
@@ -16,6 +15,10 @@ public class ViewMethods {
         for (int i = 0 ; i<views.length ; i++){
             views[i].setVisibility(View.GONE);
         }
+    }
+
+    public static String getText(EditText editText){
+        return editText.getText().toString();
     }
 
     // لإظهار ال view
@@ -66,11 +69,11 @@ public class ViewMethods {
     public static void editTextEmptyError(EditText... editTexts){
         for (EditText edittext:editTexts) {
             AnimationMethods.shake(DurationConstants.DURATION_LONG , edittext);
-            showTextInputLayoutError((TextInputEditText) edittext);
+            showTextInpuError((TextInputEditText) edittext);
         }
     }
 
-    public static void showTextInputLayoutError(TextInputEditText... editTexts){
+    public static void showTextInpuError(TextInputEditText... editTexts){
         for (TextInputEditText editText:editTexts) {
             editText.setError("error");
         }

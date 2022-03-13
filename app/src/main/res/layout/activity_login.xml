@@ -140,7 +140,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/username"
-            android:inputType="textPassword"
+            android:inputType="text"
             android:lines="1"
             android:maxLines="1"
             />
@@ -150,7 +150,7 @@
         android:id="@+id/ed_birthdate_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_80sdp"
-        app:layout_constraintTop_toBottomOf="@id/ed_username_layout"
+        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
         android:layout_marginStart="@dimen/_30sdp"
         android:layout_marginEnd="@dimen/_30sdp"
         android:layout_marginTop="@dimen/_5sdp"
@@ -173,7 +173,7 @@
                 />
 
             <com.mikhaellopez.lazydatepicker.LazyDatePicker
-                android:id="@+id/lazyDatePicker"
+                android:id="@+id/dp_birthdate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -193,7 +193,7 @@
         android:id="@+id/rb_gender_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
-        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
+        app:layout_constraintTop_toBottomOf="@id/ed_username_layout"
         android:layout_marginStart="@dimen/_30sdp"
         android:layout_marginEnd="@dimen/_30sdp"
         android:layout_marginTop="@dimen/_5sdp"
@@ -258,7 +258,7 @@
         android:text="@string/new_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
+        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
         android:layout_marginTop="@dimen/_15sdp"
         android:src="@drawable/ic_new_account"
         android:background="@drawable/ic_empty_circle"
@@ -273,7 +273,7 @@
         android:text="@string/new_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/btn_register"
-        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
+        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
         android:layout_marginTop="@dimen/_15sdp"
         android:src="@drawable/ic_cancel"
         android:background="@drawable/ic_empty_circle"
@@ -289,13 +289,48 @@
         android:text="@string/new_account"
         app:layout_constraintEnd_toStartOf="@id/btn_cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
+        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
         android:layout_marginTop="@dimen/_15sdp"
         android:src="@drawable/ic_check"
         android:background="@drawable/ic_empty_circle"
         android:backgroundTint="@color/white"
         app:tint="@color/dark_main_color"
         android:scaleType="centerInside"
+        />
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progress_login"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_5sdp"
+        app:layout_constraintBottom_toBottomOf="@id/ed_password_layout"
+        app:layout_constraintStart_toStartOf="@id/ed_password_layout"
+        app:layout_constraintEnd_toEndOf="@id/ed_password_layout"
+        android:indeterminate="true"
+        app:spb_sections_count="1"
+        app:spb_color="#FF0000"
+        app:spb_speed="1.5"
+        app:spb_stroke_width="@dimen/_2sdp"
+        app:spb_stroke_separator_length="@dimen/_2sdp"
+        app:spb_reversed="true"
+        app:spb_mirror_mode="true"
+        />
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progress_register"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_5sdp"
+        app:layout_constraintBottom_toBottomOf="@id/ed_birthdate_layout"
+        app:layout_constraintStart_toStartOf="@id/ed_birthdate_layout"
+        app:layout_constraintEnd_toEndOf="@id/ed_birthdate_layout"
+        android:elevation="@dimen/_50sdp"
+        android:indeterminate="true"
+        app:spb_sections_count="1"
+        app:spb_color="#FF0000"
+        app:spb_speed="1.5"
+        app:spb_stroke_width="@dimen/_2sdp"
+        app:spb_stroke_separator_length="@dimen/_2sdp"
+        app:spb_reversed="true"
+        app:spb_mirror_mode="true"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
