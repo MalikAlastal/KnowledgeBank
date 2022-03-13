@@ -28,6 +28,7 @@ import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
+import com.nameisknowledge.knowledgebank.Services.RequestsService;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
@@ -42,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        RequestsService.startActionFoo(this);
 
         binding.rv.setHasFixedSize(true);
         binding.rv.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));

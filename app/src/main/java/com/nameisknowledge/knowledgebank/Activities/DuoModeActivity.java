@@ -22,7 +22,7 @@ public class DuoModeActivity extends AppCompatActivity {
         binding = ActivityDuoModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        roomId = getIntent().getStringExtra("roomId");
+        roomId = getIntent().getStringExtra("RoomId");
 
         FirebaseFirestore.getInstance().collection("GamePlay").document(roomId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
