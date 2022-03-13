@@ -33,7 +33,7 @@ public class DuoModeActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
+                
             }
         });
     }
