@@ -42,7 +42,6 @@ public class SoloModeActivity extends AppCompatActivity {
 
     }
 
-
     private void initialValues(){
         index = 0;
         score = 0;

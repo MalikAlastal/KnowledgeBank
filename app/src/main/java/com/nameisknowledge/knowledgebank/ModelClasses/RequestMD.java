@@ -1,14 +1,14 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
-public class Request {
+public class RequestMD {
     private String Uid,email;
 
-    public Request(String uid, String email) {
+    public RequestMD(String uid, String email) {
         Uid = uid;
         this.email = email;
     }
 
-    public Request() {
+    public RequestMD() {
     }
 
     public String getUid() {

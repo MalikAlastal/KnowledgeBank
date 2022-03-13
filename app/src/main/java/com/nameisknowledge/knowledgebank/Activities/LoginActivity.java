@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
+import com.nameisknowledge.knowledgebank.Services.RequestsService;
 import com.nameisknowledge.knowledgebank.databinding.ActivityLoginBinding;
 
 import java.util.Calendar;
@@ -27,6 +28,8 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        startService(new Intent(this, RequestsService.class));
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
