@@ -9,6 +9,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
+        <receiver
+            android:name=".BroadCastRecivers.NotificationBroadCast"
+            android:enabled="true"
+            android:exported="false">
+
+        </receiver>
+
+        <service
+            android:name=".Services.RequestsService"
+            android:enabled="true"
+            android:exported="false">
+
+        </service>
+
+        <activity
+            android:name=".Activities.DuoModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SoloModeActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.LoginActivity"
             android:exported="true">

@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginStart="@dimen/_30sdp"
         android:layout_marginEnd="@dimen/_30sdp"
-        android:layout_marginTop="@dimen/_150sdp"
+        android:layout_marginTop="@dimen/_115sdp"
         android:background="@color/shafaf"
         app:boxStrokeWidthFocused="0dp"
         app:boxStrokeWidth="0dp"
@@ -33,8 +33,9 @@
         app:startIconTint="@color/black"
         android:textColorHint="@color/black"
         app:hintTextColor="@color/black"
-        app:boxCornerRadiusBottomEnd="@dimen/_35sdp"
+        app:boxCornerRadiusBottomEnd="@dimen/_2sdp"
         app:boxCornerRadiusBottomStart="@dimen/_2sdp"
+        app:errorEnabled="true"
         >
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ed_email"
@@ -64,8 +65,9 @@
         app:startIconTint="@color/black"
         android:textColorHint="@color/black"
         app:hintTextColor="@color/black"
-        app:boxCornerRadiusTopEnd="@dimen/_35sdp"
+        app:boxCornerRadiusTopEnd="@dimen/_2sdp"
         app:boxCornerRadiusBottomStart="@dimen/_2sdp"
+        app:errorEnabled="true"
         app:boxCornerRadiusBottomEnd="@dimen/_2sdp"
         >
         <com.google.android.material.textfield.TextInputEditText
@@ -80,6 +82,159 @@
     </com.google.android.material.textfield.TextInputLayout>
 
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ed_rePassword_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        app:layout_constraintTop_toBottomOf="@id/ed_password_layout"
+        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginEnd="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@color/shafaf"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxStrokeWidth="0dp"
+        app:boxBackgroundColor="@color/white"
+        app:startIconDrawable="@drawable/ic_key"
+        app:startIconTint="@color/black"
+        android:textColorHint="@color/black"
+        app:hintTextColor="@color/black"
+        app:boxCornerRadiusTopEnd="@dimen/_2sdp"
+        app:boxCornerRadiusBottomStart="@dimen/_2sdp"
+        app:boxCornerRadiusBottomEnd="@dimen/_2sdp"
+        app:errorEnabled="true"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_rePassword"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/password"
+            android:inputType="textPassword"
+            android:lines="1"
+            android:maxLines="1"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ed_username_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        app:layout_constraintTop_toBottomOf="@id/ed_rePassword_layout"
+        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginEnd="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@color/shafaf"
+        app:boxStrokeWidthFocused="0dp"
+        app:boxStrokeWidth="0dp"
+        app:boxBackgroundColor="@color/white"
+        app:startIconDrawable="@drawable/ic_user"
+        app:startIconTint="@color/black"
+        android:textColorHint="@color/black"
+        app:hintTextColor="@color/black"
+        app:boxCornerRadiusTopEnd="@dimen/_2sdp"
+        app:boxCornerRadiusBottomStart="@dimen/_2sdp"
+        app:boxCornerRadiusBottomEnd="@dimen/_2sdp"
+        app:errorEnabled="true"
+        >
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ed_username"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/username"
+            android:inputType="text"
+            android:lines="1"
+            android:maxLines="1"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/ed_birthdate_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_80sdp"
+        app:layout_constraintTop_toBottomOf="@id/rb_gender_layout"
+        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginEnd="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@color/shafaf"
+        app:cardCornerRadius="@dimen/_2sdp"
+        >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:background="@color/main_color"
+                android:textSize="@dimen/_10sdp"
+                android:textColor="@color/white"
+                android:text="@string/birthdate"
+                android:gravity="center"
+                />
+
+            <com.mikhaellopez.lazydatepicker.LazyDatePicker
+                android:id="@+id/dp_birthdate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                app:ldp_show_full_date="false"
+                app:ldp_text_color="@color/black"
+                app:ldp_hint_color="@color/gray"
+                app:ldp_date_format="dd-mm-yyyy"
+                />
+        </LinearLayout>
+
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.addisonelliott.segmentedbutton.SegmentedButtonGroup
+        android:id="@+id/rb_gender_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp"
+        app:layout_constraintTop_toBottomOf="@id/ed_username_layout"
+        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginEnd="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@color/white"
+        app:borderColor="@color/dark_main_color"
+        app:borderWidth="0dp"
+        app:divider="@color/light_main_color"
+        app:dividerPadding="0dp"
+        app:dividerWidth="@dimen/_1sdp"
+        app:dividerRadius="@dimen/_15sdp"
+        app:position="0"
+        app:radius="@dimen/_2sdp"
+        app:ripple="false"
+        app:draggable="true"
+        app:rippleColor="@color/dark_main_color"
+        app:selectedBackground="@color/main_color">
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:id="@+id/rb_gender_male"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_weight="1"
+            android:padding="3dp"
+            app:drawableGravity="top"
+            app:selectedDrawableTint="@color/white"
+            app:drawableTint="@color/main_color"
+            app:drawable="@drawable/ic_man"
+             />
+
+        <com.addisonelliott.segmentedbutton.SegmentedButton
+            android:id="@+id/rb_gender_female"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_weight="1"
+            android:padding="10dp"
+            app:drawableGravity="top"
+            app:selectedDrawableTint="@color/white"
+            app:drawableTint="@color/main_color"
+            app:drawable="@drawable/ic_women"
+             />
+    </com.addisonelliott.segmentedbutton.SegmentedButtonGroup>
 
 
     <ImageButton
@@ -96,21 +251,86 @@
         android:scaleType="fitXY"
          />
 
-
-
     <ImageButton
-        android:id="@+id/btn_register"
-        android:layout_width="@dimen/_70sdp"
-        android:layout_height="@dimen/_70sdp"
+        android:id="@+id/btn_prepare_register"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_55sdp"
         android:text="@string/new_account"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/ed_password_layout"
-        android:layout_marginTop="@dimen/_60sdp"
+        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
+        android:layout_marginTop="@dimen/_15sdp"
         android:src="@drawable/ic_new_account"
         android:background="@drawable/ic_empty_circle"
         android:backgroundTint="@color/white"
         app:tint="@color/dark_main_color"
+        />
+
+    <ImageButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_55sdp"
+        android:text="@string/new_account"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/btn_register"
+        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:src="@drawable/ic_cancel"
+        android:background="@drawable/ic_empty_circle"
+        android:backgroundTint="@color/white"
+        app:tint="@color/dark_main_color"
+        android:scaleType="centerInside"
+        />
+
+    <ImageButton
+        android:id="@+id/btn_register"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_55sdp"
+        android:text="@string/new_account"
+        app:layout_constraintEnd_toStartOf="@id/btn_cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ed_birthdate_layout"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:src="@drawable/ic_check"
+        android:background="@drawable/ic_empty_circle"
+        android:backgroundTint="@color/white"
+        app:tint="@color/dark_main_color"
+        android:scaleType="centerInside"
+        />
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progress_login"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_5sdp"
+        app:layout_constraintBottom_toBottomOf="@id/ed_password_layout"
+        app:layout_constraintStart_toStartOf="@id/ed_password_layout"
+        app:layout_constraintEnd_toEndOf="@id/ed_password_layout"
+        android:indeterminate="true"
+        app:spb_sections_count="1"
+        app:spb_color="#FF0000"
+        app:spb_speed="1.5"
+        app:spb_stroke_width="@dimen/_2sdp"
+        app:spb_stroke_separator_length="@dimen/_2sdp"
+        app:spb_reversed="true"
+        app:spb_mirror_mode="true"
+        />
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progress_register"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_5sdp"
+        app:layout_constraintBottom_toBottomOf="@id/ed_birthdate_layout"
+        app:layout_constraintStart_toStartOf="@id/ed_birthdate_layout"
+        app:layout_constraintEnd_toEndOf="@id/ed_birthdate_layout"
+        android:elevation="@dimen/_50sdp"
+        android:indeterminate="true"
+        app:spb_sections_count="1"
+        app:spb_color="#FF0000"
+        app:spb_speed="1.5"
+        app:spb_stroke_width="@dimen/_2sdp"
+        app:spb_stroke_separator_length="@dimen/_2sdp"
+        app:spb_reversed="true"
+        app:spb_mirror_mode="true"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
