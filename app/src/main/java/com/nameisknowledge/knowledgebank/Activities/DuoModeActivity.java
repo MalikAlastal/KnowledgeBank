@@ -39,6 +39,8 @@ public class DuoModeActivity extends AppCompatActivity {
 
         roomId = getIntent().getStringExtra("roomID");
 
+        initialValues();
+
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GamePlay_COLLECTION).document(roomId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
