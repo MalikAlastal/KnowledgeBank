@@ -133,9 +133,9 @@ public class DuoModeActivity extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        int me = (int) documentSnapshot.get(FirebaseAuth.getInstance().getUid());
-                                        int otherPlayer = (int) documentSnapshot.get(senderId);
-                                        int winner = Math.max(me,otherPlayer);
+                                        long me = (long) documentSnapshot.get(FirebaseAuth.getInstance().getUid());
+                                        long otherPlayer = (long) documentSnapshot.get(senderId);
+                                        long winner = Math.max(me,otherPlayer);
                                         toastMethods.success("The Winner score is"+winner);
                                     }
                                 }).addOnFailureListener(new OnFailureListener() {
@@ -151,7 +151,6 @@ public class DuoModeActivity extends AppCompatActivity {
                 toastMethods.error(e.getMessage());
             }
         });
-        Toast.makeText(this, "your score is: "+this.score+"/"+this.questions.size(), Toast.LENGTH_SHORT).show();
         finish();
     }
 
