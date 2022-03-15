@@ -67,7 +67,8 @@ dependencies {
 
     implementation 'com.github.addisonElliott:SegmentedButton:3.1.7'
 
+    implementation 'com.github.castorflex.smoothprogressbar:library:1.1.0'
 
-
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
 
 }

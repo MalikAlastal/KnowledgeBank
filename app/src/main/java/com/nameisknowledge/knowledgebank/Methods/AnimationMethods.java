@@ -49,7 +49,7 @@ public class AnimationMethods {
         }
     }
 
-    public static void bounce(int duration , View... views){
+    public static void shake(int duration , View... views){
         for (View view :views) {
             YoYo.with(Techniques.Shake).duration(duration).playOn(view);
         }
