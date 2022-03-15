@@ -85,7 +85,8 @@ public class RequestsService extends Service {
                            RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                                    | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                   .putExtra("roomID",value.getDocumentChanges().get(0).getDocument().getString("roomID")));
+                                   .putExtra("roomID",value.getDocumentChanges().get(0).getDocument().getString("roomID"))
+                                   .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("senderID")));
                         }
                     }
                 } else {

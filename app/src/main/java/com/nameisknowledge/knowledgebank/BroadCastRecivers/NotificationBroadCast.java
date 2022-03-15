@@ -58,7 +58,7 @@ public class NotificationBroadCast extends BroadcastReceiver {
                     FirebaseFirestore.getInstance().collection(FirebaseConstants.GamePlay_COLLECTION).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(senderID).collection(FirebaseConstants.Container_COLLECTION).add(new ResponseMD(documentReference.getId())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(senderID).collection(FirebaseConstants.Container_COLLECTION).add(new ResponseMD(documentReference.getId(),FirebaseAuth.getInstance().getUid())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
                                     documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -66,7 +66,8 @@ public class NotificationBroadCast extends BroadcastReceiver {
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             context.startActivity(new Intent(context, DuoModeActivity.class).
                                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).
-                                                    putExtra("roomID",documentSnapshot.getString("roomID")));
+                                                    putExtra("roomID",documentSnapshot.getString("roomID"))
+                                                    .putExtra("senderID",senderID));
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
