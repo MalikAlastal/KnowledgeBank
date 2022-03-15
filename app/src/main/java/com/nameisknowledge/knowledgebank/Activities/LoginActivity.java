@@ -21,6 +21,7 @@ import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
+import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
@@ -43,6 +44,9 @@ public class LoginActivity extends AppCompatActivity {
 
     FirebaseAuth auth ;
     FirebaseFirestore firestore ;
+
+
+    ToastMethods toastMethods ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +78,8 @@ public class LoginActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(LoginActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                         stopLoading();
+                        toastMethods.error(e.getMessage());
                     }
                 });
 
@@ -106,26 +110,29 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     stopLoading();
-                                    Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+                                    ViewMethods.clearEditText(binding.edUsername, binding.edRePassword);
+                                    binding.dpBirthdate.clear();
+                                    binding.rbGenderLayout.setPosition(0 , true);
+                                    prepareForLogin();
+                                    toastMethods.success("success");
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     stopLoading();
-                                    Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    toastMethods.error(e.getMessage());
                                 }
                             });
                         }
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getBaseContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            toastMethods.error(e.getMessage());
                             stopLoading();
                         }
                     });
                 }
                 else {
-                    Toast.makeText(getBaseContext(), "user null", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -151,6 +158,9 @@ public class LoginActivity extends AppCompatActivity {
 
         calendar.set(Calendar.YEAR , calendar.get(Calendar.YEAR) - UserConstants.MIN_AGE);
         binding.dpBirthdate.setMaxDate(calendar.getTime());
+
+
+        toastMethods= new ToastMethods(this);
 
         binding.progressLogin.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
         binding.progressRegister.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
@@ -247,5 +257,4 @@ public class LoginActivity extends AppCompatActivity {
 
         ViewMethods.goneView(binding.progressRegister , binding.progressLogin);
     }
-
 }

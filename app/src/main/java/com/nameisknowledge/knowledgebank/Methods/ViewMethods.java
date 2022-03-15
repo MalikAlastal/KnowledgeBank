@@ -91,4 +91,10 @@ public class ViewMethods {
             editText.setError(null);
         }
     }
+
+    public static void clearEditText(EditText... editTexts){
+        for (EditText editText:editTexts) {
+            editText.setText("");
+        }
+    }
 }
