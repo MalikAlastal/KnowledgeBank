@@ -24,7 +24,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
+import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
+import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
@@ -90,6 +92,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    private void setQes(){
+        for (int i=0;i<3;i++){
+            FirebaseFirestore.getInstance().collection(FirebaseConstants.Questions_COLLECTION)
+            .document(i+"")
+            .set(new QuestionMD("How r u","hi",i))
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
 

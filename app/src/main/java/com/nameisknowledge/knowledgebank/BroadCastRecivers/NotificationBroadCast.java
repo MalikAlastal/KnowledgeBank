@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 public class NotificationBroadCast extends BroadcastReceiver {
-    private String sID;
+    private String senderID;
 
     public NotificationBroadCast(String sID) {
-        this.sID = sID;
+        this.senderID = sID;
     }
 
     public NotificationBroadCast() {
@@ -38,32 +38,35 @@ public class NotificationBroadCast extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        sID = intent.getStringExtra("senderID");
+        senderID = intent.getStringExtra("senderID");
         FirebaseFirestore.getInstance().collection(FirebaseConstants.Questions_COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
                     int max = task.getResult().size();
                     List<Integer> questionsIndex = new ArrayList<>();
-                    for (int i=1;i<=max;i++){
+
+                    for (int i=0;i<max;i++){
                         questionsIndex.add(i);
                     }
 
                     Map<String,Object> map = new HashMap<>();
                     map.put("questionsIndex",questionsIndex);
                     map.put(FirebaseAuth.getInstance().getUid(),0);
-                    map.put(sID,0);
+                    map.put(senderID,0);
 
                     FirebaseFirestore.getInstance().collection(FirebaseConstants.GamePlay_COLLECTION).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(sID).collection(FirebaseConstants.Container_COLLECTION).add(new ResponseMD(documentReference.getId())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(senderID).collection(FirebaseConstants.Container_COLLECTION).add(new ResponseMD(documentReference.getId())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
                                     documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            context.startActivity(new Intent(context, DuoModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("RoomId",documentSnapshot.getString("RoomId")));
+                                            context.startActivity(new Intent(context, DuoModeActivity.class).
+                                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).
+                                                    putExtra("roomID",documentSnapshot.getString("roomID")));
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override

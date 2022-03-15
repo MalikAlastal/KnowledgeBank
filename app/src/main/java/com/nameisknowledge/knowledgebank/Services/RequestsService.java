@@ -82,8 +82,10 @@ public class RequestsService extends Service {
                 if (error == null) {
                     if (value != null) {
                         if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
-                           RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                   | Intent.FLAG_ACTIVITY_CLEAR_TASK).putExtra("RoomId",value.getDocumentChanges().get(0).getDocument().getString("RoomId")));
+                           RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
+                                   .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                   | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                   .putExtra("roomID",value.getDocumentChanges().get(0).getDocument().getString("roomID")));
                         }
                     }
                 } else {
