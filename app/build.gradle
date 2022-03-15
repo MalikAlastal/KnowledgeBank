@@ -6,9 +6,9 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdk 31
-
-    buildFeatures{
-        viewBinding true
+    
+    buildFeatures {
+        viewBinding = true
     }
 
     defaultConfig {
@@ -55,4 +55,19 @@ dependencies {
     //intuit library (for support multiple screen size and font)
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
     implementation 'com.intuit.ssp:ssp-android:1.0.6'
+
+
+    // animation library
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    // datePickerLibrary
+    implementation 'com.mikhaellopez:lazydatepicker:1.1.0'
+
+    // radio buttons library
+
+    implementation 'com.github.addisonElliott:SegmentedButton:3.1.7'
+
+    implementation 'com.github.castorflex.smoothprogressbar:library:1.1.0'
+
+    implementation 'com.github.GrenderG:Toasty:1.5.2'
 }
