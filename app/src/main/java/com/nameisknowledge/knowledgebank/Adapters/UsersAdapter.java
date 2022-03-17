@@ -1,5 +1,6 @@
 package com.nameisknowledge.knowledgebank.Adapters;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
     public UsersAdapter(List<UserMD> users, GenericListener<String> listener) {
         this.users = users;
         this.listener = listener;
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void setUsers(List<UserMD> users) {
+        this.users = users;
+        notifyDataSetChanged();
     }
 
     @Override

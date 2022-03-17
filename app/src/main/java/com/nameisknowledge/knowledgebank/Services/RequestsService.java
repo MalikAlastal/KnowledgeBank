@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -23,16 +22,13 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Activities.DuoModeActivity;
 import com.nameisknowledge.knowledgebank.BroadCastRecivers.NotificationBroadCast;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 public class RequestsService extends Service {
@@ -61,7 +57,7 @@ public class RequestsService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         registerReceiver();
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Requests_COLLECTION).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection(FirebaseConstants.Container_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection(FirebaseConstants.CONTAINER_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null) {
@@ -76,7 +72,7 @@ public class RequestsService extends Service {
             }
         });
 
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection(FirebaseConstants.Container_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.RESPONSES_COLLECTION).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection(FirebaseConstants.CONTAINER_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null) {

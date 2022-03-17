@@ -3,11 +3,8 @@ package com.nameisknowledge.knowledgebank.Activities;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.os.FileObserver;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -15,11 +12,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
-import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
-import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
 
 import java.util.ArrayList;
@@ -41,7 +35,7 @@ public class DuoModeActivity extends AppCompatActivity {
 
         initialValues();
 
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GamePlay_COLLECTION).document(roomId).get()
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(roomId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -66,7 +60,7 @@ public class DuoModeActivity extends AppCompatActivity {
     }
 
     private void getQuestionFromFireStore(){
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Questions_COLLECTION)
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION)
                 .document(index+"")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {

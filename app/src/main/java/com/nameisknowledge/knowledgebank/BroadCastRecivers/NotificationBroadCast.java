@@ -39,7 +39,7 @@ public class NotificationBroadCast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         senderID = intent.getStringExtra("senderID");
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Questions_COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
@@ -55,10 +55,10 @@ public class NotificationBroadCast extends BroadcastReceiver {
                     map.put(FirebaseAuth.getInstance().getUid(),0);
                     map.put(senderID,0);
 
-                    FirebaseFirestore.getInstance().collection(FirebaseConstants.GamePlay_COLLECTION).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(senderID).collection(FirebaseConstants.Container_COLLECTION).add(new ResponseMD(documentReference.getId())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            FirebaseFirestore.getInstance().collection(FirebaseConstants.RESPONSES_COLLECTION).document(senderID).collection(FirebaseConstants.CONTAINER_COLLECTION).add(new ResponseMD(documentReference.getId())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                 @Override
                                 public void onSuccess(DocumentReference documentReference) {
                                     documentReference.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
