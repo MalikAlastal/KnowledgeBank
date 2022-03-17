@@ -7,26 +7,25 @@
     tools:context=".Activities.MainActivity">
 
     <Button
-        android:id="@+id/click_btn"
+        android:id="@+id/btn_solo_mode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/solo_mode"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.087" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.15"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv"
+        android:id="@+id/rv_users"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="162dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/click_btn" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_solo_mode"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
