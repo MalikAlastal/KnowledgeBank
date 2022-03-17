@@ -5,4 +5,5 @@
     <string name="new_account">New Account</string>
     <string name="birthdate">Birth Date</string>
     <string name="username">Username</string>
+    <string name="solo_mode">Solo Mode</string>
 </resources>
