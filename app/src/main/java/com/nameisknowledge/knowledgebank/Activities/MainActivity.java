@@ -113,27 +113,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
-
-//    public void createNotification(){
-//        String channelId = "message" ;
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this , channelId) ;
-//        builder.setSmallIcon(R.drawable.ic_timer).setContent(getMyLayout());
-//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) ;
-//        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-//            NotificationChannel channel = new NotificationChannel(channelId , "Message" , NotificationManager.IMPORTANCE_DEFAULT);
-//            manager.createNotificationChannel(channel);
-//        }
-//        manager.notify(0 , builder.build());
-//    }
-//
-//    public RemoteViews getMyLayout(){
-//        @SuppressLint("RemoteViewLayout") RemoteViews remoteViews =
-//                new RemoteViews(getApplicationContext().getPackageName() , R.layout.notification_layout) ;
-//        Intent i = new Intent(getBaseContext() , DuoModeActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext() ,10 , i ,0);
-//        remoteViews.setOnClickPendingIntent(R.id.notText , pendingIntent);
-//        remoteViews.setTextViewText(R.id.notText , "Timer Finished");
-//        return remoteViews ;
-//    }
+    
 }

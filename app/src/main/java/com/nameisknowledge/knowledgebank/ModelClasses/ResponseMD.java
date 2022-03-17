@@ -1,10 +1,12 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class ResponseMD {
-    private String roomID,senderID;
-    public ResponseMD(String roomID,String senderID) {
+    private String roomID,userID;
+    public ResponseMD(String roomID,String userID) {
         this.roomID = roomID;
-        this.senderID = roomID;
+        this.userID = userID;
     }
 
     public ResponseMD() {
@@ -18,11 +20,11 @@ public class ResponseMD {
         this.roomID = roomID;
     }
 
-    public String getSenderId() {
-        return senderID;
+    public String getUserID() {
+        return userID;
     }
 
-    public void setSenderId(String senderId) {
-        this.senderID = senderId;
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 }

@@ -10,16 +10,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -28,10 +33,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Activities.DuoModeActivity;
 import com.nameisknowledge.knowledgebank.BroadCastRecivers.NotificationBroadCast;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -76,17 +83,19 @@ public class RequestsService extends Service {
             }
         });
 
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection(FirebaseConstants.Container_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION)
+                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                .collection(FirebaseConstants.Container_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
                 if (error == null) {
                     if (value != null) {
                         if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
-                           RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
-                                   .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                   | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                   .putExtra("roomID",value.getDocumentChanges().get(0).getDocument().getString("roomID"))
-                                   .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("senderID")));
+                            RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                            | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                    .putExtra("roomID", value.getDocumentChanges().get(0).getDocument().getString("roomID"))
+                                    .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("userID")));
                         }
                     }
                 } else {
@@ -97,6 +106,7 @@ public class RequestsService extends Service {
         return START_STICKY;
     }
 
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -105,7 +115,7 @@ public class RequestsService extends Service {
 
     public void showNav(RequestMD requestMD, Context context) {
         String channelId = "ChaId";
-        NotificationBroadCast notificationBroadCast = new NotificationBroadCast(requestMD.getUid());
+        NotificationBroadCast notificationBroadCast = new NotificationBroadCast();
         Intent intent = new Intent(context, notificationBroadCast.getClass()).putExtra("senderID",requestMD.getUid());
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId);
