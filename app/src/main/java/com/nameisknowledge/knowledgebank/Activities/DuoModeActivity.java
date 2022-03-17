@@ -264,7 +264,7 @@ public class DuoModeActivity extends AppCompatActivity {
                         if (!Objects.equals(Objects.requireNonNull(value).getString("Winner"), "")){
                             endGame();
                     }
-                }
+            }
        });
     }
 
