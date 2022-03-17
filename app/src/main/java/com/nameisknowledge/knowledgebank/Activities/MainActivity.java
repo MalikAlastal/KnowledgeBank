@@ -2,18 +2,11 @@ package com.nameisknowledge.knowledgebank.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -29,7 +22,6 @@ import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
-import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.Services.RequestsService;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 
@@ -97,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setQes(){
         for (int i=0;i<3;i++){
-            FirebaseFirestore.getInstance().collection(FirebaseConstants.Questions_COLLECTION)
+            FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION)
             .document(i+"")
             .set(new QuestionMD("How r u","hi",i))
             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -113,27 +105,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
-
-//    public void createNotification(){
-//        String channelId = "message" ;
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this , channelId) ;
-//        builder.setSmallIcon(R.drawable.ic_timer).setContent(getMyLayout());
-//        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) ;
-//        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-//            NotificationChannel channel = new NotificationChannel(channelId , "Message" , NotificationManager.IMPORTANCE_DEFAULT);
-//            manager.createNotificationChannel(channel);
-//        }
-//        manager.notify(0 , builder.build());
-//    }
-//
-//    public RemoteViews getMyLayout(){
-//        @SuppressLint("RemoteViewLayout") RemoteViews remoteViews =
-//                new RemoteViews(getApplicationContext().getPackageName() , R.layout.notification_layout) ;
-//        Intent i = new Intent(getBaseContext() , DuoModeActivity.class);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(getBaseContext() ,10 , i ,0);
-//        remoteViews.setOnClickPendingIntent(R.id.notText , pendingIntent);
-//        remoteViews.setTextViewText(R.id.notText , "Timer Finished");
-//        return remoteViews ;
-//    }
+    
 }

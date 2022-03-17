@@ -1,8 +1,9 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class UserMD {
+public class UserMD{
 
     private String uid , username , email , password , gender , avatar ;
     private Date birthdate , creationDate ;

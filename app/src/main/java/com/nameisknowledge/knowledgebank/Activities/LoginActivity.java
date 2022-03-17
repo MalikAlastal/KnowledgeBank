@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 startLoading(binding.progressLogin);
 
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(email , password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
                         startActivity(new Intent(getBaseContext(),MainActivity.class));
