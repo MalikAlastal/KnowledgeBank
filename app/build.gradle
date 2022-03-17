@@ -73,7 +73,5 @@ dependencies {
 
     implementation 'com.github.Spikeysanju:ZoomRecylerLayout:1.0'
 
-    implementation 'com.github.rubensousa.viewpagercards:1.0'
-
     implementation 'com.tbuonomo.andrui:viewpagerdotsindicator:4.1.2'
 }
