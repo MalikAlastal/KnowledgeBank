@@ -30,8 +30,6 @@ import java.util.Map;
 
 public class NotificationBroadCast extends BroadcastReceiver {
     private String senderID;
-    private UserMD user;
-
     public NotificationBroadCast() {
     }
 
