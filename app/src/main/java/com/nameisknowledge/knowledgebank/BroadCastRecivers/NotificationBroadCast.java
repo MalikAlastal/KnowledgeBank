@@ -3,7 +3,6 @@ package com.nameisknowledge.knowledgebank.BroadCastRecivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -18,14 +17,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.auth.User;
 import com.nameisknowledge.knowledgebank.Activities.DuoModeActivity;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -72,7 +69,7 @@ public class NotificationBroadCast extends BroadcastReceiver {
     }
 
     private void generateQuestions(Context context,GenericListener<Map<String,Object>> listener){
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Questions_COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()){
@@ -101,7 +98,7 @@ public class NotificationBroadCast extends BroadcastReceiver {
     }
 
     private void generateGamePlay(Context context,Map<String,Object> map,GenericListener<String> listener){
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GamePlay_COLLECTION).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).add(map).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 listener.getData(documentReference.getId());
@@ -115,8 +112,8 @@ public class NotificationBroadCast extends BroadcastReceiver {
     }
 
     private void generateResponse(Context context,String roomID){
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.Responses_COLLECTION).document(senderID)
-                .collection(FirebaseConstants.Container_COLLECTION)
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.RESPONSES_COLLECTION).document(senderID)
+                .collection(FirebaseConstants.CONTAINER_COLLECTION)
                 .add(new ResponseMD(roomID,FirebaseAuth.getInstance().getUid())).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
