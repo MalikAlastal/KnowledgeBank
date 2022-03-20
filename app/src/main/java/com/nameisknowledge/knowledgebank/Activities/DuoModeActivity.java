@@ -113,7 +113,6 @@ public class DuoModeActivity extends AppCompatActivity {
                 me = userMD;
             }
         });
-
         gameFlow();
     }
 
@@ -290,7 +289,7 @@ public class DuoModeActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         toastMethods.error(e.getMessage());
-                    }
+                }
         });
     }
 }
