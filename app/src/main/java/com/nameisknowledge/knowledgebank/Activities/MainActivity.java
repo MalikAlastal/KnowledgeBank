@@ -17,8 +17,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.nameisknowledge.knowledgebank.Adapters.MainBannerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.PagerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
+import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Fragments.BlankFragment;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
@@ -26,8 +28,12 @@ import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
+import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.Services.RequestsService;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
+import com.zhpan.bannerview.BannerViewPager;
+import com.zhpan.bannerview.constants.PageStyle;
+import com.zhpan.indicator.enums.IndicatorSlideMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 userMDs = queryDocumentSnapshots.toObjects(UserMD.class);
                 usersAdapter.setUsers(userMDs);
+                prepareBannerViewPager();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -146,6 +153,38 @@ public class MainActivity extends AppCompatActivity {
        fragments.add(new BlankFragment());
        fragments.add(new BlankFragment());
 
+
+
+
        pagerAdapter = new PagerAdapter(this , fragments);
+    }
+
+    private void prepareBannerViewPager(){
+        MainBannerAdapter bannerAdapter = new MainBannerAdapter();
+
+        List<UserMD> modes = new ArrayList<>();
+
+        for (int i =0 ; i <3 ; i++){
+            UserMD user = new UserMD();
+            user.setEmail("mode "+ i);
+            user.setUid("uid " + i);
+            modes.add(user);
+        }
+
+        binding.bannerViewPager.setAdapter(bannerAdapter)
+                .setLifecycleRegistry(getLifecycle())
+                .setPageStyle(PageStyle.MULTI_PAGE_OVERLAP)
+                .setScrollDuration(DurationConstants.DURATION_SO_SHORT)
+                .setRevealWidth(5 , 5)
+                .setPageMargin(getResources().getDimensionPixelOffset(R.dimen._85sdp))
+                .setAutoPlay(false)
+                .setCanLoop(false)
+                .setIndicatorVisibility(View.GONE);
+
+
+        binding.bannerViewPager.create(modes);
+
+        binding.bannerViewPager.setCurrentItem(1);
+
     }
 }
