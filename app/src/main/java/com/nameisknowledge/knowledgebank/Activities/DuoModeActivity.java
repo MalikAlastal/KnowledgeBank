@@ -36,7 +36,7 @@ public class DuoModeActivity extends AppCompatActivity {
     private String roomId,senderId;
     private UserMD me,otherPlayer;
     private List<QuestionMD> questions;
-    private int index,size,currentQuestion;
+    private int index,size;
     private ToastMethods toastMethods;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,7 +99,6 @@ public class DuoModeActivity extends AppCompatActivity {
         senderId = getIntent().getStringExtra("senderID");
         this.index = 0;
         this.size = 0;
-        this.currentQuestion = 0;
         this.questions = new ArrayList<>();
         this.toastMethods = new ToastMethods(this);
         getUserFromFireStore(senderId, new GenericListener<UserMD>() {
@@ -122,19 +121,15 @@ public class DuoModeActivity extends AppCompatActivity {
         if (TextUtils.equals(answer,questionMD.getAnswer())){
             toastMethods.success("Nice!!");
             setTheScore();
+            currentQuestion(2, new GenericListener<Void>() {
+                @Override
+                public void getData(Void unused) {
+
+                }
+            });
         }else {
             toastMethods.error("Wrong Answer");
         }
-
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
-                .update("currentQuestion",FieldValue.increment(1))
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        toastMethods.error(e.getMessage());
-                    }
-        });
     }
 
     private void nextQuestion(){
@@ -267,8 +262,7 @@ public class DuoModeActivity extends AppCompatActivity {
                         GamePlayMD gamePlayMD = Objects.requireNonNull(value).toObject(GamePlayMD.class);
                         if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2){
                             if (index != questions.size()-1){
-                                currentQuestion = 0;
-                                currentQuestion(currentQuestion, new GenericListener<Void>() {
+                                currentQuestion(0, new GenericListener<Void>() {
                                     @Override
                                     public void getData(Void unused) {
                                         nextQuestion();
