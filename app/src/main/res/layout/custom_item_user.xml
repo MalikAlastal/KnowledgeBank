@@ -1,38 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="@dimen/_250sdp"
-    android:layout_gravity="start"
-    app:cardCornerRadius="@dimen/_5sdp"
-    android:elevation="@dimen/_2sdp"
-    app:cardPreventCornerOverlap="true"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+>
+    <com.google.android.material.card.MaterialCardView
 
-    <LinearLayout
-        android:padding="@dimen/_5sdp"
         android:layout_width="match_parent"
+        android:layout_gravity="start"
+        app:cardCornerRadius="@dimen/_5sdp"
+        android:elevation="@dimen/_2sdp"
+        app:cardPreventCornerOverlap="true"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/main_color"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@color/main_color"
+        android:layout_margin="@dimen/_3sdp"
         >
 
-        <TextView
-            android:id="@+id/tv_email"
+        <LinearLayout
+            android:padding="@dimen/_5sdp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="@color/white"
-            />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
 
-        <TextView
-            android:layout_marginTop="@dimen/_5sdp"
-            android:id="@+id/tv_Uid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="@color/white"
-            />
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+            <TextView
+                android:id="@+id/tv_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="@color/white"
+                />
+
+            <TextView
+                android:layout_marginTop="@dimen/_5sdp"
+                android:id="@+id/tv_Uid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textColor="@color/white"
+                />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>
