@@ -15,12 +15,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Dialogs.WinnerDialog;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
+import com.nameisknowledge.knowledgebank.ModelClasses.GamePlayMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
@@ -34,7 +36,7 @@ public class DuoModeActivity extends AppCompatActivity {
     private String roomId,senderId;
     private UserMD me,otherPlayer;
     private List<QuestionMD> questions;
-    private int index,size,score;
+    private int index,size,currentQuestion;
     private ToastMethods toastMethods;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +51,7 @@ public class DuoModeActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         getQuestionFromFireStore();
-                        List<Integer> indexes = (List<Integer>) documentSnapshot.get("questionsIndex");
+                        List<Integer> indexes = (List<Integer>) documentSnapshot.get("index");
                         size = Objects.requireNonNull(indexes).size();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -95,9 +97,9 @@ public class DuoModeActivity extends AppCompatActivity {
     private void initialValues(){
         roomId = getIntent().getStringExtra("roomID");
         senderId = getIntent().getStringExtra("senderID");
-        this.score = 0;
         this.index = 0;
         this.size = 0;
+        this.currentQuestion = 0;
         this.questions = new ArrayList<>();
         this.toastMethods = new ToastMethods(this);
         getUserFromFireStore(senderId, new GenericListener<UserMD>() {
@@ -112,27 +114,26 @@ public class DuoModeActivity extends AppCompatActivity {
                 me = userMD;
             }
         });
-        ListenToTheWinner();
+
+        gameFlow();
     }
 
     private void submit(String answer,QuestionMD questionMD){
-
         if (TextUtils.equals(answer,questionMD.getAnswer())){
             toastMethods.success("Nice!!");
-            score++;
+            setTheScore();
         }else {
             toastMethods.error("Wrong Answer");
         }
 
-        setTheScore(score, new GenericListener<Void>() {
-            @Override
-            public void getData(Void unused) {
-                if (index != questions.size()-1){
-                    nextQuestion();
-                }else {
-                    endGame();
-                }
-            }
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
+                .document(roomId)
+                .update("currentQuestion",FieldValue.increment(1))
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
         });
     }
 
@@ -185,16 +186,17 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void setTheScore(int score,GenericListener<Void> listener){
+    private void setTheScore(){
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
-                .update(FirebaseAuth.getInstance().getUid(),score)
+                .update("ids"+"."+FirebaseAuth.getInstance().getUid(),FieldValue.increment(1))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        listener.getData(unused);
+                        toastMethods.success("Done!");
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+                })
+                .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 toastMethods.error(e.getMessage());
@@ -209,8 +211,9 @@ public class DuoModeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        long myScore = (long) documentSnapshot.get(FirebaseAuth.getInstance().getUid());
-                        long otherPlayerScore = (long) documentSnapshot.get(senderId);
+                        GamePlayMD gamePlayMD = documentSnapshot.toObject(GamePlayMD.class);
+                        long myScore = (long) gamePlayMD.getIds().get(FirebaseAuth.getInstance().getUid());
+                        long otherPlayerScore = (long) gamePlayMD.getIds().get(senderId);
                         long winner = Math.max(myScore,otherPlayerScore);
                         String win = "";
                         if (winner == myScore){
@@ -255,17 +258,45 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void ListenToTheWinner(){
+    private void gameFlow(){
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                        if (!Objects.equals(Objects.requireNonNull(value).getString("Winner"), "")){
-                            endGame();
+                        GamePlayMD gamePlayMD = Objects.requireNonNull(value).toObject(GamePlayMD.class);
+                        if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2){
+                            if (index != questions.size()-1){
+                                currentQuestion = 0;
+                                currentQuestion(currentQuestion, new GenericListener<Void>() {
+                                    @Override
+                                    public void getData(Void unused) {
+                                        nextQuestion();
+                                    }
+                                });
+                            }else {
+                                endGame();
+                        }
                     }
-            }
+                }
        });
     }
 
+    private void currentQuestion(int number,GenericListener<Void> listener){
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
+                .document(roomId)
+                .update("currentQuestion",number)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        listener.getData(unused);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+        });
+    }
 }
