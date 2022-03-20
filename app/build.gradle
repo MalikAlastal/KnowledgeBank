@@ -78,5 +78,5 @@ dependencies {
     implementation 'com.github.Spikeysanju:ZoomRecylerLayout:1.0'
 
     // viewpager library
-
+    implementation 'com.github.zhpanvip:bannerviewpager:3.5.5'
 }

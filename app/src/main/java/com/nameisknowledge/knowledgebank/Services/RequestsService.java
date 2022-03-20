@@ -58,41 +58,8 @@ public class RequestsService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         registerReceiver();
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION).document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid())).collection(FirebaseConstants.CONTAINER_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error == null) {
-                    if (value != null) {
-                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
-                            showNav(value.getDocumentChanges().get(0).getDocument().toObject(RequestMD.class), mActivity.getBaseContext());
-                        }
-                    }
-                } else {
-                    Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.RESPONSES_COLLECTION)
-                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
-                .collection(FirebaseConstants.CONTAINER_COLLECTION).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error == null) {
-                    if (value != null) {
-                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
-                            RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                            | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                    .putExtra("roomID", value.getDocumentChanges().get(0).getDocument().getString("roomID"))
-                                    .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("userID")));
-                        }
-                    }
-                } else {
-                    Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        requestsListener();
+        responsesListener();
         return START_STICKY;
     }
 
@@ -127,7 +94,62 @@ public class RequestsService extends Service {
         return remoteViews;
     }
 
+    private void responsesListener(){
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.RESPONSES_COLLECTION)
+                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                .collection(FirebaseConstants.CONTAINER_COLLECTION)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            if (value != null) {
+                                if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
+                                    RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                                    | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                            .putExtra("roomID", value.getDocumentChanges().get(0).getDocument().getString("roomID"))
+                                            .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("userID")));
+                                }
+                            }
+                        } else {
+                            Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
 
+    /*
+    دالة عبارة عن Listener على كوليكشن الRequests للحصول على اي Request جديدة يتم ارسالها الى المستخدم
+     */
+    private void requestsListener(){
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
+                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                .collection(FirebaseConstants.CONTAINER_COLLECTION)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            if (value != null) {
+                                // تم وضع هذا الشرط للحصول فقط على الطلبات الجديدة لان السنابشوت الخاص بالفايربيز يقوم بجلب جميع بيانات
+                                // الكوليكشن في اول مرة يتم تنفيذ الكود فيها
+                                // "لكن يوجد مشكلة"
+                                if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
+                                    // هنا قمنا باستخدام دالة اظهار الاشعار وارسلنا لها اوبجكت الRequest الي وصل + context
+                                    showNav(value.getDocumentChanges().get(0).getDocument().toObject(RequestMD.class), mActivity.getBaseContext());
+                                }
+                            }
+                        } else {
+                            Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
+    /*
+    دالة تقوم بتسجيل البرودكاست في النظام
+    وظيفة هذا البرودكاست هي ارسال اشعار للمستخدم عند وصول طلب لعب (Request)
+     */
     public void registerReceiver() {
         NotificationBroadCast receiver = new NotificationBroadCast();
         IntentFilter filter = new IntentFilter();
