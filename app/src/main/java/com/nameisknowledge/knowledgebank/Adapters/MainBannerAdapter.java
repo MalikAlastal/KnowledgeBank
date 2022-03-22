@@ -1,25 +1,29 @@
 package com.nameisknowledge.knowledgebank.Adapters;
 
-import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
+import android.graphics.Color;
+
+import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
 import com.nameisknowledge.knowledgebank.R;
-import com.nameisknowledge.knowledgebank.databinding.CustomItemUserBinding;
+import com.nameisknowledge.knowledgebank.databinding.BannerItemModeBinding;
 import com.zhpan.bannerview.BaseBannerAdapter;
 import com.zhpan.bannerview.BaseViewHolder;
 
-public class MainBannerAdapter extends BaseBannerAdapter<UserMD> {
+public class MainBannerAdapter extends BaseBannerAdapter<ModeMD> {
 
-    CustomItemUserBinding binding ;
+    BannerItemModeBinding binding ;
 
     @Override
-    protected void bindData(BaseViewHolder<UserMD> holder, UserMD data, int position, int pageSize) {
-        binding = CustomItemUserBinding.bind(holder.itemView);
+    protected void bindData(BaseViewHolder<ModeMD> holder, ModeMD data, int position, int pageSize) {
+        binding = BannerItemModeBinding.bind(holder.itemView);
 
-        binding.tvEmail.setText(data.getEmail());
-        binding.tvUid.setText(data.getUid());
+        binding.cardBackground.setCardBackgroundColor(data.getResMainColor());
+        binding.imgMode.setImageResource(data.getResImage());
+        binding.tvModeName.setText(data.getResName());
+        binding.tvModeName.setTextColor(data.getResMainColor());
     }
 
     @Override
     public int getLayoutId(int viewType) {
-        return R.layout.custom_item_user;
+        return R.layout.banner_item_mode;
     }
 }

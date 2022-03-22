@@ -25,6 +25,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Fragments.BlankFragment;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
+import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
@@ -48,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
     ToastMethods toastMethods ;
     List<UserMD> userMDs ;
     UsersAdapter usersAdapter  ;
-    PagerAdapter pagerAdapter ;
-    List<Fragment> fragments ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 userMDs = queryDocumentSnapshots.toObjects(UserMD.class);
                 usersAdapter.setUsers(userMDs);
-                prepareBannerViewPager();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -72,14 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 toastMethods.error(e.getMessage());
             }
         });
-
-        binding.btnSoloMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, SoloModeActivity.class));
-            }
-        });
-
     }
 
 
@@ -104,18 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void prepareActivity(){
         binding.rvUsers.setHasFixedSize(true);
-
-        LinearLayoutManager layoutManager = new ZoomRecyclerLayout(this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
-
-        SnapHelper snapHelper = new LinearSnapHelper();
-        snapHelper.attachToRecyclerView(binding.rvUsers);
-        binding.rvUsers.setNestedScrollingEnabled(false);
-
-
-        binding.rvUsers.setLayoutManager(layoutManager);
+        binding.rvUsers.setLayoutManager(new LinearLayoutManager(this));
 
         RequestsService.startActionFoo(this);
 
@@ -125,51 +104,17 @@ public class MainActivity extends AppCompatActivity {
 
        usersAdapter =  new UsersAdapter(userMDs, new GenericListener<String>() {
             @Override
-            public void getData(String Uid) {
-
-                FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
-                        .document(Uid).collection(FirebaseConstants.CONTAINER_COLLECTION)
-                        .add(new RequestMD(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()
-                                ,FirebaseAuth.getInstance().getCurrentUser().getEmail()))
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                toastMethods.success("Request Send");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        toastMethods.error(e.getMessage());
-                    }
-                });
+            public void getData(String uid) {
+                sendRequest(uid);
             }
         });
 
        binding.rvUsers.setAdapter(usersAdapter);
-
-       fragments = new ArrayList<>();
-
-       fragments.add(new BlankFragment());
-       fragments.add(new BlankFragment());
-       fragments.add(new BlankFragment());
-
-
-
-
-       pagerAdapter = new PagerAdapter(this , fragments);
+       prepareBannerViewPager();
     }
 
     private void prepareBannerViewPager(){
         MainBannerAdapter bannerAdapter = new MainBannerAdapter();
-
-        List<UserMD> modes = new ArrayList<>();
-
-        for (int i =0 ; i <3 ; i++){
-            UserMD user = new UserMD();
-            user.setEmail("mode "+ i);
-            user.setUid("uid " + i);
-            modes.add(user);
-        }
 
         binding.bannerViewPager.setAdapter(bannerAdapter)
                 .setLifecycleRegistry(getLifecycle())
@@ -179,12 +124,43 @@ public class MainActivity extends AppCompatActivity {
                 .setPageMargin(getResources().getDimensionPixelOffset(R.dimen._85sdp))
                 .setAutoPlay(false)
                 .setCanLoop(false)
-                .setIndicatorVisibility(View.GONE);
+                .setIndicatorVisibility(View.GONE)
+                .setOnPageClickListener(new BannerViewPager.OnPageClickListener() {
+                    @Override
+                    public void onPageClick(View clickedView, int position) {
+                        if(binding.bannerViewPager.getCurrentItem() != position){
+                            binding.bannerViewPager.setCurrentItem(position);
+                        }
+                    }
+                });;
 
+        List<ModeMD> modes = new ArrayList<>();
+
+        modes.add(new ModeMD(R.string.mode_solo , R.drawable.ic_solo_mode , getResources().getColor(R.color.dark_main_color)));
+        modes.add(new ModeMD(R.string.duo_mode , R.drawable.ic_duo_mode , getResources().getColor(R.color.dark_main_color)));
+        modes.add(new ModeMD(R.string.map_mode , R.drawable.ic_map_mode , getResources().getColor(R.color.dark_main_color)));
 
         binding.bannerViewPager.create(modes);
 
-        binding.bannerViewPager.setCurrentItem(1);
+        binding.bannerViewPager.setCurrentItem(1 , true);
+    }
 
+    private void sendRequest(String uid){
+
+        FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
+                .document(uid).collection(FirebaseConstants.CONTAINER_COLLECTION)
+                .add(new RequestMD(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()
+                        ,FirebaseAuth.getInstance().getCurrentUser().getEmail()))
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        toastMethods.success("Request Send");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                toastMethods.error(e.getMessage());
+            }
+        });
     }
 }

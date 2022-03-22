@@ -79,5 +79,4 @@ dependencies {
 
     // viewpager library
     implementation 'com.github.zhpanvip:bannerviewpager:3.5.5'
-
 }
