@@ -25,6 +25,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Fragments.BlankFragment;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
+import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
@@ -48,8 +49,6 @@ public class MainActivity extends AppCompatActivity {
     ToastMethods toastMethods ;
     List<UserMD> userMDs ;
     UsersAdapter usersAdapter  ;
-    PagerAdapter pagerAdapter ;
-    List<Fragment> fragments ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 userMDs = queryDocumentSnapshots.toObjects(UserMD.class);
                 usersAdapter.setUsers(userMDs);
-                prepareBannerViewPager();
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -73,15 +70,6 @@ public class MainActivity extends AppCompatActivity {
                 toastMethods.error(e.getMessage());
             }
         });
-
-        binding.btnSoloMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, SoloModeActivity.class));
-            }
-        });
-
-
     }
 
 
@@ -106,18 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void prepareActivity(){
         binding.rvUsers.setHasFixedSize(true);
-
-        LinearLayoutManager layoutManager = new ZoomRecyclerLayout(this);
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        layoutManager.setStackFromEnd(true);
-        layoutManager.setReverseLayout(true);
-
-        SnapHelper snapHelper = new LinearSnapHelper();
-        snapHelper.attachToRecyclerView(binding.rvUsers);
-        binding.rvUsers.setNestedScrollingEnabled(false);
-
-
-        binding.rvUsers.setLayoutManager(layoutManager);
+        binding.rvUsers.setLayoutManager(new LinearLayoutManager(this));
 
         RequestsService.startActionFoo(this);
 
@@ -127,22 +104,13 @@ public class MainActivity extends AppCompatActivity {
 
        usersAdapter =  new UsersAdapter(userMDs, new GenericListener<String>() {
             @Override
-            public void getData(String Uid) {
-
+            public void getData(String uid) {
+                sendRequest(uid);
             }
         });
 
        binding.rvUsers.setAdapter(usersAdapter);
-
-       fragments = new ArrayList<>();
-
-       fragments.add(new BlankFragment());
-       fragments.add(new BlankFragment());
-       fragments.add(new BlankFragment());
-
-
-
-       pagerAdapter = new PagerAdapter(this , fragments);
+       prepareBannerViewPager();
     }
 
     private void prepareBannerViewPager(){
@@ -160,19 +128,21 @@ public class MainActivity extends AppCompatActivity {
                 .setOnPageClickListener(new BannerViewPager.OnPageClickListener() {
                     @Override
                     public void onPageClick(View clickedView, int position) {
-                        binding.bannerViewPager.setCurrentItem(position);
-                        sendRequest(userMDs.get(position).getUid());
+                        if(binding.bannerViewPager.getCurrentItem() != position){
+                            binding.bannerViewPager.setCurrentItem(position);
+                        }
                     }
                 });;
 
+        List<ModeMD> modes = new ArrayList<>();
 
-        binding.bannerViewPager.create(userMDs);
+        modes.add(new ModeMD(R.string.mode_solo , R.drawable.ic_solo_mode , getResources().getColor(R.color.dark_main_color)));
+        modes.add(new ModeMD(R.string.duo_mode , R.drawable.ic_duo_mode , getResources().getColor(R.color.dark_main_color)));
+        modes.add(new ModeMD(R.string.map_mode , R.drawable.ic_map_mode , getResources().getColor(R.color.dark_main_color)));
 
-        binding.bannerViewPager.setCurrentItem(userMDs.size()/2 , true);
+        binding.bannerViewPager.create(modes);
 
-
-
-
+        binding.bannerViewPager.setCurrentItem(1 , true);
     }
 
     private void sendRequest(String uid){

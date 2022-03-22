@@ -6,16 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".Activities.MainActivity">
 
-    <Button
-        android:id="@+id/btn_solo_mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/solo_mode"
+
+    <com.zhpan.bannerview.BannerViewPager
+        android:id="@+id/banner_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_250sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.15"
+        app:layout_constraintVertical_bias="0.25"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
         />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -25,20 +27,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_solo_mode"
-        android:visibility="invisible"
+        app:layout_constraintTop_toBottomOf="@+id/banner_view_pager"
         />
 
-    <com.zhpan.bannerview.BannerViewPager
-        android:id="@+id/banner_view_pager"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_250sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_solo_mode"
-        android:paddingTop="@dimen/_10sdp"
-        android:paddingBottom="@dimen/_10sdp"
-        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
