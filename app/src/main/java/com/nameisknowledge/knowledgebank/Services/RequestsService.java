@@ -18,7 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,7 +36,7 @@ import java.util.Objects;
 
 public class RequestsService extends Service {
     private static FragmentActivity mActivity;
-
+    private int id = 0;
     public RequestsService() {
     }
 
@@ -84,7 +86,8 @@ public class RequestsService extends Service {
             NotificationChannel channel = new NotificationChannel(channelId, "myChannel", NotificationManager.IMPORTANCE_HIGH);
             manager.createNotificationChannel(channel);
         }
-        manager.notify(0, builder.build());
+        id++;
+        manager.notify(id, builder.build());
     }
 
     public RemoteViews getContent(String name, Context context, PendingIntent intent) {
@@ -153,7 +156,7 @@ public class RequestsService extends Service {
     public void registerReceiver() {
         NotificationBroadCast receiver = new NotificationBroadCast();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         registerReceiver(receiver, filter);
     }
+
 }
