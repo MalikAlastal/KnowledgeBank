@@ -131,6 +131,16 @@ public class MainActivity extends AppCompatActivity {
                         if(binding.bannerViewPager.getCurrentItem() != position){
                             binding.bannerViewPager.setCurrentItem(position);
                         }
+                        else {
+                            switch (position){
+                                case 0 :
+                                soloModeListener(); break;
+                                case 1 :
+                                duoModeListener(); break;
+                                case 2 :
+                                mapModeListener(); break;
+                            }
+                        }
                     }
                 });;
 
@@ -145,6 +155,19 @@ public class MainActivity extends AppCompatActivity {
         binding.bannerViewPager.setCurrentItem(1 , true);
     }
 
+    private void soloModeListener(){
+        Intent goSoloActivity = new Intent(this , SoloModeActivity.class);
+        startActivity(goSoloActivity);
+    }
+
+    private void duoModeListener(){
+        Intent goSoloActivity = new Intent(this , DuoModeActivity.class);
+        startActivity(goSoloActivity);
+    }
+
+    private void mapModeListener(){
+        toastMethods.warning("هذا المود غير متاح حاليا");
+    }
     private void sendRequest(String uid){
 
         FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
