@@ -1,19 +1,29 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
-import java.io.Serializable;
 import java.util.Date;
 
 public class UserMD{
 
-    private String uid , username , email , password , gender , avatar ;
+    private String uid , username , email , password , gender , avatarRes;
     private Date birthdate , creationDate ;
 
-    public UserMD(String username, String email, String password, String gender, String avatar, Date birthdate, Date creationDate) {
+    public UserMD(String username, String email, String password, String gender, String avatarRes, Date birthdate, Date creationDate) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.gender = gender;
-        this.avatar = avatar;
+        this.avatarRes = avatarRes;
+        this.birthdate = birthdate;
+        this.creationDate = creationDate;
+    }
+
+    public UserMD(String uid, String username, String email, String password, String gender, String avatarRes, Date birthdate, Date creationDate) {
+        this.uid = uid;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.gender = gender;
+        this.avatarRes = avatarRes;
         this.birthdate = birthdate;
         this.creationDate = creationDate;
     }
@@ -61,12 +71,12 @@ public class UserMD{
         this.gender = gender;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarRes() {
+        return avatarRes;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarRes(String avatarRes) {
+        this.avatarRes = avatarRes;
     }
 
     public Date getBirthdate() {

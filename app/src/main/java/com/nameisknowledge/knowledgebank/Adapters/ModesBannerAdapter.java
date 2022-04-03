@@ -1,14 +1,12 @@
 package com.nameisknowledge.knowledgebank.Adapters;
 
-import android.graphics.Color;
-
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.BannerItemModeBinding;
 import com.zhpan.bannerview.BaseBannerAdapter;
 import com.zhpan.bannerview.BaseViewHolder;
 
-public class MainBannerAdapter extends BaseBannerAdapter<ModeMD> {
+public class ModesBannerAdapter extends BaseBannerAdapter<ModeMD> {
 
     BannerItemModeBinding binding ;
 
