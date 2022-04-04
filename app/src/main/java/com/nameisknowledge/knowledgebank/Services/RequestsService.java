@@ -18,9 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,7 +34,7 @@ import java.util.Objects;
 
 public class RequestsService extends Service {
     private static FragmentActivity mActivity;
-    private int id = 0;
+
     public RequestsService() {
     }
 
@@ -86,8 +84,7 @@ public class RequestsService extends Service {
             NotificationChannel channel = new NotificationChannel(channelId, "myChannel", NotificationManager.IMPORTANCE_HIGH);
             manager.createNotificationChannel(channel);
         }
-        id++;
-        manager.notify(id, builder.build());
+        manager.notify(0, builder.build());
     }
 
     public RemoteViews getContent(String name, Context context, PendingIntent intent) {
@@ -102,23 +99,23 @@ public class RequestsService extends Service {
                 .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
                 .collection(FirebaseConstants.CONTAINER_COLLECTION)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error == null) {
-                    if (value != null) {
-                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
-                            RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
-                                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                            | Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                    .putExtra("roomID", value.getDocumentChanges().get(0).getDocument().getString("roomID"))
-                                    .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("userID")));
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            if (value != null) {
+                                if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
+                                    RequestsService.this.startActivity(new Intent(RequestsService.this, DuoModeActivity.class)
+                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                                                    | Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                            .putExtra("roomID", value.getDocumentChanges().get(0).getDocument().getString("roomID"))
+                                            .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("userID")));
+                                }
+                            }
+                        } else {
+                            Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
-                } else {
-                    Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                });
     }
 
     /*
@@ -129,23 +126,23 @@ public class RequestsService extends Service {
                 .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
                 .collection(FirebaseConstants.CONTAINER_COLLECTION)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error == null) {
-                    if (value != null) {
-                        // تم وضع هذا الشرط للحصول فقط على الطلبات الجديدة لان السنابشوت الخاص بالفايربيز يقوم بجلب جميع بيانات
-                        // الكوليكشن في اول مرة يتم تنفيذ الكود فيها
-                        // "لكن يوجد مشكلة"
-                        if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
-                            // هنا قمنا باستخدام دالة اظهار الاشعار وارسلنا لها اوبجكت الRequest الي وصل + context
-                            showNav(value.getDocumentChanges().get(0).getDocument().toObject(RequestMD.class), mActivity.getBaseContext());
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                        if (error == null) {
+                            if (value != null) {
+                                // تم وضع هذا الشرط للحصول فقط على الطلبات الجديدة لان السنابشوت الخاص بالفايربيز يقوم بجلب جميع بيانات
+                                // الكوليكشن في اول مرة يتم تنفيذ الكود فيها
+                                // "لكن يوجد مشكلة"
+                                if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED) {
+                                    // هنا قمنا باستخدام دالة اظهار الاشعار وارسلنا لها اوبجكت الRequest الي وصل + context
+                                    showNav(value.getDocumentChanges().get(0).getDocument().toObject(RequestMD.class), mActivity.getBaseContext());
+                                }
+                            }
+                        } else {
+                            Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
-                } else {
-                    Toast.makeText(RequestsService.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+                });
     }
 
 
@@ -156,7 +153,7 @@ public class RequestsService extends Service {
     public void registerReceiver() {
         NotificationBroadCast receiver = new NotificationBroadCast();
         IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
         registerReceiver(receiver, filter);
     }
-
 }

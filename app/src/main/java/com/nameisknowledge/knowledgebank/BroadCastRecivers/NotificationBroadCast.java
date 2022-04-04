@@ -37,17 +37,17 @@ public class NotificationBroadCast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         senderID = intent.getStringExtra("senderID");
-                generateQuestions(context, new GenericListener<GamePlayMD>() {
+        generateQuestions(context, new GenericListener<GamePlayMD>() {
+            @Override
+            public void getData(GamePlayMD gamePlayMD) {
+                generateGamePlay(context, gamePlayMD, new GenericListener<String>() {
                     @Override
-                    public void getData(GamePlayMD gamePlayMD) {
-                        generateGamePlay(context, gamePlayMD, new GenericListener<String>() {
-                            @Override
-                            public void getData(String s) {
-                                generateResponse(context,s);
-                            }
-                        });
+                    public void getData(String s) {
+                        generateResponse(context,s);
                     }
                 });
+            }
+        });
     }
 
     private void generateQuestions(Context context,GenericListener<GamePlayMD> listener){

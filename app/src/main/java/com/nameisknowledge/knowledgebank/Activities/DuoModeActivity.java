@@ -101,6 +101,7 @@ public class DuoModeActivity extends AppCompatActivity {
         this.size = 0;
         this.questions = new ArrayList<>();
         this.toastMethods = new ToastMethods(this);
+
         getUserFromFireStore(senderId, new GenericListener<UserMD>() {
             @Override
             public void getData(UserMD userMD) {
@@ -191,11 +192,11 @@ public class DuoModeActivity extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private void checkTheWinner(GenericListener<String> listener){
@@ -210,6 +211,7 @@ public class DuoModeActivity extends AppCompatActivity {
                         long otherPlayerScore = (long) gamePlayMD.getIds().get(senderId);
                         long winner = Math.max(myScore,otherPlayerScore);
                         String win = "";
+
                         if (winner == myScore){
                             win = me.getUsername();
                         }else {
@@ -269,10 +271,10 @@ public class DuoModeActivity extends AppCompatActivity {
                                 });
                             }else {
                                 endGame();
+                            }
                         }
                     }
-                }
-       });
+                });
     }
 
     private void currentQuestion(int number,GenericListener<Void> listener){
@@ -289,7 +291,7 @@ public class DuoModeActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         toastMethods.error(e.getMessage());
-                }
-        });
+                    }
+                });
     }
 }
