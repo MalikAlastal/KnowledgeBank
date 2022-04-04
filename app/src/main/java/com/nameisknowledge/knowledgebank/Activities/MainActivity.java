@@ -2,10 +2,7 @@ package com.nameisknowledge.knowledgebank.Activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
-import androidx.recyclerview.widget.SnapHelper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,12 +14,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.nameisknowledge.knowledgebank.Adapters.MainBannerAdapter;
-import com.nameisknowledge.knowledgebank.Adapters.PagerAdapter;
+import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
-import com.nameisknowledge.knowledgebank.Fragments.BlankFragment;
+import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
@@ -34,13 +30,10 @@ import com.nameisknowledge.knowledgebank.Services.RequestsService;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 import com.zhpan.bannerview.BannerViewPager;
 import com.zhpan.bannerview.constants.PageStyle;
-import com.zhpan.indicator.enums.IndicatorSlideMode;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import www.sanju.zoomrecyclerlayout.ZoomRecyclerLayout;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -110,13 +103,33 @@ public class MainActivity extends AppCompatActivity {
         });
 
        binding.rvUsers.setAdapter(usersAdapter);
-       prepareBannerViewPager();
+       prepareModes();
+
+       binding.ivUserImage.setMinimumWidth(binding.layoutUserDetails.getMinimumWidth());
+
+       UserMD user = UserConstants.getCurrentUser(this) ;
+
+       binding.tvUserEmail.setText(user.getEmail());
+       binding.tvUserUsername.setText(user.getUsername());
+
+       if(user.getAvatarRes()!=null && !user.getAvatarRes().equals("")){
+       binding.ivUserImage.setImageResource(Integer.parseInt(user.getAvatarRes()));
+       }
+       else {
+           String userGender = user.getGender();
+           if (userGender.equals(UserConstants.GENDER_MALE))
+               binding.ivUserImage.setImageResource(R.drawable.avatar_man_1);
+           else if (userGender.equals(UserConstants.GENDER_FEMALE))
+               binding.ivUserImage.setImageResource(R.drawable.avatar_woman_1);
+
+
+       }
     }
 
-    private void prepareBannerViewPager(){
-        MainBannerAdapter bannerAdapter = new MainBannerAdapter();
+    private void prepareModes(){
+        ModesBannerAdapter bannerAdapter = new ModesBannerAdapter();
 
-        binding.bannerViewPager.setAdapter(bannerAdapter)
+        binding.bvpModes.setAdapter(bannerAdapter)
                 .setLifecycleRegistry(getLifecycle())
                 .setPageStyle(PageStyle.MULTI_PAGE_OVERLAP)
                 .setScrollDuration(DurationConstants.DURATION_SO_SHORT)
@@ -128,8 +141,18 @@ public class MainActivity extends AppCompatActivity {
                 .setOnPageClickListener(new BannerViewPager.OnPageClickListener() {
                     @Override
                     public void onPageClick(View clickedView, int position) {
-                        if(binding.bannerViewPager.getCurrentItem() != position){
-                            binding.bannerViewPager.setCurrentItem(position);
+                        if(binding.bvpModes.getCurrentItem() != position){
+                            binding.bvpModes.setCurrentItem(position);
+                        }
+                        else {
+                            switch (position){
+                                case 0 :
+                                soloModeListener(); break;
+                                case 1 :
+                                duoModeListener(); break;
+                                case 2 :
+                                mapModeListener(); break;
+                            }
                         }
                         else {
                             switch (position){
@@ -150,9 +173,23 @@ public class MainActivity extends AppCompatActivity {
         modes.add(new ModeMD(R.string.duo_mode , R.drawable.ic_duo_mode , getResources().getColor(R.color.dark_main_color)));
         modes.add(new ModeMD(R.string.map_mode , R.drawable.ic_map_mode , getResources().getColor(R.color.dark_main_color)));
 
-        binding.bannerViewPager.create(modes);
+        binding.bvpModes.create(modes);
 
-        binding.bannerViewPager.setCurrentItem(1 , true);
+        binding.bvpModes.setCurrentItem(1 , false);
+    }
+
+    private void soloModeListener(){
+        Intent goSoloActivity = new Intent(this , SoloModeActivity.class);
+        startActivity(goSoloActivity);
+    }
+
+    private void duoModeListener(){
+        Intent goSoloActivity = new Intent(this , DuoModeActivity.class);
+        startActivity(goSoloActivity);
+    }
+
+    private void mapModeListener(){
+        toastMethods.info("هذا المود غير متاح حاليا");
     }
 
     private void soloModeListener(){
