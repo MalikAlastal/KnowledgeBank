@@ -154,16 +154,6 @@ public class MainActivity extends AppCompatActivity {
                                 mapModeListener(); break;
                             }
                         }
-                        else {
-                            switch (position){
-                                case 0 :
-                                soloModeListener(); break;
-                                case 1 :
-                                duoModeListener(); break;
-                                case 2 :
-                                mapModeListener(); break;
-                            }
-                        }
                     }
                 });;
 
@@ -176,20 +166,6 @@ public class MainActivity extends AppCompatActivity {
         binding.bvpModes.create(modes);
 
         binding.bvpModes.setCurrentItem(1 , false);
-    }
-
-    private void soloModeListener(){
-        Intent goSoloActivity = new Intent(this , SoloModeActivity.class);
-        startActivity(goSoloActivity);
-    }
-
-    private void duoModeListener(){
-        Intent goSoloActivity = new Intent(this , DuoModeActivity.class);
-        startActivity(goSoloActivity);
-    }
-
-    private void mapModeListener(){
-        toastMethods.info("هذا المود غير متاح حاليا");
     }
 
     private void soloModeListener(){
