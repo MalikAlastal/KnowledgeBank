@@ -10,4 +10,7 @@
     <string name="mode_solo">أوفلاين مود</string>
     <string name="duo_mode">لعب تنافسي</string>
     <string name="map_mode">مود الخرائط</string>
+
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoibWFsaWtkZXZlbG9wZXIiLCJhIjoiY2wxa2M5cTU0MmN2MjNmcDNpZzN3MzU1aCJ9.RjuJzx0iKVruV65-HLgMBw</string>
+
 </resources>

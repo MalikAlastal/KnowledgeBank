@@ -1,12 +1,12 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -174,13 +174,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void duoModeListener(){
-        Intent goSoloActivity = new Intent(this , DuoModeActivity.class);
-        startActivity(goSoloActivity);
+        Intent goDouActivity = new Intent(this , DuoModeActivity.class);
+        startActivity(goDouActivity);
     }
 
     private void mapModeListener(){
-        toastMethods.warning("هذا المود غير متاح حاليا");
-    }
+        Intent goMapActivity = new Intent(this , MapModeActivity.class);
+        startActivity(goMapActivity);    }
     private void sendRequest(String uid){
 
         FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
