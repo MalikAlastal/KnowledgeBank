@@ -19,8 +19,8 @@
             android:name=".Services.RequestsService"
             android:enabled="true"
             android:exported="false">
-
         </service>
+
 
         <activity
             android:name=".Activities.DuoModeActivity"

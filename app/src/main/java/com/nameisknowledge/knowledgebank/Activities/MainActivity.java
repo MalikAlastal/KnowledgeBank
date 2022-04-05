@@ -179,9 +179,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mapModeListener(){
-        toastMethods.info("هذا المود غير متاح حاليا");
+        toastMethods.warning("هذا المود غير متاح حاليا");
     }
-
     private void sendRequest(String uid){
 
         FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
