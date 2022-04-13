@@ -7,59 +7,21 @@
     tools:context=".Activities.DuoModeActivity">
 
     <TextView
+        android:layout_marginTop="@dimen/_40sdp"
+        android:gravity="center"
         android:id="@+id/tv_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_120sdp"
-        android:layout_marginEnd="@dimen/_20sdp"
-
+        android:layout_alignParentTop="true"
         android:text="TextView"
         android:textSize="@dimen/_22ssp"
         android:textStyle="bold" />
 
-    <EditText
-        android:id="@+id/ed_answer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_question"
-        android:layout_alignStart="@id/tv_question"
-        android:layout_alignEnd="@id/tv_question"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:layout_marginBottom="@dimen/_10sdp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="Name" />
-
-    <Button
-        android:layout_marginTop="@dimen/_10sdp"
-        android:id="@+id/btn_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ed_answer"
-        android:layout_alignEnd="@id/tv_question"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:text="Next" />
-
-    <Button
-        android:id="@+id/btn_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_margin="@dimen/_10sdp"
-        android:layout_below="@id/btn_next"
-        android:layout_alignEnd="@id/tv_question"
-        android:layout_alignStart="@id/tv_question"
-        android:text="submit" />
-
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv"
+        android:id="@+id/rv_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btn_submit"
+        android:layout_below="@id/tv_question"
         android:layout_marginStart="@dimen/_30sdp"
         android:layout_marginEnd="@dimen/_30sdp"
         android:layout_marginTop="@dimen/_10sdp">
@@ -67,10 +29,11 @@
     </androidx.recyclerview.widget.RecyclerView>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/ans_rv"
+        android:id="@+id/rv_answer"
+        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginEnd="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginStart="@dimen/_30sdp"
-        android:layout_marginEnd="@dimen/_30sdp" />
+        android:layout_below="@id/rv_input" />
 </RelativeLayout>

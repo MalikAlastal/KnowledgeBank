@@ -1,6 +1,8 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
-public class TestRvMD {
+import java.io.Serializable;
+
+public class TestRvMD implements Serializable {
     private char letter;
     private int index;
 
