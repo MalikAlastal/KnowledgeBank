@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.view.View;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,32 +28,29 @@ import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class DuoModeActivity extends AppCompatActivity {
+    public final String[] letters = {
+            "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"
+    };
     private ActivityDuoModeBinding binding;
     private String roomId,senderId;
     private UserMD me,otherPlayer;
     private List<QuestionMD> questions;
     private int index;
     private ToastMethods toastMethods;
-    private TestRvAdapter adapter1,adapter;
+    private TestRvAdapter answerAdapter,inputAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDuoModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         initialValues();
-
-        binding.btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String answer = binding.edAnswer.getText().toString();
-                submit(answer);
-            }
-        });
     }
 
     private void initialValues(){
@@ -83,25 +81,35 @@ public class DuoModeActivity extends AppCompatActivity {
                     @Override
                     public void getData(QuestionMD questionMD) {
                         binding.tvQuestion.setText(questions.get(index).getQuestion());
-                        binding.rv.setHasFixedSize(true);
-                        binding.rv.setLayoutManager(new GridLayoutManager(getApplicationContext(),5));
-                        binding.ansRv.setHasFixedSize(true);
-                        binding.ansRv.setLayoutManager(new GridLayoutManager(getApplicationContext(),5));
-                        adapter = new TestRvAdapter("", new GenericListener<TestRvMD>() {
+                        binding.rvInput.setHasFixedSize(true);
+                        binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(),5));
+                        binding.rvAnswer.setHasFixedSize(true);
+                        binding.rvAnswer.setLayoutManager(new GridLayoutManager(getApplicationContext(),5));
+                        inputAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()),true, new GenericListener<TestRvMD>() {
                             @Override
-                            public void getData(TestRvMD s) {
-                                adapter1.setChar(s);
+                            public void getData(TestRvMD testRvMD) {
+                                answerAdapter.setChar(testRvMD);
                             }
-                        },2);
-                        adapter1 = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), new GenericListener<TestRvMD>() {
+                        });
+
+                        answerAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()),false, new GenericListener<TestRvMD>() {
                             @Override
-                            public void getData(TestRvMD s) {
-                                adapter.addChar(s);
-                                submit(getString(adapter.getMyList()));
+                            public void getData(TestRvMD testRvMD) {
+                                inputAdapter.checkEmpty(new GenericListener<List<Integer>>() {
+                                    @Override
+                                    public void getData(List<Integer> list) {
+                                        if (list.size()!=0){
+                                            answerAdapter.setEmpty(testRvMD.getIndex(),testRvMD);
+                                            inputAdapter.addChar(testRvMD);
+                                        }
+                                        submit(getString(inputAdapter.getMyList()));
+                                    }
+                                });
                             }
-                        },1);
-                        binding.ansRv.setAdapter(adapter);
-                        binding.rv.setAdapter(adapter1);
+                        });
+
+                        binding.rvInput.setAdapter(inputAdapter);
+                        binding.rvAnswer.setAdapter(answerAdapter);
                     }
                 });
             }
@@ -122,11 +130,19 @@ public class DuoModeActivity extends AppCompatActivity {
         }
     }
 
+    private String makeStringEmpty(String s){
+        char[] array = s.toCharArray();
+        for (int i=0;i<s.length();i++){
+            array[i] = ' ';
+        }
+        return String.valueOf(array);
+    }
+
     private void clearAdapters(){
-        adapter.clearArray();
-        adapter1.clearArray();
-        adapter1.setMyList(adapter1.cutString(checkAnswerLength(questions.get(index).getAnswer()).toCharArray()));
-        toastMethods.success(checkAnswerLength(questions.get(index).getAnswer())+"::"+index);
+        answerAdapter.clearArray();
+        inputAdapter.clearArray();
+        inputAdapter.setMyList(inputAdapter.cutString(makeStringEmpty(questions.get(index).getAnswer()).toCharArray()));
+        answerAdapter.setMyList(answerAdapter.cutString(checkAnswerLength(questions.get(index).getAnswer()).toCharArray()));
     }
 
     private String getString(List<TestRvMD> list){
@@ -136,7 +152,6 @@ public class DuoModeActivity extends AppCompatActivity {
         }
         return stringBuilder.toString();
     }
-
 
     private void nextQuestion(){
         this.index++;
@@ -184,7 +199,6 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-
     private void endGame(){
         checkTheWinner(new GenericListener<String>() {
             @Override
@@ -198,7 +212,7 @@ public class DuoModeActivity extends AppCompatActivity {
     private void setTheWinner(String winner,GenericListener<Void> listener){
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
-                .update("Winner",winner)
+                .update("winner",winner)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -219,7 +233,7 @@ public class DuoModeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        listener.getData(documentSnapshot.getString("Winner"));
+                        listener.getData(documentSnapshot.getString("winner"));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -268,7 +282,7 @@ public class DuoModeActivity extends AppCompatActivity {
                             }
                         }
                     }
-                });
+        });
     }
 
     private void checkTheWinner(GenericListener<String> listener){
@@ -347,9 +361,20 @@ public class DuoModeActivity extends AppCompatActivity {
     private String checkAnswerLength(String answer){
         StringBuilder fina = new StringBuilder();
         fina.append(answer);
-        for (int i=answer.length();i<10;i++){
-            fina.append("a");
+        for (int i=answer.length();i<answer.length()+4;i++){
+            fina.append(letters[new Random().nextInt(((letters.length - 1)) + 1)]);
         }
-        return fina.toString();
+        return randomTheAnswer(fina.toString());
+    }
+
+    private String randomTheAnswer(String string){
+        char[] array = string.toCharArray();
+        for (int i = 0; i < array.length; i++) {
+            int randomIndexToSwap = new Random().nextInt(array.length);
+            char temp = array[randomIndexToSwap];
+            array[randomIndexToSwap] = array[i];
+            array[i] = temp;
+        }
+        return String.valueOf(array);
     }
 }

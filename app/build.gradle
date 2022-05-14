@@ -46,13 +46,11 @@ dependencies {
     // firebase Storage
     implementation 'com.google.firebase:firebase-storage:20.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'com.mapbox.maps:android:10.4.0'
-    implementation 'com.mapbox.maps:android:10.4.0'
+    //firebase cloudMessing
+    implementation 'com.google.firebase:firebase-messaging:23.0.3'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-
-    implementation("com.google.android.gms:play-services-location:19.0.1")
 
     // firebase
     implementation platform('com.google.firebase:firebase-bom:29.1.0')
@@ -70,6 +68,7 @@ dependencies {
     implementation 'com.mikhaellopez:lazydatepicker:1.1.0'
 
     // radio buttons library
+
     implementation 'com.github.addisonElliott:SegmentedButton:3.1.7'
 
     // progressbar
@@ -84,6 +83,23 @@ dependencies {
     // viewpager library
     implementation 'com.github.zhpanvip:bannerviewpager:3.5.5'
 
-    implementation 'com.mapbox.maps:android:10.4.0'
+    def room_version = "2.4.2"
 
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+
+    // optional - RxJava2 support for Room
+    implementation "androidx.room:room-rxjava2:$room_version"
+
+    // optional - RxJava3 support for Room
+    implementation "androidx.room:room-rxjava3:$room_version"
+
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    implementation "androidx.room:room-guava:$room_version"
+
+    // optional - Test helpers
+    testImplementation "androidx.room:room-testing:$room_version"
+
+    // optional - Paging 3 Integration
+    implementation "androidx.room:room-paging:2.5.0-alpha01"
 }
