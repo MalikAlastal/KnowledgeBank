@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="10dp"
-    android:elevation="10dp"
-    app:cardUseCompatPadding="true"
-    android:layout_height="wrap_content">
-    <LinearLayout
-        android:padding="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/_75sdp"
+>
+    <com.google.android.material.card.MaterialCardView
+
         android:layout_width="match_parent"
+        android:layout_gravity="start"
+        app:cardCornerRadius="@dimen/_5sdp"
+        android:elevation="@dimen/_2sdp"
+        app:cardPreventCornerOverlap="true"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/name_txt"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@color/main_color"
+        android:layout_margin="@dimen/_3sdp"
+        >
+
+        <LinearLayout
+            android:padding="@dimen/_5sdp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/email_txt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/tv_email"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="TextView"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:fontFamily="@font/main_font"
+                android:layout_weight="1"
+                />
+
+            <TextView
+                android:id="@+id/tv_Uid"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="TextView"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:fontFamily="@font/main_font"
+                android:layout_weight="1"
+                />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

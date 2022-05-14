@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nameisknowledge.knowledgebank">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:allowBackup="true"
@@ -10,10 +9,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
         <activity
-            android:name=".Activities.GameActivity"
+            android:name="com.nameisknowledge.knowledgebank.Activities.QuestionsModeActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".BroadCastRecivers.NotificationBroadCast"
+            android:enabled="true"
+            android:exported="false">
+
+        </receiver>
+
+        <service
+            android:name=".Services.RequestsService"
+            android:enabled="true"
+            android:exported="false">
+
+        </service>
+
+        <activity
+            android:name=".Activities.DuoModeActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.UserActivity"
+            android:name=".Activities.SoloModeActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.LoginActivity"
@@ -24,9 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".Activities.RegisterActivity"
-            android:exported="false" />
         <activity
             android:name=".Activities.MainActivity"
             android:exported="true" />
