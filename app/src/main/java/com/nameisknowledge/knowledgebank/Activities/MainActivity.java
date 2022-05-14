@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void setQes(){
         for (int i=0;i<3;i++){
             FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION)
@@ -121,8 +120,6 @@ public class MainActivity extends AppCompatActivity {
                binding.ivUserImage.setImageResource(R.drawable.avatar_man_1);
            else if (userGender.equals(UserConstants.GENDER_FEMALE))
                binding.ivUserImage.setImageResource(R.drawable.avatar_woman_1);
-
-
        }
     }
 
@@ -155,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }
-                });;
+                });
 
         List<ModeMD> modes = new ArrayList<>();
 
@@ -180,7 +177,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void mapModeListener(){
         Intent goMapActivity = new Intent(this , MapModeActivity.class);
-        startActivity(goMapActivity);    }
+        startActivity(goMapActivity);
+    }
+
     private void sendRequest(String uid){
 
         FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
