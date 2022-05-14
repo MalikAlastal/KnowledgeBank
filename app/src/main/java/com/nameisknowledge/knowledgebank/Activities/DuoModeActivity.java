@@ -212,7 +212,7 @@ public class DuoModeActivity extends AppCompatActivity {
     private void setTheWinner(String winner,GenericListener<Void> listener){
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
-                .update("Winner",winner)
+                .update("winner",winner)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -233,7 +233,7 @@ public class DuoModeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        listener.getData(documentSnapshot.getString("Winner"));
+                        listener.getData(documentSnapshot.getString("winner"));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
