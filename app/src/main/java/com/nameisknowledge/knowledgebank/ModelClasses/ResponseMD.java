@@ -2,6 +2,8 @@ package com.nameisknowledge.knowledgebank.ModelClasses;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Map;
+
 public class ResponseMD {
     private String roomID,userID;
     public ResponseMD(String roomID,String userID) {

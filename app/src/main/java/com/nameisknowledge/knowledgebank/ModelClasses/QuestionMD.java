@@ -1,6 +1,8 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
-public class QuestionMD {
+import java.io.Serializable;
+
+public class QuestionMD implements Serializable {
     private String question,answer;
     private int index;
 
@@ -8,6 +10,11 @@ public class QuestionMD {
         this.question = question;
         this.answer = answer;
         this.index = index;
+    }
+
+    public QuestionMD(String question, String answer) {
+        this.question = question;
+        this.answer = answer;
     }
 
     public QuestionMD() {

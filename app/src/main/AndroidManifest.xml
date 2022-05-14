@@ -8,6 +8,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
+        <activity
+            android:name="com.nameisknowledge.knowledgebank.Activities.QuestionsModeActivity"
+            android:exported="false" />
+
         <receiver
             android:name=".BroadCastRecivers.NotificationBroadCast"
             android:enabled="true"
