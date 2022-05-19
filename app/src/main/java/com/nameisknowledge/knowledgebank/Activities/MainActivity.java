@@ -172,6 +172,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void duoModeListener(){
         Intent goDouActivity = new Intent(this , DuoModeActivity.class);
+        goDouActivity.putExtra("roomID", "4T15RedvSHJLXF2m9TvS");
+        goDouActivity.putExtra("senderID","0dvE371gEtYTPWWjfZzhhBLbhP83");
         startActivity(goDouActivity);
     }
 
