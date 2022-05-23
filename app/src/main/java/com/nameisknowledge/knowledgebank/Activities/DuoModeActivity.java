@@ -1,14 +1,12 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
+import android.os.Bundle;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
-
-import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
-import android.text.TextUtils;
-import android.view.View;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,14 +28,12 @@ import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
 public class DuoModeActivity extends AppCompatActivity {
-    private final String[] letters = {
+    public final String[] letters = {
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     };
     private ActivityDuoModeBinding binding;
@@ -84,18 +80,18 @@ public class DuoModeActivity extends AppCompatActivity {
                     @Override
                     public void getData(QuestionMD questionMD) {
                         binding.tvQuestion.setText(questions.get(index).getQuestion());
-                        binding.rvInput.setHasFixedSize(true);
-                        binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
                         binding.rvAnswer.setHasFixedSize(true);
                         binding.rvAnswer.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
-                        inputAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()), true, new GenericListener<TestRvMD>() {
+                        binding.rvInput.setHasFixedSize(true);
+                        binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
+                        inputAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()), false, new GenericListener<TestRvMD>() {
                             @Override
                             public void getData(TestRvMD testRvMD) {
                                 answerAdapter.setChar(testRvMD);
                             }
                         });
 
-                        answerAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), false, new GenericListener<TestRvMD>() {
+                        answerAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), true, new GenericListener<TestRvMD>() {
                             @Override
                             public void getData(TestRvMD testRvMD) {
                                 inputAdapter.checkEmpty(new GenericListener<List<Integer>>() {
@@ -111,8 +107,8 @@ public class DuoModeActivity extends AppCompatActivity {
                             }
                         });
 
-                        binding.rvInput.setAdapter(inputAdapter);
-                        binding.rvAnswer.setAdapter(answerAdapter);
+                        binding.rvAnswer.setAdapter(inputAdapter);
+                        binding.rvInput.setAdapter(answerAdapter);
                     }
                 });
             }
@@ -122,7 +118,7 @@ public class DuoModeActivity extends AppCompatActivity {
     }
 
     private void submit(String answer) {
-        if (TextUtils.equals(removeSpaces(answer),removeSpaces(questions.get(index).getAnswer()))) {
+        if (TextUtils.equals(answer, questions.get(index).getAnswer())) {
             toastMethods.success("Nice!!");
             setTheScore();
             currentQuestion(2, new GenericListener<Void>() {
@@ -168,21 +164,28 @@ public class DuoModeActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        questions.add(documentSnapshot.toObject(QuestionMD.class));
+                        QuestionMD questionMD = documentSnapshot.toObject(QuestionMD.class) ;
+
+                        if(questionMD==null){
+                            return;
+                        }
+
+                        questionMD.setAnswer(clearAnswerSpaces(questionMD.getAnswer()));
+                        questions.add(questionMD);
                         index++;
                         if (index < size) {
-                            getQuestionFromFireStore(size,listener);
+                            getQuestionFromFireStore(size, listener);
                         } else {
                             index = 0;
                             listener.getData(questions.get(index));
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private void getUserFromFireStore(String id, GenericListener<UserMD> listener) {
@@ -195,11 +198,11 @@ public class DuoModeActivity extends AppCompatActivity {
                         listener.getData(documentSnapshot.toObject(UserMD.class));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private void endGame() {
@@ -222,11 +225,11 @@ public class DuoModeActivity extends AppCompatActivity {
                         listener.getData(unused);
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private void getTheWinner(GenericListener<String> listener) {
@@ -239,11 +242,11 @@ public class DuoModeActivity extends AppCompatActivity {
                         listener.getData(documentSnapshot.getString("winner"));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private void setTheScore() {
@@ -320,11 +323,11 @@ public class DuoModeActivity extends AppCompatActivity {
                         });
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private void currentQuestion(int number, GenericListener<Void> listener) {
@@ -354,20 +357,30 @@ public class DuoModeActivity extends AppCompatActivity {
                         listener.getData(indexes.size());
                     }
                 }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
     }
 
     private String checkAnswerLength(String answer) {
-        StringBuilder fina = new StringBuilder();
-        fina.append(removeSpaces(answer));
+        StringBuilder finalAnswer = new StringBuilder();
+        finalAnswer.append(answer);
         for (int i = answer.length(); i < answer.length() + 4; i++) {
-            fina.append(letters[new Random().nextInt(((letters.length - 1)) + 1)]);
+            finalAnswer.append(letters[new Random().nextInt(((letters.length - 1)) + 1)]);
         }
-        return randomTheAnswer(fina.toString());
+        return randomTheAnswer(finalAnswer.toString());
+    }
+
+    private String clearAnswerSpaces(String answer){
+        StringBuilder formatAnswer = new StringBuilder();
+        for (int i = 0 ; i<answer.length() ; i++) {
+            if (answer.charAt(i)!=' '){
+                formatAnswer.append(answer.charAt(i));
+            }
+        }
+        return formatAnswer.toString() ;
     }
 
     private String randomTheAnswer(String string) {
@@ -379,15 +392,5 @@ public class DuoModeActivity extends AppCompatActivity {
             array[i] = temp;
         }
         return String.valueOf(array);
-    }
-
-    private String removeSpaces(String s){
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i=0;i<s.length();i++){
-            if (s.charAt(i) != ' '){
-                stringBuilder.append(s.charAt(i));
-            }
-        }
-        return stringBuilder.toString();
     }
 }

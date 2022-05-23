@@ -1,10 +1,10 @@
 package com.nameisknowledge.knowledgebank.Adapters;
 
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,14 +15,13 @@ import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.CustomTestRvItemBinding;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
     private List<TestRvMD> myList;
     private GenericListener<TestRvMD> listener;
     private boolean input;
+    private Context context ;
 
 
     public TestRvAdapter(String answer,boolean input,GenericListener<TestRvMD> listener) {
@@ -47,6 +46,7 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
 
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        context = parent.getContext() ;
         return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.custom_test_rv_item,parent,false));
     }
 
@@ -110,7 +110,7 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (input){
+                    if (!input){
                         setEmpty(position,new TestRvMD(' ',position));
                     }
                     listener.getData(test);
@@ -122,6 +122,11 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
             this.test = string;
             this.position = position;
             binding.textView.setText(String.valueOf(string.getLetter()));
+
+            if (!input){
+                binding.cardText.setCardBackgroundColor(context.getResources().getColor(R.color.white));
+                binding.textView.setTextColor(context.getResources().getColor(R.color.black));
+            }
         }
 
     }

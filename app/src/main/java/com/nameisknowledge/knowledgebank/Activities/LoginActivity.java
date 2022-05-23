@@ -1,14 +1,14 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.animation.Animator;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.addisonelliott.segmentedbutton.SegmentedButtonGroup;
 import com.daimajia.androidanimations.library.YoYo;
@@ -70,8 +70,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
         prepareActivity();
+
+//        if (auth.getCurrentUser()!=null){
+//            startActivity(new Intent(getBaseContext(),MainActivity.class));
+//            finish();
+//        }
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
