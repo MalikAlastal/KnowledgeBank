@@ -72,7 +72,7 @@ public class AddQuestionDialog extends DialogFragment {
             public void onClick(View view) {
                 String question = binding.edQuestion.getText().toString();
                 String answer = binding.edAnswer.getText().toString();
-                FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_2_COLLECTION).document(gamePlay).update(
+                FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(gamePlay).update(
                         "data."+FirebaseAuth.getInstance().getUid(), FieldValue.arrayUnion(new QuestionMD(question,answer))
                 ).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -91,7 +91,7 @@ public class AddQuestionDialog extends DialogFragment {
         binding.txtCounter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_2_COLLECTION).document(gamePlay)
+                    FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(gamePlay)
                             .get()
                             .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
