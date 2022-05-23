@@ -10,4 +10,6 @@
     <string name="mode_solo">أوفلاين مود</string>
     <string name="duo_mode">لعب تنافسي</string>
     <string name="map_mode">مود الخرائط</string>
+
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 </resources>

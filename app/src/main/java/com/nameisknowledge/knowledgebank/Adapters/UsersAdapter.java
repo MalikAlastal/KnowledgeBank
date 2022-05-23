@@ -61,7 +61,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
         }
 
         private void bind(UserMD userMD){
-            this.Uid = userMD.getUid();
+            this.Uid = userMD.getNotificationToken();
             binding.tvEmail.setText(userMD.getEmail());
             binding.tvUid.setText(userMD.getUid());
         }

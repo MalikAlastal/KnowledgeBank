@@ -12,16 +12,20 @@ import android.view.View;
 
 import com.addisonelliott.segmentedbutton.SegmentedButtonGroup;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.nameisknowledge.knowledgebank.Adapters.AvatarsBannerAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
+import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
@@ -120,7 +124,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
         binding.btnPrepareRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,12 +137,16 @@ public class LoginActivity extends AppCompatActivity {
                 UserMD user = getEnteredData();
                 if (user!=null){
                     startLoading(binding.progressRegister);
-
+                    getNotificationToken(new GenericListener<String>() {
+                        @Override
+                        public void getData(String s) {
+                            user.setNotificationToken(s);
+                        }
+                    });
                     auth.createUserWithEmailAndPassword(user.getEmail() , user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
                             user.setUid(Objects.requireNonNull(authResult.getUser()).getUid());
-
                             firestore.collection(FirebaseConstants.USERS_COLLECTION).document(user.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
@@ -213,8 +220,8 @@ public class LoginActivity extends AppCompatActivity {
         binding.progressLogin.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
         binding.progressRegister.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
 
-        String currentEmail = auth.getCurrentUser().getEmail();
-        binding.edEmail.setText(currentEmail);
+//        String currentEmail = auth.getCurrentUser().getEmail();
+//        binding.edEmail.setText(currentEmail);
 
         binding.edPassword.setText(UserConstants.getCurrentUser(this).getPassword());
 
@@ -388,5 +395,16 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
         }
+    }
+
+    private void getNotificationToken(GenericListener<String> genericListener){
+        FirebaseMessaging.getInstance()
+                .getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        genericListener.getData(task.getResult());
+                    }
+                });
     }
 }

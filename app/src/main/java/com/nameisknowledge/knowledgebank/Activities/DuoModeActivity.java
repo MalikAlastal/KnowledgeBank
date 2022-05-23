@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.text.TextUtils;
 import android.view.View;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,16 +37,17 @@ import java.util.Objects;
 import java.util.Random;
 
 public class DuoModeActivity extends AppCompatActivity {
-    public final String[] letters = {
-            "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"
+    private final String[] letters = {
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     };
     private ActivityDuoModeBinding binding;
-    private String roomId,senderId;
-    private UserMD me,otherPlayer;
+    private String roomId, senderId;
+    private UserMD me, otherPlayer;
     private List<QuestionMD> questions;
     private int index;
     private ToastMethods toastMethods;
-    private TestRvAdapter answerAdapter,inputAdapter;
+    private TestRvAdapter answerAdapter, inputAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +56,7 @@ public class DuoModeActivity extends AppCompatActivity {
         initialValues();
     }
 
-    private void initialValues(){
+    private void initialValues() {
         roomId = getIntent().getStringExtra("roomID");
         senderId = getIntent().getStringExtra("senderID");
         this.index = 0;
@@ -82,24 +85,24 @@ public class DuoModeActivity extends AppCompatActivity {
                     public void getData(QuestionMD questionMD) {
                         binding.tvQuestion.setText(questions.get(index).getQuestion());
                         binding.rvInput.setHasFixedSize(true);
-                        binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(),5));
+                        binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
                         binding.rvAnswer.setHasFixedSize(true);
-                        binding.rvAnswer.setLayoutManager(new GridLayoutManager(getApplicationContext(),5));
-                        inputAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()),true, new GenericListener<TestRvMD>() {
+                        binding.rvAnswer.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
+                        inputAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()), true, new GenericListener<TestRvMD>() {
                             @Override
                             public void getData(TestRvMD testRvMD) {
                                 answerAdapter.setChar(testRvMD);
                             }
                         });
 
-                        answerAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()),false, new GenericListener<TestRvMD>() {
+                        answerAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), false, new GenericListener<TestRvMD>() {
                             @Override
                             public void getData(TestRvMD testRvMD) {
                                 inputAdapter.checkEmpty(new GenericListener<List<Integer>>() {
                                     @Override
                                     public void getData(List<Integer> list) {
-                                        if (list.size()!=0){
-                                            answerAdapter.setEmpty(testRvMD.getIndex(),testRvMD);
+                                        if (list.size() != 0) {
+                                            answerAdapter.setEmpty(testRvMD.getIndex(), testRvMD);
                                             inputAdapter.addChar(testRvMD);
                                         }
                                         submit(getString(inputAdapter.getMyList()));
@@ -118,8 +121,8 @@ public class DuoModeActivity extends AppCompatActivity {
         gameFlow();
     }
 
-    private void submit(String answer){
-        if (TextUtils.equals(answer,questions.get(index).getAnswer())){
+    private void submit(String answer) {
+        if (TextUtils.equals(removeSpaces(answer),removeSpaces(questions.get(index).getAnswer()))) {
             toastMethods.success("Nice!!");
             setTheScore();
             currentQuestion(2, new GenericListener<Void>() {
@@ -130,46 +133,46 @@ public class DuoModeActivity extends AppCompatActivity {
         }
     }
 
-    private String makeStringEmpty(String s){
+    private String makeStringEmpty(String s) {
         char[] array = s.toCharArray();
-        for (int i=0;i<s.length();i++){
+        for (int i = 0; i < s.length(); i++) {
             array[i] = ' ';
         }
         return String.valueOf(array);
     }
 
-    private void clearAdapters(){
+    private void clearAdapters() {
         answerAdapter.clearArray();
         inputAdapter.clearArray();
         inputAdapter.setMyList(inputAdapter.cutString(makeStringEmpty(questions.get(index).getAnswer()).toCharArray()));
         answerAdapter.setMyList(answerAdapter.cutString(checkAnswerLength(questions.get(index).getAnswer()).toCharArray()));
     }
 
-    private String getString(List<TestRvMD> list){
+    private String getString(List<TestRvMD> list) {
         StringBuilder stringBuilder = new StringBuilder();
-        for (int i=0;i<list.size();i++) {
+        for (int i = 0; i < list.size(); i++) {
             stringBuilder.append(list.get(i).getLetter());
         }
         return stringBuilder.toString();
     }
 
-    private void nextQuestion(){
+    private void nextQuestion() {
         this.index++;
         binding.tvQuestion.setText(questions.get(this.index).getQuestion());
     }
 
-    private void getQuestionFromFireStore(int size,GenericListener<QuestionMD> listener){
+    private void getQuestionFromFireStore(int size, GenericListener<QuestionMD> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION)
-                .document(index+"")
+                .document(index + "")
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         questions.add(documentSnapshot.toObject(QuestionMD.class));
                         index++;
-                        if (index<size){
+                        if (index < size) {
                             getQuestionFromFireStore(size,listener);
-                        }else {
+                        } else {
                             index = 0;
                             listener.getData(questions.get(index));
                         }
@@ -182,7 +185,7 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void getUserFromFireStore(String id, GenericListener<UserMD> listener){
+    private void getUserFromFireStore(String id, GenericListener<UserMD> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.USERS_COLLECTION)
                 .document(id)
                 .get()
@@ -199,20 +202,20 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void endGame(){
+    private void endGame() {
         checkTheWinner(new GenericListener<String>() {
             @Override
             public void getData(String s) {
                 WinnerDialog winnerDialog = WinnerDialog.newInstance(s);
-                winnerDialog.show(getSupportFragmentManager(),"Winner Dialog");
+                winnerDialog.show(getSupportFragmentManager(), "Winner Dialog");
             }
         });
     }
 
-    private void setTheWinner(String winner,GenericListener<Void> listener){
+    private void setTheWinner(String winner, GenericListener<Void> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
-                .update("winner",winner)
+                .update("winner", winner)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -226,7 +229,7 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void getTheWinner(GenericListener<String> listener){
+    private void getTheWinner(GenericListener<String> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).
                 document(roomId)
                 .get()
@@ -243,10 +246,10 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void setTheScore(){
+    private void setTheScore() {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
-                .update("ids"+"."+FirebaseAuth.getInstance().getUid(),FieldValue.increment(1))
+                .update("ids" + "." + FirebaseAuth.getInstance().getUid(), FieldValue.increment(1))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -261,15 +264,15 @@ public class DuoModeActivity extends AppCompatActivity {
                 });
     }
 
-    private void gameFlow(){
+    private void gameFlow() {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
                     public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
                         GamePlayMD gamePlayMD = Objects.requireNonNull(value).toObject(GamePlayMD.class);
-                        if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2){
-                            if (index != questions.size()-1){
+                        if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2) {
+                            if (index != questions.size() - 1) {
                                 currentQuestion(0, new GenericListener<Void>() {
                                     @Override
                                     public void getData(Void unused) {
@@ -277,15 +280,15 @@ public class DuoModeActivity extends AppCompatActivity {
                                         clearAdapters();
                                     }
                                 });
-                            }else {
+                            } else {
                                 endGame();
                             }
                         }
                     }
-        });
+                });
     }
 
-    private void checkTheWinner(GenericListener<String> listener){
+    private void checkTheWinner(GenericListener<String> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
                 .get()
@@ -295,12 +298,12 @@ public class DuoModeActivity extends AppCompatActivity {
                         GamePlayMD gamePlayMD = documentSnapshot.toObject(GamePlayMD.class);
                         long myScore = (long) gamePlayMD.getIds().get(FirebaseAuth.getInstance().getUid());
                         long otherPlayerScore = (long) gamePlayMD.getIds().get(senderId);
-                        long winner = Math.max(myScore,otherPlayerScore);
+                        long winner = Math.max(myScore, otherPlayerScore);
                         String win = "";
 
-                        if (winner == myScore){
+                        if (winner == myScore) {
                             win = me.getUsername();
-                        }else {
+                        } else {
                             win = otherPlayer.getUsername();
                         }
 
@@ -324,10 +327,10 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private void currentQuestion(int number,GenericListener<Void> listener){
+    private void currentQuestion(int number, GenericListener<Void> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
                 .document(roomId)
-                .update("currentQuestion",number)
+                .update("currentQuestion", number)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
@@ -342,7 +345,7 @@ public class DuoModeActivity extends AppCompatActivity {
                 });
     }
 
-    private void getGamePlayData(GenericListener<Integer> listener){
+    private void getGamePlayData(GenericListener<Integer> listener) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(roomId).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -358,16 +361,16 @@ public class DuoModeActivity extends AppCompatActivity {
         });
     }
 
-    private String checkAnswerLength(String answer){
+    private String checkAnswerLength(String answer) {
         StringBuilder fina = new StringBuilder();
-        fina.append(answer);
-        for (int i=answer.length();i<answer.length()+4;i++){
+        fina.append(removeSpaces(answer));
+        for (int i = answer.length(); i < answer.length() + 4; i++) {
             fina.append(letters[new Random().nextInt(((letters.length - 1)) + 1)]);
         }
         return randomTheAnswer(fina.toString());
     }
 
-    private String randomTheAnswer(String string){
+    private String randomTheAnswer(String string) {
         char[] array = string.toCharArray();
         for (int i = 0; i < array.length; i++) {
             int randomIndexToSwap = new Random().nextInt(array.length);
@@ -376,5 +379,15 @@ public class DuoModeActivity extends AppCompatActivity {
             array[i] = temp;
         }
         return String.valueOf(array);
+    }
+
+    private String removeSpaces(String s){
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i=0;i<s.length();i++){
+            if (s.charAt(i) != ' '){
+                stringBuilder.append(s.charAt(i));
+            }
+        }
+        return stringBuilder.toString();
     }
 }
