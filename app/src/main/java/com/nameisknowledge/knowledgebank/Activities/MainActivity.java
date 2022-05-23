@@ -1,12 +1,12 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,7 +26,10 @@ import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
-import com.nameisknowledge.knowledgebank.Services.RequestsService;
+import com.nameisknowledge.knowledgebank.Retroift.Data;
+import com.nameisknowledge.knowledgebank.Retroift.NotificationData;
+import com.nameisknowledge.knowledgebank.Retroift.PushNotification;
+import com.nameisknowledge.knowledgebank.Retroift.RetrofitInstance;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 import com.zhpan.bannerview.BannerViewPager;
 import com.zhpan.bannerview.constants.PageStyle;
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     private void setQes(){
         for (int i=0;i<3;i++){
             FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION)
@@ -88,8 +92,6 @@ public class MainActivity extends AppCompatActivity {
         binding.rvUsers.setHasFixedSize(true);
         binding.rvUsers.setLayoutManager(new LinearLayoutManager(this));
 
-        RequestsService.startActionFoo(this);
-
         toastMethods = new ToastMethods(this);
         userMDs = new ArrayList<>();
 
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
        usersAdapter =  new UsersAdapter(userMDs, new GenericListener<String>() {
             @Override
             public void getData(String uid) {
-                sendRequest(uid);
+                sendMessage(uid,uid);
             }
         });
 
@@ -120,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
                binding.ivUserImage.setImageResource(R.drawable.avatar_man_1);
            else if (userGender.equals(UserConstants.GENDER_FEMALE))
                binding.ivUserImage.setImageResource(R.drawable.avatar_woman_1);
+
+
        }
     }
 
@@ -152,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }
-                });
+                });;
 
         List<ModeMD> modes = new ArrayList<>();
 
@@ -171,33 +175,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void duoModeListener(){
-        Intent goDouActivity = new Intent(this , DuoModeActivity.class);
-        goDouActivity.putExtra("roomID", "4T15RedvSHJLXF2m9TvS");
-        goDouActivity.putExtra("senderID","0dvE371gEtYTPWWjfZzhhBLbhP83");
-        startActivity(goDouActivity);
+        Intent goSoloActivity = new Intent(this , DuoModeActivity.class);
+        startActivity(goSoloActivity);
     }
 
     private void mapModeListener(){
-        Intent goMapActivity = new Intent(this , MapModeActivity.class);
-        startActivity(goMapActivity);
+        toastMethods.warning("هذا المود غير متاح حاليا");
     }
-
-    private void sendRequest(String uid){
-
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.REQUESTS_COLLECTION)
-                .document(uid).collection(FirebaseConstants.CONTAINER_COLLECTION)
-                .add(new RequestMD(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid()
-                        ,FirebaseAuth.getInstance().getCurrentUser().getEmail()))
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        toastMethods.success("Request Send");
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                toastMethods.error(e.getMessage());
-            }
-        });
+    private void sendMessage(String to,String msg){
+        NotificationData notificationData = new NotificationData("Hi there",msg);
+        Data data = new Data("abood","19");
+        PushNotification pushNotification = new PushNotification(notificationData,to,data);
+        RetrofitInstance.getInstance().sentNot(pushNotification);
     }
 }

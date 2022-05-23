@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class UserMD{
 
-    private String uid , username , email , password , gender , avatarRes;
+    private String uid , username , email , password , gender , avatarRes ,notificationToken;
     private Date birthdate , creationDate ;
 
     public UserMD(String username, String email, String password, String gender, String avatarRes, Date birthdate, Date creationDate) {
@@ -93,5 +93,13 @@ public class UserMD{
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getNotificationToken() {
+        return notificationToken;
+    }
+
+    public void setNotificationToken(String notificationToken) {
+        this.notificationToken = notificationToken;
     }
 }
