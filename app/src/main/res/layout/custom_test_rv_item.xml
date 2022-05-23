@@ -6,8 +6,8 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_text"
-        android:layout_width="@dimen/_60sdp"
-        android:layout_height="@dimen/_60sdp"
+        android:layout_width="@dimen/_45sdp"
+        android:layout_height="@dimen/_45sdp"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_2sdp"
         app:cardUseCompatPadding="true"

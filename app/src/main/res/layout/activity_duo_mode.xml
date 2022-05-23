@@ -74,16 +74,19 @@
                 android:background="@color/white"
                 />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_answer"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_8sdp"
-                />
+                >
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_answer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    />
+            </HorizontalScrollView>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_input"
