@@ -224,8 +224,10 @@ public class LoginActivity extends AppCompatActivity {
         binding.progressLogin.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
         binding.progressRegister.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
 
-//        String currentEmail = auth.getCurrentUser().getEmail();
-//        binding.edEmail.setText(currentEmail);
+        if (auth.getCurrentUser() != null){
+            String currentEmail = auth.getCurrentUser().getEmail();
+            binding.edEmail.setText(currentEmail);
+        }
 
         binding.edPassword.setText(UserConstants.getCurrentUser(this).getPassword());
 

@@ -52,7 +52,7 @@ public class DuoModeActivity extends AppCompatActivity {
         initialValues();
     }
 
-    private void initialValues() {
+    private void initialValues(){
         roomId = getIntent().getStringExtra("roomID");
         senderId = getIntent().getStringExtra("senderID");
         this.index = 0;

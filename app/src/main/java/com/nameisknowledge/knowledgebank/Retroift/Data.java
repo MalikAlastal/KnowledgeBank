@@ -3,29 +3,20 @@ package com.nameisknowledge.knowledgebank.Retroift;
 import java.io.Serializable;
 
 public class Data implements Serializable {
-    private String name,age;
+    private String senderId;
 
-    public Data(String name, String age) {
-        this.name = name;
-        this.age = age;
+    public Data(String senderId) {
+        this.senderId = senderId;
     }
 
     public Data() {
     }
 
-    public String getName() {
-        return name;
+    public String getSenderId() {
+        return senderId;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAge() {
-        return age;
-    }
-
-    public void setAge(String age) {
-        this.age = age;
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
     }
 }
