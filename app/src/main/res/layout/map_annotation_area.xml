@@ -15,6 +15,7 @@
         android:layout_height="match_parent"
         android:padding="@dimen/_10sdp"
         android:orientation="vertical"
+        android:gravity="center"
         >
 
         <TextView

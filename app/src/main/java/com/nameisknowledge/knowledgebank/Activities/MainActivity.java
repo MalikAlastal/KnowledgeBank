@@ -1,17 +1,15 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
@@ -23,7 +21,6 @@ import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.Retroift.Data;
@@ -36,7 +33,6 @@ import com.zhpan.bannerview.constants.PageStyle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -175,12 +171,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void duoModeListener(){
-        Intent goSoloActivity = new Intent(this , DuoModeActivity.class);
-        startActivity(goSoloActivity);
+        Intent goDuoActivity = new Intent(this , DuoModeActivity.class);
+        startActivity(goDuoActivity);
     }
 
     private void mapModeListener(){
-        toastMethods.warning("هذا المود غير متاح حاليا");
+        Intent goMapActivity = new Intent(this , MapModeActivity.class);
+        startActivity(goMapActivity);
     }
     private void sendMessage(String to,String msg){
         NotificationData notificationData = new NotificationData("Hi there",msg);
