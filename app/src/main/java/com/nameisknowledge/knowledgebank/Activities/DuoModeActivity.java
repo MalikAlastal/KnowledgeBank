@@ -84,31 +84,32 @@ public class DuoModeActivity extends AppCompatActivity {
                         binding.rvAnswer.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
                         binding.rvInput.setHasFixedSize(true);
                         binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
-                        inputAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()), false, new GenericListener<TestRvMD>() {
+
+                        answerAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()), false, new GenericListener<TestRvMD>() {
                             @Override
                             public void getData(TestRvMD testRvMD) {
-                                answerAdapter.setChar(testRvMD);
+                                inputAdapter.setChar(testRvMD);
                             }
                         });
 
-                        answerAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), true, new GenericListener<TestRvMD>() {
+                        inputAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), true, new GenericListener<TestRvMD>() {
                             @Override
                             public void getData(TestRvMD testRvMD) {
-                                inputAdapter.checkEmpty(new GenericListener<List<Integer>>() {
+                                answerAdapter.checkEmpty(new GenericListener<List<Integer>>() {
                                     @Override
                                     public void getData(List<Integer> list) {
                                         if (list.size() != 0) {
-                                            answerAdapter.setEmpty(testRvMD.getIndex(), testRvMD);
-                                            inputAdapter.addChar(testRvMD);
+                                            inputAdapter.setEmpty(testRvMD.getIndex(), testRvMD);
+                                            answerAdapter.addChar(testRvMD);
                                         }
-                                        submit(getString(inputAdapter.getMyList()));
+                                        submit(getString(answerAdapter.getMyList()));
                                     }
                                 });
                             }
                         });
 
-                        binding.rvAnswer.setAdapter(inputAdapter);
-                        binding.rvInput.setAdapter(answerAdapter);
+                        binding.rvAnswer.setAdapter(answerAdapter);
+                        binding.rvInput.setAdapter(inputAdapter);
                     }
                 });
             }

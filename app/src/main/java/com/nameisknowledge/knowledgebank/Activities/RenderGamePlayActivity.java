@@ -55,7 +55,9 @@ public class RenderGamePlayActivity extends AppCompatActivity {
             CounterService.startAction(this, new GenericListener<Void>() {
                 @Override
                 public void getData(Void unused) {
-                    Toast.makeText(RenderGamePlayActivity.this, "Time Out!!", Toast.LENGTH_SHORT).show();
+                    if (binding!=null){
+                        Toast.makeText(RenderGamePlayActivity.this, "Time Out!!", Toast.LENGTH_SHORT).show();
+                    }
                     finish();
                 }
             });
@@ -76,6 +78,11 @@ public class RenderGamePlayActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+         binding = null;
+    }
 
     private void generateQuestions(Context context, GenericListener<GamePlayMD> listener){
         FirebaseFirestore.getInstance().collection(FirebaseConstants.QUESTIONS_COLLECTION).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

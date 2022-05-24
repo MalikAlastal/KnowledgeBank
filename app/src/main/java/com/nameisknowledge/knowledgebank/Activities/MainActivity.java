@@ -168,7 +168,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void mapModeListener() {
-        toastMethods.warning("هذا المود غير متاح حاليا");
+        Intent goSoloActivity = new Intent(this, MapModeActivity.class);
+        startActivity(goSoloActivity);
     }
 
     private void sendMessage(String to, String msg, String senderId) {
