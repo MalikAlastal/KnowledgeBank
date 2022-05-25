@@ -50,6 +50,8 @@ public class RenderGamePlayActivity extends AppCompatActivity {
 
         senderID = getIntent().getStringExtra("senderId");
 
+        Toast.makeText(this, "Hi", Toast.LENGTH_SHORT).show();
+
         if (senderID == null){
             responsesListener();
             CounterService.startAction(this, new GenericListener<Void>() {
@@ -170,8 +172,6 @@ public class RenderGamePlayActivity extends AppCompatActivity {
                                 }
                                 if (value.getDocumentChanges().size() == 1 && value.getDocumentChanges().get(0).getType() != DocumentChange.Type.REMOVED && resSize != 1) {
                                     startActivity(new Intent(getApplicationContext(), DuoModeActivity.class)
-                                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                                                    | Intent.FLAG_ACTIVITY_CLEAR_TASK)
                                             .putExtra("roomID", value.getDocumentChanges().get(0).getDocument().getString("roomID"))
                                             .putExtra("senderID",value.getDocumentChanges().get(0).getDocument().getString("userID")));
                                     finish();

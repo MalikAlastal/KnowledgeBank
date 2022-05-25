@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 
@@ -69,11 +71,11 @@ public class ViewMethods {
     public static void editTextEmptyError(EditText... editTexts){
         for (EditText edittext:editTexts) {
             AnimationMethods.shake(DurationConstants.DURATION_LONG , edittext);
-            showTextInpuError((TextInputEditText) edittext);
+            showTextInputError((TextInputEditText) edittext);
         }
     }
 
-    public static void showTextInpuError(TextInputEditText... editTexts){
+    public static void showTextInputError(TextInputEditText... editTexts){
         for (TextInputEditText editText:editTexts) {
             editText.setError("error");
         }
@@ -90,6 +92,12 @@ public class ViewMethods {
         for (TextInputEditText editText:editTexts) {
             editText.setError(null);
         }
+    }
+
+    public static <T extends RecyclerView.ViewHolder> void  prepareRecycler(RecyclerView recycler , RecyclerView.Adapter<T> adapter , boolean hasFixedSize , RecyclerView.LayoutManager manager){
+        recycler.setAdapter(adapter);
+        recycler.setHasFixedSize(hasFixedSize);
+        recycler.setLayoutManager(manager);
     }
 
     public static void clearEditText(EditText... editTexts){
