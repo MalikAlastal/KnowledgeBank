@@ -8,15 +8,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
+        <service
+            android:name="com.nameisknowledge.knowledgebank.Services.CounterService"
+            android:exported="false"></service>
+
+        <activity
+            android:name="com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity"
+            android:exported="false" />
         <activity
             android:name="com.nameisknowledge.knowledgebank.Activities.QuestionsModeActivity"
             android:exported="false" />
 
-        <service android:name=".Services.MyFirebaseMessagingService"
+        <service
+            android:name=".Services.MyFirebaseMessagingService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 

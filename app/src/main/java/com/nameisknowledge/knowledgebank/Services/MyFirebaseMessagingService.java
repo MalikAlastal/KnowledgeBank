@@ -16,6 +16,7 @@
 
 package com.nameisknowledge.knowledgebank.Services;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -25,7 +26,10 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
+import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -33,6 +37,7 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.nameisknowledge.knowledgebank.Activities.MainActivity;
+import com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity;
 import com.nameisknowledge.knowledgebank.R;
 
 import java.util.Objects;
@@ -51,6 +56,7 @@ import java.util.Objects;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
+    private String senderId;
 
     /**
      * Called when message is received.
@@ -82,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            senderId = remoteMessage.getData().get("senderId");
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use WorkManager.
                 scheduleJob();
@@ -161,37 +167,74 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param remoteMessage FCM message body received.
      *
      */
-    private void sendNotification(RemoteMessage remoteMessage) {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+//    private void sendNotification(RemoteMessage remoteMessage) {
+//        Intent intent = new Intent(this, MainActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+//                PendingIntent.FLAG_ONE_SHOT);
+//
+//        String channelId = getString(R.string.default_notification_channel_id);
+//
+//        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//        NotificationCompat.Builder notificationBuilder =
+//                new NotificationCompat.Builder(this, channelId)
+//                        .setSmallIcon(R.drawable.ic_empty_circle)
+//                        .setContentTitle(Objects.requireNonNull(remoteMessage.getNotification()).getTitle())
+//                        .setContentText(Objects.requireNonNull(remoteMessage.getNotification()).getBody())
+//                        .setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getNotification().getBody()))
+//                        .setAutoCancel(true)
+//                        .setSound(defaultSoundUri)
+//                        .setContentIntent(pendingIntent);
+//
+//        NotificationManager notificationManager =
+//                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//
+//        // Since android Oreo notification channel is needed.
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            NotificationChannel channel = new NotificationChannel(channelId,
+//                    "Channel human readable title",
+//                    NotificationManager.IMPORTANCE_HIGH);
+//            notificationManager.createNotificationChannel(channel);
+//        }
+//
+//        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+//    }
+
+    public void sendNotification(RemoteMessage remoteMessage){
 
         String channelId = getString(R.string.default_notification_channel_id);
-        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_empty_circle)
-                        .setPriority(Notification.PRIORITY_HIGH)
-                        .setContentTitle(Objects.requireNonNull(remoteMessage.getNotification()).getTitle())
-                        .setContentText(Objects.requireNonNull(remoteMessage.getNotification()).getBody())
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText(remoteMessage.getNotification().getBody()))
-                        .setAutoCancel(true)
-                        .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this , channelId)
+                .setSmallIcon(R.drawable.ic_timer)
+                .setAutoCancel(true)
+                .setContent(getMyLayout(Objects.requireNonNull(remoteMessage.getNotification()).getTitle()));
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-        // Since android Oreo notification channel is needed.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(channelId,
-                    "Channel human readable title",
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationManager.createNotificationChannel(channel);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) ;
+        if (Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel(channelId , "Channel human readable title" , NotificationManager.IMPORTANCE_HIGH);
+            manager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        manager.notify(0 , builder.build());
+    }
+
+    public RemoteViews getMyLayout(String msg){
+        RemoteViews remoteViews =
+                new RemoteViews(getApplicationContext().getPackageName() , R.layout.notification_layout) ;
+        //اذا بدك تبعت بيانات لما تضغط على الاشعار للاكتيفتي الي رايح الها الاشعار
+        Intent notificationIntent = new Intent(getApplicationContext(), RenderGamePlayActivity.class);
+        Log.d(TAG, "Message data payload: " + senderId);
+        Bundle bundle = new Bundle();
+        bundle.putString("senderId",senderId);
+        notificationIntent.putExtras(bundle);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(),
+                0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        // عمل ليسينر على أي آيتم في النوتفيكيشن
+        remoteViews.setOnClickPendingIntent(R.id.accept , pendingIntent);
+        remoteViews.setTextViewText(R.id.title ,msg);
+        return remoteViews ;
     }
 
 }
