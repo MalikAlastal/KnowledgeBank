@@ -3,6 +3,7 @@ package com.nameisknowledge.knowledgebank.Activities;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -34,7 +35,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.MapQuestion;
+import com.nameisknowledge.knowledgebank.ModelClasses.MapQuestionMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMapModeBinding;
 import com.nameisknowledge.knowledgebank.databinding.MapAnnotationAreaBinding;
@@ -81,11 +82,11 @@ public class MapModeActivity extends AppCompatActivity {
         areas = new ArrayList<>();
         isLocationFound = false ;
 
-        List<MapQuestion> questionList = new ArrayList<>() ;
-        questionList.add(new MapQuestion("What is name of this area" , "الوسطى1" , 1));
-        questionList.add(new MapQuestion("What is name of this area" , "الوسطى2" , 2));
-        questionList.add(new MapQuestion("What is name of this area" , "الوسطى3" , 3));
-        questionList.add(new MapQuestion("What is name of this area" , "الوسطى4" , 4));
+        List<MapQuestionMD> questionList = new ArrayList<>() ;
+        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى1" , 1));
+        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى2" , 2));
+        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى3" , 3));
+        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى4" , 4));
 
         MapAreaMD areaMD = new MapAreaMD("الوسطى" ,  34.363371 ,31.4072699 , questionList);
 
@@ -182,18 +183,12 @@ public class MapModeActivity extends AppCompatActivity {
             annotationBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    closeAllAnnotation();
                     annotationBinding.buttonsLayout.setVisibility(View.VISIBLE);
                 }
             });
             annotationBinding.tvAreaName.setText(area.getAreaName());
 
-            annotationBinding.btnAttack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    toastMethods.info("attack");
-                }
-            });
+            annotationBinding.btnAttack.setOnClickListener(getAttackClickListener(area));
     }
 
     private void getMapAreas(GenericListener<List<MapAreaMD>> listener){
@@ -211,6 +206,17 @@ public class MapModeActivity extends AppCompatActivity {
                 toastMethods.error("why ??");
             }
         });
+    }
+
+    private View.OnClickListener getAttackClickListener(MapAreaMD area){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getBaseContext() , AttackAreaActivity.class);
+                intent.putExtra(AttackAreaActivity.AREA_KEY , area);
+                startActivity(intent);
+            }
+        };
     }
 
     private void closeAllAnnotation(){

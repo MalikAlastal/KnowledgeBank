@@ -141,8 +141,8 @@ public class DuoModeActivity extends AppCompatActivity {
     private void clearAdapters() {
         answerAdapter.clearArray();
         inputAdapter.clearArray();
-        inputAdapter.setMyList(inputAdapter.cutString(makeStringEmpty(questions.get(index).getAnswer()).toCharArray()));
-        answerAdapter.setMyList(answerAdapter.cutString(checkAnswerLength(questions.get(index).getAnswer()).toCharArray()));
+        answerAdapter.setMyList(answerAdapter.cutString(makeStringEmpty(questions.get(index).getAnswer()).toCharArray()));
+        inputAdapter.setMyList(inputAdapter.cutString(checkAnswerLength(questions.get(index).getAnswer()).toCharArray()));
     }
 
     private String getString(List<TestRvMD> list) {

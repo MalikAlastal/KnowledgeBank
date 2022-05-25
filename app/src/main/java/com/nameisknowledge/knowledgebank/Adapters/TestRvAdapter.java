@@ -20,14 +20,14 @@ import java.util.List;
 public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
     private List<TestRvMD> myList;
     private GenericListener<TestRvMD> listener;
-    private boolean input;
+    private boolean isInput;
     private Context context ;
 
 
-    public TestRvAdapter(String answer,boolean input,GenericListener<TestRvMD> listener) {
+    public TestRvAdapter(String answer, boolean isInput, GenericListener<TestRvMD> listener) {
         this.myList = cutString(answer.toCharArray());
         this.listener = listener;
-        this.input = input;
+        this.isInput = isInput;
     }
 
     public List<TestRvMD> getMyList() {
@@ -110,7 +110,7 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!input){
+                    if (!isInput){
                         setEmpty(position,new TestRvMD(' ',position));
                     }
                     listener.getData(test);
@@ -123,7 +123,7 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
             this.position = position;
             binding.textView.setText(String.valueOf(string.getLetter()));
 
-            if (!input){
+            if (!isInput){
                 binding.cardText.setCardBackgroundColor(context.getResources().getColor(R.color.white));
                 binding.textView.setTextColor(context.getResources().getColor(R.color.black));
             }

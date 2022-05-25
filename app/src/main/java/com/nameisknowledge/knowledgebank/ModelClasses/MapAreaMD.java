@@ -1,14 +1,15 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MapAreaMD {
+public class MapAreaMD implements Serializable {
     String areaName ="";
     double areaLng =0;
     double areaLat =0;
 
 
-    List<MapQuestion> questionList ;
+    List<MapQuestionMD> questionList ;
 
     public String getAreaName() {
         return areaName;
@@ -17,7 +18,7 @@ public class MapAreaMD {
     public MapAreaMD() {
     }
 
-    public MapAreaMD(String areaName, double areaLng, double areaLat, List<MapQuestion> questionList) {
+    public MapAreaMD(String areaName, double areaLng, double areaLat, List<MapQuestionMD> questionList) {
         this.areaName = areaName;
         this.areaLng = areaLng;
         this.areaLat = areaLat;
@@ -44,11 +45,11 @@ public class MapAreaMD {
         this.areaLat = areaLat;
     }
 
-    public List<MapQuestion> getQuestionList() {
+    public List<MapQuestionMD> getQuestionList() {
         return questionList;
     }
 
-    public void setQuestionList(List<MapQuestion> questionList) {
+    public void setQuestionList(List<MapQuestionMD> questionList) {
         this.questionList = questionList;
     }
 }
