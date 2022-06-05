@@ -32,6 +32,8 @@ public class SoloModeActivity extends AppCompatActivity {
         // set values to global variables;
         initialValues();
 
+        // حسن اللي كتب هادا الكود
+
         binding.btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
