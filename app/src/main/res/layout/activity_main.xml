@@ -4,15 +4,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".Activities.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_user_details"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_100sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bvp_modes"
+        android:layout_marginBottom="@dimen/_3sdp"
+        >
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_bottom_corners"/>
+
+        <ImageView
+            android:id="@+id/iv_user_image"
+            android:layout_width="@dimen/_100sdp"
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:scaleType="fitCenter"
+            android:src="@drawable/avatar_man_1"
+            android:background="@color/shafaf"
+            android:padding="@dimen/_10sdp"
+            />
+
+        <TextView
+            android:id="@+id/tv_user_email"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toEndOf="@+id/iv_user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_user_username"
+            android:textColor="@color/white"
+            android:fontFamily="@font/main_font"
+            android:gravity="bottom|start"
+            android:textSize="@dimen/_18sdp"
+            android:text="@string/app_name"
+            />
+
+        <TextView
+            android:id="@+id/tv_user_username"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toEndOf="@+id/iv_user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_user_email"
+            android:textColor="@color/white"
+            android:fontFamily="@font/main_font"
+            android:gravity="top|start"
+            android:textSize="@dimen/_12sdp"
+            android:text="@string/app_name"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <com.zhpan.bannerview.BannerViewPager
+        android:id="@+id/bvp_modes"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_250sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintVertical_bias="0.25"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        >
+    </com.zhpan.bannerview.BannerViewPager>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_users"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bvp_modes"
+        />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
