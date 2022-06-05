@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "219226442407",
+    "project_id": "knowledgebank-5fffd",
+    "storage_bucket": "knowledgebank-5fffd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219226442407:android:b0077cd25a1fe066c96982",
+        "android_client_info": {
+          "package_name": "com.nameisknowledge.knowledgebank"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "219226442407-grvj7bqg2u6717vlhjfo0cd27o8cbqk3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nameisknowledge.knowledgebank",
+            "certificate_hash": "0eddf6188bff5c2ad59f92361897c45ab504e5dc"
+          }
+        },
+        {
+          "client_id": "219226442407-8r4lv5m6blkamo93146933tcg07aanlc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYwIPHuUqOC8CNgp4qHq7EwEwtoNi1gjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219226442407-8r4lv5m6blkamo93146933tcg07aanlc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
