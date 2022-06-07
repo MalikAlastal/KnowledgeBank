@@ -6,10 +6,10 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_text"
-        android:layout_width="@dimen/_45sdp"
-        android:layout_height="@dimen/_45sdp"
+        android:layout_width="@dimen/_55sdp"
+        android:layout_height="@dimen/_55sdp"
         app:cardCornerRadius="@dimen/_5sdp"
-        app:cardElevation="@dimen/_2sdp"
+        app:cardElevation="0.2dp"
         app:cardUseCompatPadding="true"
         app:cardBackgroundColor="@color/light_main_color"
         >
@@ -18,7 +18,7 @@
             android:gravity="center"
             android:id="@+id/textView"
             android:fontFamily="@font/main_font"
-            android:textSize="@dimen/_15sdp"
+            android:textSize="@dimen/_18sdp"
             android:textColor="@color/white"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />

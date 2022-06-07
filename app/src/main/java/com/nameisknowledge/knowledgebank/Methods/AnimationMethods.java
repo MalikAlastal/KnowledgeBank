@@ -24,6 +24,24 @@ public class AnimationMethods {
             YoYo.with(Techniques.SlideOutUp).duration(duration).onEnd(callback).playOn(view);
         }
     }
+    public static void flash(int duration ,int repeatTimes, YoYo.AnimatorCallback callback, View... views){
+        for (View view :views) {
+            YoYo.with(Techniques.Flash).repeat(repeatTimes).duration(duration).onEnd(callback).playOn(view);
+        }
+    }
+
+    public static void flash(int duration ,int repeatTimes, View... views){
+        for (View view :views) {
+            YoYo.with(Techniques.Flash).repeat(repeatTimes).duration(duration).playOn(view);
+        }
+    }
+
+    public static void bounceIn(int duration , YoYo.AnimatorCallback callback, View... views){
+        for (View view :views) {
+            YoYo.with(Techniques.BounceIn).onEnd(callback).duration(duration).playOn(view);
+        }
+    }
+
 
     public static void slideInRight(int duration , View... views){
         for (View view :views) {
@@ -64,6 +82,12 @@ public class AnimationMethods {
     public static void shake(int duration , View... views){
         for (View view :views) {
             YoYo.with(Techniques.Shake).duration(duration).playOn(view);
+        }
+    }
+
+    public static void shake(int duration ,YoYo.AnimatorCallback callback, View... views){
+        for (View view :views) {
+            YoYo.with(Techniques.Shake).onEnd(callback).duration(duration).playOn(view);
         }
     }
 

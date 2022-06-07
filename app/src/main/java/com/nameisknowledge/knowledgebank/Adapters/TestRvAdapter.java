@@ -39,6 +39,10 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
         notifyDataSetChanged();
     }
 
+    public void setAnswer(String answer){
+        myList = cutString(answer.toCharArray());
+        notifyDataSetChanged();
+    }
 
     public void setMyList(List<TestRvMD> myList) {
         this.myList = myList;

@@ -17,4 +17,16 @@
     <string name="info">معلومات</string>
 
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="you_are_the_owner">أنت حاكم هذه المنطقة الآن</string>
+    <string name="you">(You)</string>
+    <string name="area_owner">(Area Owner)</string>
+    <string name="king">(King)</string>
+    <string name="end_game">End Game</string>
+    <string name="game_ended">Game ended</string>
+    <string name="the_king">The King</string>
+    <string name="You">You</string>
+    <string name="you_are_the_king">You are The King\\</string>
+    <string name="great">Great</string>
+    <string name="ok">Ok</string>
+    <string name="the_king_is">The King is</string>
 </resources>

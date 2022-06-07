@@ -7,7 +7,8 @@ public class MapAreaMD implements Serializable {
     String areaName ="";
     double areaLng =0;
     double areaLat =0;
-
+    UserMD ownerUser ;
+    int ownerAnsweredQuestionsCount =0 ;
 
     List<MapQuestionMD> questionList ;
 
@@ -18,11 +19,29 @@ public class MapAreaMD implements Serializable {
     public MapAreaMD() {
     }
 
-    public MapAreaMD(String areaName, double areaLng, double areaLat, List<MapQuestionMD> questionList) {
+    public MapAreaMD(String areaName, double areaLng, double areaLat, UserMD ownerUser, int ownerAnsweredQuestionsCount, List<MapQuestionMD> questionList) {
         this.areaName = areaName;
         this.areaLng = areaLng;
         this.areaLat = areaLat;
+        this.ownerUser = ownerUser;
+        this.ownerAnsweredQuestionsCount = ownerAnsweredQuestionsCount;
         this.questionList = questionList;
+    }
+
+    public int getOwnerAnsweredQuestionsCount() {
+        return ownerAnsweredQuestionsCount;
+    }
+
+    public void setOwnerAnsweredQuestionsCount(int ownerAnsweredQuestionsCount) {
+        this.ownerAnsweredQuestionsCount = ownerAnsweredQuestionsCount;
+    }
+
+    public UserMD getOwnerUser() {
+        return ownerUser;
+    }
+
+    public void setOwnerUser(UserMD ownerUser) {
+        this.ownerUser = ownerUser;
     }
 
     public void setAreaName(String areaName) {

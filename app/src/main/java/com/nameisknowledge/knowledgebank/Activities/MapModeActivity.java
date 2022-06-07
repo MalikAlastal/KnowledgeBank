@@ -35,7 +35,6 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.MapQuestionMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMapModeBinding;
 import com.nameisknowledge.knowledgebank.databinding.MapAnnotationAreaBinding;
@@ -82,16 +81,15 @@ public class MapModeActivity extends AppCompatActivity {
         areas = new ArrayList<>();
         isLocationFound = false ;
 
-        List<MapQuestionMD> questionList = new ArrayList<>() ;
-        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى1" , 1));
-        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى2" , 2));
-        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى3" , 3));
-        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى4" , 4));
-
-        MapAreaMD areaMD = new MapAreaMD("الوسطى" ,  34.363371 ,31.4072699 , questionList);
-
-        firestore.collection(FirebaseConstants.MAP_AREAS_COLLECTION).document(areaMD.getAreaName()).set(areaMD);
-
+//        List<MapQuestionMD> questionList = new ArrayList<>() ;
+//        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى1" , 1));
+//        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى2" , 2));
+//        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى3" , 3));
+//        questionList.add(new MapQuestionMD("What is name of this area" , "الوسطى4" , 4));
+//
+//        MapAreaMD areaMD = new MapAreaMD("الوسطى" ,  35.363371 ,32.4072699 , null , 0 , questionList );
+//
+//        firestore.collection(FirebaseConstants.MAP_AREAS_COLLECTION).document(areaMD.getAreaName()).set(areaMD);
 
         locationArl = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
@@ -117,10 +115,15 @@ public class MapModeActivity extends AppCompatActivity {
                 });
 
         prepareMap();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         getMapAreas(new GenericListener<List<MapAreaMD>>() {
             @Override
             public void getData(List<MapAreaMD> mapAreas) {
+                binding.mapView.getViewAnnotationManager().removeAllViewAnnotations();
                 areas = mapAreas ;
                 toastMethods.info(areas.size()+"");
                 for (MapAreaMD area:mapAreas) {
@@ -128,6 +131,8 @@ public class MapModeActivity extends AppCompatActivity {
                 }
             }
         });
+
+        isLocationFound = false ;
     }
 
     private void prepareMap(){
@@ -189,6 +194,11 @@ public class MapModeActivity extends AppCompatActivity {
             annotationBinding.tvAreaName.setText(area.getAreaName());
 
             annotationBinding.btnAttack.setOnClickListener(getAttackClickListener(area));
+            if (area.getOwnerUser()!=null){
+                annotationBinding.ownerInfoLayout.setVisibility(View.VISIBLE);
+                annotationBinding.ivUserImage.setImageResource(Integer.parseInt(area.getOwnerUser().getAvatarRes()));
+                annotationBinding.tvUserUsername.setText(area.getOwnerUser().getUsername());
+            }
     }
 
     private void getMapAreas(GenericListener<List<MapAreaMD>> listener){
