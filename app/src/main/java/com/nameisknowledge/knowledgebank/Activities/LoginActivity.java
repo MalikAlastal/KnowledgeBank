@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -97,16 +98,26 @@ public class LoginActivity extends AppCompatActivity {
                                 .document(Objects.requireNonNull(authResult.getUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                // to set receive notifications
 
-                                UserMD currentUser = documentSnapshot.toObject(UserMD.class);
+                                getNotificationToken(new GenericListener<String>() {
+                                    @Override
+                                    public void getData(String s) {
+                                        FirebaseFirestore.getInstance()
+                                                .collection(FirebaseConstants.USERS_COLLECTION)
+                                                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                                                .update("notificationToken",s);
 
-                                if (currentUser==null)
-                                    return;
+                                        UserMD currentUser = documentSnapshot.toObject(UserMD.class);
+                                        if (currentUser==null)
+                                            return;
 
-                                saveCurrentUserData(currentUser);
-                                startActivity(new Intent(getBaseContext(),MainActivity.class));
-                                stopLoading();
-                                finish();
+                                        saveCurrentUserData(currentUser);
+                                        startActivity(new Intent(getBaseContext(),MainActivity.class));
+                                        stopLoading();
+                                        finish();
+                                    }
+                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

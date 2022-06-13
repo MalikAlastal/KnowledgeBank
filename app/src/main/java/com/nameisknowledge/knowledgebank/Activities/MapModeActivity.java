@@ -177,7 +177,7 @@ public class MapModeActivity extends AppCompatActivity {
 
         ViewAnnotationOptions options = new ViewAnnotationOptions.Builder()
                 .geometry(Point.fromLngLat(area.getAreaLng() , area.getAreaLat()))
-                //.associatedFeatureId(area.getAreaName())
+                .associatedFeatureId(area.getAreaName())
                 .visible(true)
                 .build() ;
 
@@ -219,13 +219,10 @@ public class MapModeActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener getAttackClickListener(MapAreaMD area){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getBaseContext() , AttackAreaActivity.class);
-                intent.putExtra(AttackAreaActivity.AREA_KEY , area);
-                startActivity(intent);
-            }
+        return view -> {
+            Intent intent = new Intent(getBaseContext() , AttackAreaActivity.class);
+            intent.putExtra(AttackAreaActivity.AREA_KEY , area);
+            startActivity(intent);
         };
     }
 
