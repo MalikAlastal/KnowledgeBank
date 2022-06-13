@@ -11,9 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2571963362996797~4761517646"/>
+
         <service
             android:name="com.nameisknowledge.knowledgebank.Services.CounterService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <activity
             android:name="com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity"

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -37,13 +38,19 @@ public class AreaAttackedDialog extends DialogFragment {
 
     DialogAreaAttackedBinding binding ;
 
-    GenericListener<Void> greatClickListener  ;
+    GenericListener<Boolean> listener;
+
+    MediaPlayer glitchSound ;
+    MediaPlayer victorySound ;
+    MediaPlayer lostSound ;
+
+    boolean isRewardButtonClicked = false ;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        greatClickListener = (GenericListener<Void>) context;
+        listener = (GenericListener<Boolean>) context;
     }
 
     public static AreaAttackedDialog newInstance(MapAreaMD area , UserMD user , boolean isWinner) {
@@ -65,6 +72,10 @@ public class AreaAttackedDialog extends DialogFragment {
             user = (UserMD) bundle.getSerializable(USER_KEY);
             isWinner = bundle.getBoolean(IS_WINNER_KEY , false);
         }
+
+        glitchSound = MediaPlayer.create(requireContext() , R.raw.glitchy_sound);
+        victorySound = MediaPlayer.create(requireContext() , R.raw.victory);
+        lostSound = MediaPlayer.create(requireContext() , R.raw.negative_beeps);
     }
 
     @NonNull
@@ -86,11 +97,18 @@ public class AreaAttackedDialog extends DialogFragment {
 
         }
         
-        binding.tvGreat.setOnClickListener(new View.OnClickListener() {
+        binding.tvEndDialog.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dismiss();
-                greatClickListener.getData(null);
+            }
+        });
+
+        binding.tvDoubleReward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isRewardButtonClicked = true ;
+                dismiss();
             }
         });
 
@@ -102,7 +120,7 @@ public class AreaAttackedDialog extends DialogFragment {
         builder.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                greatClickListener.getData(null);
+                listener.getData(isRewardButtonClicked);
             }
         });
 
@@ -125,6 +143,7 @@ public class AreaAttackedDialog extends DialogFragment {
     }
 
     private void userWon(){
+        glitchSound.start();
         AnimationMethods.flash(DurationConstants.DURATION_SHORT,2 , new YoYo.AnimatorCallback() {
             @Override
             public void call(Animator animator) {
@@ -133,6 +152,8 @@ public class AreaAttackedDialog extends DialogFragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        glitchSound.stop();
+                        victorySound.start();
                         binding.cardUser.setVisibility(View.VISIBLE);
                         binding.tvYou.setTypedText("");
                         AnimationMethods.bounceIn(DurationConstants.DURATION_SHORT, new YoYo.AnimatorCallback() {
@@ -148,8 +169,17 @@ public class AreaAttackedDialog extends DialogFragment {
         }, binding.cardKing);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        listener.getData(isRewardButtonClicked);
+    }
+
     private void userLost(){
-        binding.tvGreat.setText(getString(R.string.ok));
+        binding.tvEndDialog.setText(getString(R.string.ok));
+        binding.tvDoubleReward.setEnabled(false);
+        lostSound.start();
         AnimationMethods.shake(DurationConstants.DURATION_LONG, new YoYo.AnimatorCallback() {
             @Override
             public void call(Animator animator) {

@@ -12,7 +12,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_250sdp"
+            android:layout_height="@dimen/_300sdp"
             app:layout_constraintTop_toTopOf="parent"
             >
             <TextView
@@ -37,7 +37,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_height="0dp"
                 android:minWidth="@dimen/_150sdp"
-                app:layout_constraintBottom_toTopOf="@id/tv_great"
+                app:layout_constraintBottom_toTopOf="@id/tv_double_reward"
                 app:layout_constraintTop_toBottomOf="@id/tv_area_name"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="@dimen/_15sdp"
@@ -62,7 +62,7 @@
                         android:fontFamily="@font/main_font"
                         android:gravity="center"
                         android:textSize="@dimen/_20sdp"
-                        android:text="@string/You"
+                        android:text="@string/the_king"
                         app:randomize_typing_speed="false"
                         app:randomize_type_seed="75"
                         app:show_cursor="false"
@@ -114,7 +114,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:minWidth="@dimen/_150sdp"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@id/tv_great"
+                app:layout_constraintBottom_toTopOf="@id/tv_double_reward"
                 app:layout_constraintTop_toBottomOf="@id/tv_area_name"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="@dimen/_15sdp"
@@ -188,7 +188,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
-                android:id="@+id/tv_great"
+                android:id="@+id/tv_end_dialog"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -201,6 +201,24 @@
                 android:text="@string/great"
                 android:background="@drawable/shape_dark_main_back"
                 android:paddingTop="@dimen/_5sdp"
+                />
+
+            <TextView
+                android:id="@+id/tv_double_reward"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_25sdp"
+                app:layout_constraintBottom_toTopOf="@id/tv_end_dialog"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:background="@drawable/red_circle"
+                android:textColor="@color/white"
+                android:fontFamily="@font/main_font"
+                android:gravity="center"
+                android:textSize="@dimen/_15sdp"
+                android:text="@string/reward_x2"
+                android:paddingEnd="@dimen/_7sdp"
+                android:paddingStart="@dimen/_7sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

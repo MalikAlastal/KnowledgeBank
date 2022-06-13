@@ -11,8 +11,10 @@
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_man.xml" value="0.14104234527687295" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_new_account.xml" value="0.14104234527687295" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_next_arrow.xml" value="0.18270042194092828" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_plus.xml" value="0.1475" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_user.xml" value="0.11597222222222223" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/ic_women.xml" value="0.14104234527687295" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/red_circle.xml" value="0.2155" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/shape_bottom_corners.xml" value="0.14104234527687295" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/shape_dark_main_back.xml" value="0.2155" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/drawable/shape_shafaf_to_lightmain.xml" value="0.18270042194092828" />
@@ -26,7 +28,7 @@
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/banner_item_mode.xml" value="0.13223684210526315" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/custom_item_user.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/custom_test_rv_item.xml" value="0.13223684210526315" />
-        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/dialog_area_attacked.xml" value="0.22" />
+        <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/dialog_area_attacked.xml" value="0.18" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/fragment_blank.xml" value="0.13223684210526315" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/map_annotation_area.xml" value="0.20833333333333334" />
         <entry key="..\:/AndroidStudioProjects/KnowledgeBank/app/src/main/res/layout/map_annotation_user.xml" value="0.13157894736842105" />

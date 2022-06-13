@@ -18,10 +18,79 @@
         mapbox:mapbox_cameraTargetLng="-74.0060"
         mapbox:mapbox_cameraZoom="9.0"
         android:fitsSystemWindows="true"
-        mapbox:chainUseRtl="true"
+        mapbox:chainUseRtl="false"
         mapbox:barrierAllowsGoneWidgets="true"
         mapbox:barrierDirection="bottom"
-
         />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_attack_points"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:cardElevation="@dimen/_3sdp"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardUseCompatPadding="true"
+        app:cardBackgroundColor="@color/main_color"
+        android:fitsSystemWindows="true"
+        android:layout_marginTop="@dimen/_20sdp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="@dimen/_2sdp"
+            >
+            <ImageView
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
+                android:scaleType="centerInside"
+                android:src="@drawable/sword"
+                app:tint="@color/white"
+                android:padding="@dimen/_5sdp"
+                android:layout_gravity="center"
+                />
+
+            <TextView
+                android:id="@+id/tv_area_attack_points"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:fontFamily="@font/main_font"
+                android:gravity="center"
+                android:textSize="@dimen/_15sdp"
+                android:text="@string/_10"
+                android:paddingStart="@dimen/_2sdp"
+                android:paddingEnd="@dimen/_2sdp"
+                />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+        <LinearLayout
+            android:id="@+id/card_points_request"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/card_attack_points"
+            app:layout_constraintBottom_toBottomOf="@id/card_attack_points"
+            app:layout_constraintStart_toEndOf="@id/card_attack_points"
+            android:background="@drawable/red_circle"
+            android:backgroundTint="@color/main_color"
+            android:orientation="horizontal"
+            android:padding="@dimen/_2sdp"
+            >
+            <ImageView
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_plus"
+                app:tint="@color/white"
+                android:padding="@dimen/_1sdp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

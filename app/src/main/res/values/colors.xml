@@ -13,6 +13,7 @@
     <color name="dark_main_color">#3C556B</color>
     <color name="shafaf">#00000000</color>
     <color name="gray">#888888</color>
+    <color name="map_gray">#c8d1d3</color>
     <color name="color">#4FB639</color>
     <color name="progress_red">#DB3434</color>
     <color name="progress_blue">#3498DB</color>

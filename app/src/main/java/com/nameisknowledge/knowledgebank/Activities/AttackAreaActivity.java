@@ -1,5 +1,6 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
+import android.animation.Animator;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,15 +12,30 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.daimajia.androidanimations.library.YoYo;
 import com.daimajia.numberprogressbar.NumberProgressBar;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nameisknowledge.knowledgebank.Adapters.TestRvAdapter;
+import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Dialogs.AreaAttackedDialog;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
+import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
@@ -31,8 +47,9 @@ import com.nameisknowledge.knowledgebank.databinding.ActivityAttackAreaBinding;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
-public class AttackAreaActivity extends AppCompatActivity implements GenericListener<Void>{
+public class AttackAreaActivity extends AppCompatActivity implements GenericListener<Boolean>{
 
     ActivityAttackAreaBinding binding ;
 
@@ -45,6 +62,12 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     TestRvAdapter inputAdapter ;
     TestRvAdapter answerAdapter ;
 
+    MediaPlayer clickSound;
+    MediaPlayer swingSound;
+    MediaPlayer popSound;
+
+    boolean isActivityVisible;
+
     public final String[] letters = {
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"
     };
@@ -53,6 +76,11 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     int answeredQuestions = 0 ;
 
     FirebaseFirestore firestore ;
+
+    private RewardedAd rewardedAd;
+    private InterstitialAd interstitialAd;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +97,16 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
         toastMethods.info(area.getAreaName());
         questionList = area.getQuestionList();
 
+        clickSound = MediaPlayer.create(this , R.raw.button_clicked);
+        swingSound = MediaPlayer.create(this , R.raw.swing);
+        popSound = MediaPlayer.create(this , R.raw.pop_sound);
+
         firestore = FirebaseFirestore.getInstance() ;
 
         binding.tvQuestion.setText(questionList.get(currentQuestion).getQuestion());
         binding.tvAreaName.setText(area.getAreaName());
+
+        isActivityVisible = true ;
 
         for (MapQuestionMD question: questionList) {
             question.setAnswer(clearAnswerSpaces(question.getAnswer()));
@@ -92,6 +126,8 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
         }
         prepareListeners();
         prepareRecyclers();
+        prepareAds();
+        updateUserAttackAreaPoints(-1);
     }
 
     private void prepareListeners(){
@@ -101,6 +137,46 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
                 endGame(area , UserConstants.getCurrentUser(getBaseContext()));
             }
         });
+    }
+
+    private void prepareAds(){
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917",
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error.
+                        rewardedAd = null;
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd mRewardedAd) {
+                        rewardedAd = mRewardedAd;
+                        toastMethods.info("loaded");
+                    }
+                });
+
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
+
+        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        // The mInterstitialAd reference will be null until
+                        // an ad is loaded.
+                        AttackAreaActivity.this.interstitialAd = interstitialAd  ;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error
+                        AttackAreaActivity.this.interstitialAd = null;
+                    }
+                });
     }
 
     private void prepareRecyclers(){
@@ -203,11 +279,22 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
     private void nextQuestion(int nextQuestion){
 
-        inputAdapter.clearArray();
-        answerAdapter.clearArray();
-        inputAdapter.setAnswer(updateInput(questionList.get(nextQuestion).getAnswer()));
-        answerAdapter.setAnswer(makeStringEmpty(questionList.get(nextQuestion).getAnswer()));
-        binding.tvQuestion.setText(questionList.get(nextQuestion).getQuestion());
+        AnimationMethods.slideOutLeft(DurationConstants.DURATION_SO_SHORT, new YoYo.AnimatorCallback() {
+            @Override
+            public void call(Animator animator) {
+                inputAdapter.clearArray();
+                answerAdapter.clearArray();
+                inputAdapter.setAnswer(updateInput(questionList.get(nextQuestion).getAnswer()));
+                answerAdapter.setAnswer(makeStringEmpty(questionList.get(nextQuestion).getAnswer()));
+                binding.tvQuestion.setText(questionList.get(nextQuestion).getQuestion());
+
+                swingSound.start();
+
+                AnimationMethods.slideInRight(DurationConstants.DURATION_SO_SHORT ,binding.cardQuestion , binding.rvInput);
+            }
+        },binding.cardQuestion , binding.rvInput);
+
+
     }
 
     private void endGame(MapAreaMD area,UserMD user){
@@ -240,8 +327,25 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     }
 
     @Override
-    public void getData(Void unused) {
+    public void getData(Boolean isRewardButtonClicked) {
+
+        if (isRewardButtonClicked){
+        if (rewardedAd==null){
+            finish();
+            return;
+        }
+        rewardedAd.show(this, new OnUserEarnedRewardListener() {
+            @Override
+            public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                updateUserAttackAreaPoints(UserConstants.DOUBLE_REWARD_AREA_ATTACK_POINTS);
+            }
+        });
+        }
+        else {
+            interstitialAd.show(this);
+        }
         finish();
+
     }
 
     public class ProgressHandler extends Handler {
@@ -271,6 +375,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
                             message.obj = progressBar ;
 
                             handler.sendMessage(message);
+
                             Thread.sleep(20);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -296,13 +401,87 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     }
 
     private void buttonClickedSound(){
-        MediaPlayer player = MediaPlayer.create(this , R.raw.button_clicked);
-
         try {
-            player.start();
+            if (clickSound.isPlaying()){
+                clickSound.seekTo(0);
+            }
+            else {
+                clickSound.start();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                    isActivityVisible = false ;
+            }
+        }, TimeUnit.SECONDS.toMillis(30));
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!isActivityVisible){
+            endGame(area , UserConstants.getCurrentUser(getBaseContext()));
+        }
+        isActivityVisible = true ;
+    }
+
+    private void updateUserAttackAreaPoints(int points){
+        UserMD currentUser = UserConstants.getCurrentUser(getBaseContext());
+        currentUser.setAreaAttackPoints(currentUser.getAreaAttackPoints()+points);
+
+        firestore.collection(FirebaseConstants.USERS_COLLECTION).document(currentUser.getUid()).set(currentUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        updateUserInfo();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
+    }
+    private void updateUserInfo(){
+        UserMD currentUser = UserConstants.getCurrentUser(getBaseContext());
+        currentUser.setAreaAttackPoints(currentUser.getAreaAttackPoints());
+
+        firestore.collection(FirebaseConstants.USERS_COLLECTION).document(currentUser.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserMD user = documentSnapshot.toObject(UserMD.class);
+
+                        if (user==null){
+                            return;
+                        }
+
+                        UserConstants.setCurrentUser(user , getBaseContext());
+                        user = null ;
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 }
 

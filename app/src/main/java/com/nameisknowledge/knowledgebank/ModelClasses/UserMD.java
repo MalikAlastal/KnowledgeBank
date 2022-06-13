@@ -7,29 +7,33 @@ public class UserMD implements Serializable {
 
     private String uid , username , email , password , gender , avatarRes ,notificationToken;
     private Date birthdate , creationDate ;
+    int areaAttackPoints ;
 
-    public UserMD(String username, String email, String password, String gender, String avatarRes, Date birthdate, Date creationDate) {
-        this.username = username;
-        this.email = email;
-        this.password = password;
-        this.gender = gender;
-        this.avatarRes = avatarRes;
-        this.birthdate = birthdate;
-        this.creationDate = creationDate;
-    }
-
-    public UserMD(String uid, String username, String email, String password, String gender, String avatarRes, Date birthdate, Date creationDate) {
+    public UserMD(String uid, String username, String email, String password, String gender, String avatarRes, String notificationToken, Date birthdate, Date creationDate, int areaAttackPoints) {
         this.uid = uid;
         this.username = username;
         this.email = email;
         this.password = password;
         this.gender = gender;
         this.avatarRes = avatarRes;
+        this.notificationToken = notificationToken;
         this.birthdate = birthdate;
         this.creationDate = creationDate;
+        this.areaAttackPoints = areaAttackPoints;
     }
 
+
+
+
     public UserMD() {
+    }
+
+    public int getAreaAttackPoints() {
+        return areaAttackPoints;
+    }
+
+    public void setAreaAttackPoints(int areaAttackPoints) {
+        this.areaAttackPoints = areaAttackPoints;
     }
 
     public String getUid() {

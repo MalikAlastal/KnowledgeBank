@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -16,10 +15,18 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.mapbox.geojson.Point;
@@ -32,9 +39,11 @@ import com.mapbox.maps.plugin.animation.MapAnimationOptions;
 import com.mapbox.maps.plugin.delegates.listeners.OnCameraChangeListener;
 import com.mapbox.maps.viewannotation.ViewAnnotationManager;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMapModeBinding;
 import com.nameisknowledge.knowledgebank.databinding.MapAnnotationAreaBinding;
@@ -60,15 +69,20 @@ public class MapModeActivity extends AppCompatActivity {
 
     List<MapAreaMD> areas  ;
 
+    UserMD currentUser ;
+
+    private RewardedAd rewardedAd;
+    private InterstitialAd interstitialAd;
+
     boolean isLocationFound ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMapModeBinding.inflate(getLayoutInflater());
-        getWindow().setStatusBarColor(Color.parseColor("#55000000"));
+        getWindow().setStatusBarColor(getResources().getColor(R.color.map_gray));
         setContentView(binding.getRoot());
 
-       prepareActivity();
+        prepareActivity();
     }
 
     private void prepareActivity(){
@@ -91,6 +105,10 @@ public class MapModeActivity extends AppCompatActivity {
 //
 //        firestore.collection(FirebaseConstants.MAP_AREAS_COLLECTION).document(areaMD.getAreaName()).set(areaMD);
 
+         currentUser = UserConstants.getCurrentUser(this);
+
+        binding.tvAreaAttackPoints.setText(String.valueOf(currentUser.getAreaAttackPoints()));
+
         locationArl = registerForActivityResult(
                 new ActivityResultContracts.RequestMultiplePermissions(), new ActivityResultCallback<Map<String, Boolean>>() {
                     @SuppressLint("MissingPermission")
@@ -106,7 +124,7 @@ public class MapModeActivity extends AppCompatActivity {
                                         return;
                                     }
                                     Point point = Point.fromLngLat(location.getLongitude() , location.getLatitude()) ;
-                                    moveCamera(point);
+                                    moveCamera(point , 10d);
                                     isLocationFound = true ;
                                 }
                             });
@@ -114,7 +132,21 @@ public class MapModeActivity extends AppCompatActivity {
                     }
                 });
 
+        binding.cardPointsRequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rewardedAd.show(MapModeActivity.this, new OnUserEarnedRewardListener() {
+                    @Override
+                    public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                        updateUserAttackAreaPoints(UserConstants.REWARD_AREA_ATTACK_POINTS);
+                        updateUserInfo();
+                    }
+                });
+            }
+        });
+
         prepareMap();
+        prepareAds();
     }
 
     @Override
@@ -131,6 +163,8 @@ public class MapModeActivity extends AppCompatActivity {
                 }
             }
         });
+
+        updateUserInfo();
 
         isLocationFound = false ;
     }
@@ -154,17 +188,37 @@ public class MapModeActivity extends AppCompatActivity {
 
     }
 
+    private void prepareAds(){
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917",
+                adRequest, new RewardedAdLoadCallback() {
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        // Handle the error.
+                        rewardedAd = null;
+                    }
+
+                    @Override
+                    public void onAdLoaded(@NonNull RewardedAd mRewardedAd) {
+                        rewardedAd = mRewardedAd;
+                        toastMethods.info("loaded");
+                    }
+                });
+
+    }
+
     @SuppressLint("MissingPermission")
     private void findMyLocation(android.location.LocationListener locationListener) {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER , 2500 , 1 ,locationListener );
       //  locationListener.onLocationChanged(locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER));
     }
 
-    private void moveCamera(Point point){
+    private void moveCamera(Point point  , double zoom){
         binding.mapView.getMapboxMap().cameraAnimationsPlugin(new Function1<CameraAnimationsPlugin, Object>() {
             @Override
             public Object invoke(CameraAnimationsPlugin cameraAnimationsPlugin) {
-                cameraAnimationsPlugin.easeTo(new CameraOptions.Builder().center(point).zoom(10d).build() ,
+                cameraAnimationsPlugin.easeTo(new CameraOptions.Builder().center(point).zoom(zoom).build() ,
                         new MapAnimationOptions.Builder().duration(1500).build());
                 return null;
             }
@@ -188,7 +242,15 @@ public class MapModeActivity extends AppCompatActivity {
             annotationBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    annotationBinding.buttonsLayout.setVisibility(View.VISIBLE);
+                    int buttonsVisibility = annotationBinding.buttonsLayout.getVisibility();
+
+                    if (buttonsVisibility == View.VISIBLE){
+                        annotationBinding.buttonsLayout.setVisibility(View.GONE);
+                    }else {
+                        annotationBinding.buttonsLayout.setVisibility(View.VISIBLE);
+                    }
+
+                    moveCamera(Point.fromLngLat(area.getAreaLng() , area.getAreaLat()) , 13d);
                 }
             });
             annotationBinding.tvAreaName.setText(area.getAreaName());
@@ -222,11 +284,39 @@ public class MapModeActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (currentUser.getAreaAttackPoints()>0){
                 Intent intent = new Intent(getBaseContext() , AttackAreaActivity.class);
                 intent.putExtra(AttackAreaActivity.AREA_KEY , area);
-                startActivity(intent);
+                startActivity(intent);}
+                else {
+                    toastMethods.warning(getString(R.string.attack_points_error));
+                }
             }
         };
+    }
+
+    private void updateUserInfo(){
+        UserMD currentUser = UserConstants.getCurrentUser(this);
+        firestore.collection(FirebaseConstants.USERS_COLLECTION).document(currentUser.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserMD user = documentSnapshot.toObject(UserMD.class);
+
+                        if (user==null){
+                            return;
+                        }
+
+                        UserConstants.setCurrentUser(user , getBaseContext());
+                        binding.tvAreaAttackPoints.setText(String.valueOf(UserConstants.getCurrentUser(getBaseContext()).getAreaAttackPoints()));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 
     private void closeAllAnnotation(){
@@ -240,5 +330,24 @@ public class MapModeActivity extends AppCompatActivity {
             areaBinding.buttonsLayout.setVisibility(View.GONE);
             toastMethods.info(areaBinding.tvAreaName.getText().toString());
         }
+    }
+
+    private void updateUserAttackAreaPoints(int points){
+        UserMD currentUser = UserConstants.getCurrentUser(getBaseContext());
+        currentUser.setAreaAttackPoints(currentUser.getAreaAttackPoints()+points);
+
+        firestore.collection(FirebaseConstants.USERS_COLLECTION).document(currentUser.getUid()).set(currentUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
     }
 }

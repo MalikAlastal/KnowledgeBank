@@ -2,9 +2,7 @@ package com.nameisknowledge.knowledgebank.Activities;
 
 import android.animation.Animator;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -59,8 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
     ToastMethods toastMethods ;
 
-    SharedPreferences sharedPreferences ;
-    SharedPreferences.Editor editor ;
+
 
     List<AvatarMD> avatars ;
     AvatarsBannerAdapter bannerAdapter;
@@ -103,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                                 if (currentUser==null)
                                     return;
 
-                                saveCurrentUserData(currentUser);
+                                UserConstants.setCurrentUser(currentUser , getBaseContext());
                                 startActivity(new Intent(getBaseContext(),MainActivity.class));
                                 stopLoading();
                                 finish();
@@ -235,8 +232,7 @@ public class LoginActivity extends AppCompatActivity {
 
         binding.edPassword.setText(UserConstants.getCurrentUser(this).getPassword());
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = sharedPreferences.edit() ;
+
         prepareAvatars();
     }
 
@@ -322,7 +318,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String avatar = String.valueOf(avatarRes) ;
 
-        UserMD user = new UserMD(username ,email , password , gender , avatar , birthdate , creationDate) ;
+        UserMD user = new UserMD("",username ,email , password , gender , avatar , "" , birthdate , creationDate , UserConstants.DEFAULT_AREA_ATTACK_POINTS) ;
 
         return user ;
     }
@@ -341,18 +337,6 @@ public class LoginActivity extends AppCompatActivity {
                 , binding.btnLogin , binding.btnPrepareRegister);
 
         ViewMethods.goneView(binding.progressRegister , binding.progressLogin);
-    }
-    private void saveCurrentUserData(UserMD user){
-        editor.putString(UserConstants.CURRENT_UID , user.getUid());
-        editor.putString(UserConstants.CURRENT_AVATAR , user.getAvatarRes());
-        editor.putString(UserConstants.CURRENT_GENDER , user.getGender());
-        editor.putString(UserConstants.CURRENT_PASSWORD , user.getPassword());
-        editor.putString(UserConstants.CURRENT_EMAIL , user.getEmail());
-        editor.putString(UserConstants.CURRENT_USERNAME , user.getUsername());
-        editor.putLong(UserConstants.CURRENT_BIRTHDATE , user.getBirthdate().getTime());
-        editor.putLong(UserConstants.CURRENT_CREATION_DATE , user.getCreationDate().getTime());
-
-        editor.apply();
     }
 
     private void prepareAvatars(){

@@ -13,6 +13,12 @@ public class AnimationMethods {
         }
     }
 
+    public static void slideOutLeft(int duration , YoYo.AnimatorCallback callback, View... views){
+        for (View view :views) {
+            YoYo.with(Techniques.SlideOutLeft).duration(duration).onEnd(callback).playOn(view);
+        }
+    }
+
     public static void slideInDown(int duration , View... views){
         for (View view :views) {
             YoYo.with(Techniques.SlideInDown).duration(duration).playOn(view);
