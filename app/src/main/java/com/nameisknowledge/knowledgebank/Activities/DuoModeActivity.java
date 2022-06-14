@@ -21,6 +21,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Dialogs.WinnerDialog;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
+import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.GamePlayMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.TestRvMD;
@@ -48,6 +49,7 @@ public class DuoModeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityDuoModeBinding.inflate(getLayoutInflater());
+        ViewMethods.setLocale(this , "ar");
         setContentView(binding.getRoot());
         initialValues();
     }

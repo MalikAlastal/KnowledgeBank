@@ -1,5 +1,8 @@
 package com.nameisknowledge.knowledgebank.Methods;
 
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
@@ -9,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
+
+import java.util.Locale;
 
 public class ViewMethods {
 
@@ -104,5 +109,14 @@ public class ViewMethods {
         for (EditText editText:editTexts) {
             editText.setText("");
         }
+    }
+
+    public static void setLocale(Activity activity, String languageCode) {
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+        Resources resources = activity.getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 }

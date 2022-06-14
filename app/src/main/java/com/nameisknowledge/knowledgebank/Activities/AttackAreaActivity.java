@@ -86,6 +86,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityAttackAreaBinding.inflate(getLayoutInflater());
+        ViewMethods.setLocale(this , "ar");
         setContentView(binding.getRoot());
         prepareActivity();
     }
