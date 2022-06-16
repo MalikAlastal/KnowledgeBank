@@ -2,26 +2,30 @@ package com.nameisknowledge.knowledgebank.Activities;
 
 import android.animation.Animator;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.addisonelliott.segmentedbutton.SegmentedButtonGroup;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.nameisknowledge.knowledgebank.Adapters.AvatarsBannerAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
+import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
@@ -42,22 +46,14 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
-
     // حالة الواجهة : تسجيل دخول أو تسجيل مستخدم جديد
     private String state ;
     private final String login_state = "login_state" ;
+    private String token;
     private final String register_state = "register_state" ;
-
-
     FirebaseAuth auth ;
     FirebaseFirestore firestore ;
-
-
     ToastMethods toastMethods ;
-
-    SharedPreferences sharedPreferences ;
-    SharedPreferences.Editor editor ;
-
     List<AvatarMD> avatars ;
     AvatarsBannerAdapter bannerAdapter;
 
@@ -72,6 +68,11 @@ public class LoginActivity extends AppCompatActivity {
 //            startActivity(new Intent(getBaseContext(),MainActivity.class));
 //            finish();
 //        }
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token->{
+                    this.token  = token;
+                });
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,16 +94,19 @@ public class LoginActivity extends AppCompatActivity {
                                 .document(Objects.requireNonNull(authResult.getUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                UserMD currentUser = documentSnapshot.toObject(UserMD.class);
-
-                                if (currentUser==null)
-                                    return;
-
-                                saveCurrentUserData(currentUser);
-                                startActivity(new Intent(getBaseContext(),MainActivity.class));
-                                stopLoading();
-                                finish();
+                                        FirebaseFirestore.getInstance()
+                                                .collection(FirebaseConstants.USERS_COLLECTION)
+                                                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                                                .update("notificationToken",token)
+                                                .addOnSuccessListener(u->{
+                                                    UserMD currentUser = documentSnapshot.toObject(UserMD.class);
+                                                    if (currentUser==null)
+                                                        return;
+                                                    UserConstants.setCurrentUser(currentUser , getBaseContext());
+                                                    startActivity(new Intent(getBaseContext(),MainActivity.class));
+                                                    stopLoading();
+                                                    finish();
+                                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -124,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-
         binding.btnPrepareRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -138,12 +141,11 @@ public class LoginActivity extends AppCompatActivity {
                 UserMD user = getEnteredData();
                 if (user!=null){
                     startLoading(binding.progressRegister);
-
+                    user.setNotificationToken(token);
                     auth.createUserWithEmailAndPassword(user.getEmail() , user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
                             user.setUid(Objects.requireNonNull(authResult.getUser()).getUid());
-
                             firestore.collection(FirebaseConstants.USERS_COLLECTION).document(user.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
@@ -217,13 +219,18 @@ public class LoginActivity extends AppCompatActivity {
         binding.progressLogin.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
         binding.progressRegister.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
 
+        try{
         String currentEmail = auth.getCurrentUser().getEmail();
-        binding.edEmail.setText(currentEmail);
+
+        if (currentEmail!=null){
+        binding.edEmail.setText(currentEmail);}}
+        catch (Exception e){
+            
+        }
 
         binding.edPassword.setText(UserConstants.getCurrentUser(this).getPassword());
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        editor = sharedPreferences.edit() ;
+
         prepareAvatars();
     }
 
@@ -309,7 +316,7 @@ public class LoginActivity extends AppCompatActivity {
 
         String avatar = String.valueOf(avatarRes) ;
 
-        UserMD user = new UserMD(username ,email , password , gender , avatar , birthdate , creationDate) ;
+        UserMD user = new UserMD("",username ,email , password , gender , avatar , "" , birthdate , creationDate , UserConstants.DEFAULT_AREA_ATTACK_POINTS) ;
 
         return user ;
     }
@@ -328,18 +335,6 @@ public class LoginActivity extends AppCompatActivity {
                 , binding.btnLogin , binding.btnPrepareRegister);
 
         ViewMethods.goneView(binding.progressRegister , binding.progressLogin);
-    }
-    private void saveCurrentUserData(UserMD user){
-        editor.putString(UserConstants.CURRENT_UID , user.getUid());
-        editor.putString(UserConstants.CURRENT_AVATAR , user.getAvatarRes());
-        editor.putString(UserConstants.CURRENT_GENDER , user.getGender());
-        editor.putString(UserConstants.CURRENT_PASSWORD , user.getPassword());
-        editor.putString(UserConstants.CURRENT_EMAIL , user.getEmail());
-        editor.putString(UserConstants.CURRENT_USERNAME , user.getUsername());
-        editor.putLong(UserConstants.CURRENT_BIRTHDATE , user.getBirthdate().getTime());
-        editor.putLong(UserConstants.CURRENT_CREATION_DATE , user.getCreationDate().getTime());
-
-        editor.apply();
     }
 
     private void prepareAvatars(){

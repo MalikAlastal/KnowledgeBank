@@ -17,9 +17,9 @@ import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
     private List<UserMD> users;
-    private GenericListener<String> listener;
+    private GenericListener<UserMD> listener;
 
-    public UsersAdapter(List<UserMD> users, GenericListener<String> listener) {
+    public UsersAdapter(List<UserMD> users, GenericListener<UserMD> listener) {
         this.users = users;
         this.listener = listener;
     }
@@ -47,7 +47,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
 
     class Holder extends RecyclerView.ViewHolder {
         private CustomItemUserBinding binding;
-        private String Uid;
+        private UserMD Uid;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
@@ -61,7 +61,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
         }
 
         private void bind(UserMD userMD){
-            this.Uid = userMD.getUid();
+            this.Uid = userMD;
             binding.tvEmail.setText(userMD.getEmail());
             binding.tvUid.setText(userMD.getUid());
         }

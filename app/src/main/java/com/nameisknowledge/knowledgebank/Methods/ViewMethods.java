@@ -1,12 +1,19 @@
 package com.nameisknowledge.knowledgebank.Methods;
 
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
+
+import java.util.Locale;
 
 public class ViewMethods {
 
@@ -69,11 +76,11 @@ public class ViewMethods {
     public static void editTextEmptyError(EditText... editTexts){
         for (EditText edittext:editTexts) {
             AnimationMethods.shake(DurationConstants.DURATION_LONG , edittext);
-            showTextInpuError((TextInputEditText) edittext);
+            showTextInputError((TextInputEditText) edittext);
         }
     }
 
-    public static void showTextInpuError(TextInputEditText... editTexts){
+    public static void showTextInputError(TextInputEditText... editTexts){
         for (TextInputEditText editText:editTexts) {
             editText.setError("error");
         }
@@ -92,9 +99,24 @@ public class ViewMethods {
         }
     }
 
+    public static <T extends RecyclerView.ViewHolder> void  prepareRecycler(RecyclerView recycler , RecyclerView.Adapter<T> adapter , boolean hasFixedSize , RecyclerView.LayoutManager manager){
+        recycler.setAdapter(adapter);
+        recycler.setHasFixedSize(hasFixedSize);
+        recycler.setLayoutManager(manager);
+    }
+
     public static void clearEditText(EditText... editTexts){
         for (EditText editText:editTexts) {
             editText.setText("");
         }
+    }
+
+    public static void setLocale(Activity activity, String languageCode) {
+        Locale locale = new Locale(languageCode);
+        Locale.setDefault(locale);
+        Resources resources = activity.getResources();
+        Configuration config = resources.getConfiguration();
+        config.setLocale(locale);
+        resources.updateConfiguration(config, resources.getDisplayMetrics());
     }
 }
