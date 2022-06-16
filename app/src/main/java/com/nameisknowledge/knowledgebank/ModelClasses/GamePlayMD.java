@@ -7,9 +7,9 @@ public class GamePlayMD {
     private Map<String,Integer> ids;
     private String winner;
     private int currentQuestion;
-    private List<Integer> index;
+    private List<EmitterQuestion> index;
 
-    public GamePlayMD(Map<String, Integer> ids,List<Integer> index) {
+    public GamePlayMD(Map<String, Integer> ids,List<EmitterQuestion> index) {
         this.ids = ids;
         this.winner = "";
         this.currentQuestion = 0;
@@ -27,7 +27,7 @@ public class GamePlayMD {
         return winner;
     }
 
-    public List<Integer> getIndex() {
+    public List<EmitterQuestion> getIndex() {
         return index;
     }
 
@@ -47,7 +47,7 @@ public class GamePlayMD {
         this.currentQuestion = currentQuestion;
     }
 
-    public void setIndex(List<Integer> index) {
+    public void setIndex(List<EmitterQuestion> index) {
         this.index = index;
     }
 }
