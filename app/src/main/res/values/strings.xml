@@ -1,3 +1,34 @@
 <resources>
     <string name="app_name">KnowledgeBank</string>
-</resources>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="new_account">New Account</string>
+    <string name="birthdate">Birth Date</string>
+    <string name="username">Username</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="mode_solo">أوفلاين مود</string>
+    <string name="duo_mode">لعب تنافسي</string>
+    <string name="map_mode">مود الخرائط</string>
+
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoibWFsaWtkZXZlbG9wZXIiLCJhIjoiY2wxa2M5cTU0MmN2MjNmcDNpZzN3MzU1aCJ9.RjuJzx0iKVruV65-HLgMBw</string>
+    <string name="question">Question</string>
+    <string name="attack">هجوم</string>
+    <string name="info">معلومات</string>
+
+    <string name="you_are_the_owner">أنت حاكم هذه المنطقة الآن</string>
+    <string name="you">(You)</string>
+    <string name="area_owner">(Area Owner)</string>
+    <string name="king">(King)</string>
+    <string name="end_game">End Game</string>
+    <string name="game_ended">Game ended</string>
+    <string name="the_king">The King</string>
+    <string name="You">You</string>
+    <string name="you_are_the_king">You are The King\</string>
+    <string name="great">Great</string>
+    <string name="ok">Ok</string>
+    <string name="the_king_is">The King is</string>
+    <string name="reward_x2">reward ×2</string>
+    <string name="_10">10</string>
+    <string name="attack_points_error">You dont have point to attack</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string></resources>

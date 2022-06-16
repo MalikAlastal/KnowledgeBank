@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nameisknowledge.knowledgebank">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -9,8 +11,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2571963362996797~4761517646"/>
+
+        <service
+            android:name="com.nameisknowledge.knowledgebank.Services.CounterService"
+            android:exported="false" />
+
         <activity
-            android:name=".MainActivity"
+            android:name="com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.AttackAreaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.QuestionsModeActivity"
+            android:exported="false" />
+
+        <service
+            android:name=".Services.MyFirebaseMessagingService"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".Activities.DuoModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.SoloModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.MapModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,6 +57,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Activities.MainActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

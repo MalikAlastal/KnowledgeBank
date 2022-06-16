@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    app:cardCornerRadius="@dimen/_5sdp"
+    app:cardElevation="@dimen/_10sdp"
+    app:cardBackgroundColor="@color/light_main_color"
+    app:cardUseCompatPadding="true"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/_10sdp"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+
+        <TextView
+            android:id="@+id/tv_area_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:maxWidth="@dimen/_150sdp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/main_font"
+            android:text="@string/mode_solo"
+            android:textSize="@dimen/_15sdp"
+            android:gravity="center"
+            android:layout_margin="@dimen/_5sdp"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/white"
+            />
+
+        <LinearLayout
+            android:id="@+id/owner_info_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+
+            <ImageView
+                android:id="@+id/iv_user_image"
+                android:layout_width="@dimen/_75sdp"
+                android:layout_height="@dimen/_75sdp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/avatar_man_1"
+                android:background="@color/shafaf"
+                android:padding="@dimen/_10sdp"
+                />
+
+            <TextView
+                android:id="@+id/tv_user_username"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_75sdp"
+                app:layout_constraintStart_toEndOf="@+id/iv_user_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_user_email"
+                android:textColor="@color/white"
+                android:fontFamily="@font/main_font"
+                android:gravity="center"
+                android:textSize="@dimen/_12sdp"
+                android:text="@string/app_name"
+                />
+
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/white"
+            />
+
+        <LinearLayout
+            android:id="@+id/buttons_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:visibility="gone"
+            >
+            <TextView
+                android:id="@+id/btn_attack"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:maxWidth="@dimen/_150sdp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/main_font"
+                android:text="@string/attack"
+                android:textSize="@dimen/_12sdp"
+                android:gravity="center"
+                android:layout_margin="@dimen/_5sdp"
+                />
+
+
+            <TextView
+                android:id="@+id/btn_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:maxWidth="@dimen/_150sdp"
+                android:textColor="@color/white"
+                android:fontFamily="@font/main_font"
+                android:text="@string/info"
+                android:textSize="@dimen/_12sdp"
+                android:gravity="center"
+                android:layout_margin="@dimen/_5sdp"
+                />
+
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
