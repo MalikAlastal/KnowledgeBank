@@ -3,14 +3,13 @@ package com.nameisknowledge.knowledgebank.ModelClasses;
 import java.io.Serializable;
 
 public class QuestionMD implements Serializable {
-    private String question,answer,category,hardLevel;
+    private String question,answer,category;
     private int index;
 
-    public QuestionMD(String question, String answer, String category, String hardLevel,int index) {
+    public QuestionMD(String question, String answer, String category,int index) {
         this.question = question;
         this.answer = answer;
         this.category = category;
-        this.hardLevel = hardLevel;
         this.index = index;
     }
 
@@ -41,10 +40,6 @@ public class QuestionMD implements Serializable {
         this.category = category;
     }
 
-    public String getHardLevel() {
-        return hardLevel;
-    }
-
     public int getIndex() {
         return index;
     }
@@ -53,7 +48,4 @@ public class QuestionMD implements Serializable {
         this.index = index;
     }
 
-    public void setHardLevel(String hardLevel) {
-        this.hardLevel = hardLevel;
-    }
 }

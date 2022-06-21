@@ -105,6 +105,10 @@ dependencies {
     // optional - Paging 3 Integration
     implementation "androidx.room:room-paging:2.5.0-alpha01"
 
+    //mapbox
+    implementation 'com.mapbox.maps:android:10.5.0'
+
+
     //retrofit
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'com.squareup.retrofit:retrofit:2.0.0-beta2'

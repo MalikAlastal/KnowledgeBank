@@ -9,6 +9,9 @@ public class EmitterQuestion {
         this.index = index;
     }
 
+    public EmitterQuestion() {
+    }
+
     public String getTag() {
         return tag;
     }
