@@ -10,27 +10,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
-import com.nameisknowledge.knowledgebank.ModelClasses.TestRvMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.InputsMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.CustomTestRvItemBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
-    private List<TestRvMD> myList;
-    private final GenericListener<TestRvMD> listener;
+public class GamePlayAdapter extends RecyclerView.Adapter<GamePlayAdapter.Holder>{
+    private List<InputsMD> myList;
+    private final GenericListener<InputsMD> listener;
     private final boolean isInput;
     private Context context ;
 
 
-    public TestRvAdapter(String answer, boolean isInput, GenericListener<TestRvMD> listener) {
+    public GamePlayAdapter(String answer, boolean isInput, GenericListener<InputsMD> listener) {
         this.myList = cutString(answer.toCharArray());
         this.listener = listener;
         this.isInput = isInput;
     }
 
-    public List<TestRvMD> getMyList() {
+    public List<InputsMD> getMyList() {
         return myList;
     }
 
@@ -44,7 +44,7 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
         notifyDataSetChanged();
     }
 
-    public void setMyList(List<TestRvMD> myList) {
+    public void setMyList(List<InputsMD> myList) {
         this.myList = myList;
     }
 
@@ -59,18 +59,13 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
         holder.bind(myList.get(position),position);
     }
 
-    public void setEmpty(int position,TestRvMD testRvMD){
-        myList.set(position,new TestRvMD(' ',testRvMD.getIndex()));
+    public void setEmpty(int position, InputsMD inputsMD){
+        myList.set(position,new InputsMD(' ', inputsMD.getIndex()));
         notifyDataSetChanged();
     }
 
-    public void addChar(TestRvMD chr){
-        checkEmpty(new GenericListener<List<Integer>>() {
-            @Override
-            public void getData(List<Integer> list) {
-                myList.set(list.get(0),chr);
-            }
-        });
+    public void addChar(InputsMD chr){
+        checkEmpty(list -> myList.set(list.get(0),chr));
         notifyDataSetChanged();
     }
 
@@ -85,15 +80,15 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
         indexes.getData(num);
     }
 
-    public void setChar(TestRvMD chr){
+    public void setChar(InputsMD chr){
         myList.set(chr.getIndex(),chr);
         notifyDataSetChanged();
     }
 
-    public List<TestRvMD> cutString(char[] chars){
-        List<TestRvMD> listC = new ArrayList<TestRvMD>();
+    public List<InputsMD> cutString(char[] chars){
+        List<InputsMD> listC = new ArrayList<>();
         for (int i=0;i<chars.length;i++) {
-            listC.add(new TestRvMD(chars[i],i));
+            listC.add(new InputsMD(chars[i],i));
         }
         return listC;
     }
@@ -104,24 +99,21 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
     }
 
     class Holder extends RecyclerView.ViewHolder {
-        private CustomTestRvItemBinding binding;
-        private TestRvMD test;
+        private final CustomTestRvItemBinding binding;
+        private InputsMD test;
         private int position;
         public Holder(@NonNull View itemView) {
             super(itemView);
             binding = CustomTestRvItemBinding.bind(itemView);
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!isInput){
-                        setEmpty(position,new TestRvMD(' ',position));
-                    }
-                    listener.getData(test);
+            binding.getRoot().setOnClickListener(view -> {
+                if (!isInput){
+                    setEmpty(position,new InputsMD(' ',position));
                 }
+                listener.getData(test);
             });
         }
 
-        private void bind(TestRvMD string,int position){
+        private void bind(InputsMD string, int position){
             this.test = string;
             this.position = position;
             binding.textView.setText(String.valueOf(string.getLetter()));

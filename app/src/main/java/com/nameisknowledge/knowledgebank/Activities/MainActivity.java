@@ -27,8 +27,6 @@ import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.RequestMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.Retroift.Data;
@@ -41,11 +39,9 @@ import com.zhpan.bannerview.constants.PageStyle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
-
     ActivityMainBinding binding;
     ToastMethods toastMethods;
     List<UserMD> userMDs;

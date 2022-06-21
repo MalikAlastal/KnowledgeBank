@@ -2,9 +2,10 @@ package com.nameisknowledge.knowledgebank.ModelClasses;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ResponseMD {
+public class ResponseMD implements Serializable {
     private String roomID,userID;
     public ResponseMD(String roomID,String userID) {
         this.roomID = roomID;

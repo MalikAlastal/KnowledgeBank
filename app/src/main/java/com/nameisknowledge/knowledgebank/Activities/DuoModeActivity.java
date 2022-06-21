@@ -1,30 +1,27 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.collection.ArraySet;
 import androidx.recyclerview.widget.GridLayoutManager;
 import com.daimajia.numberprogressbar.NumberProgressBar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.nameisknowledge.knowledgebank.Adapters.TestRvAdapter;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Dialogs.WinnerDialog;
-import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.EmitterQuestion;
 import com.nameisknowledge.knowledgebank.ModelClasses.GamePlayMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.TestRvMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.InputsMD;
 import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
 
 import java.util.ArrayList;
@@ -34,25 +31,36 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.core.SingleOnSubscribe;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class DuoModeActivity extends AppCompatActivity {
     private final String TAG = "DuoModeActivity";
-    public final String[] letters = {
+    private final String[] letters = {
             "أ", "ب", "ت", "ث", "ج", "ح","خ", "د","ذ","ر","ز","س","ش", "ص", "ض", "ط","ظ","ع", "غ","ف", "ق","م","ل","ك","ن", "ه","و","ي"
     };
     private ActivityDuoModeBinding binding;
-    private String roomId,senderId;
-    private UserMD me,otherPlayer;
+    private ResponseMD responseMD;
+    private String playerName, enemyName;
     private List<QuestionMD> questions;
+    private ListenerRegistration gameFlowListener;
     private int index;
     private ToastMethods toastMethods;
-    private TestRvAdapter answerAdapter,inputAdapter;
+    private GamePlayAdapter answerAdapter,inputAdapter;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private CompositeDisposable generateGamePlayCompositeDisposable = new CompositeDisposable();
+    private final CompositeDisposable progressDisposable = new CompositeDisposable();
+    private Disposable enemyNameDisposable;
+    private Disposable playerNameDisposable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,23 +72,57 @@ public class DuoModeActivity extends AppCompatActivity {
     }
 
     private void initialValues(){
+
         binding.ownerProgressLine.setProgress(0);
         binding.enemyProgressLine.setProgress(0);
-        roomId = getIntent().getStringExtra("roomID");
-        senderId = getIntent().getStringExtra("senderID");
+        responseMD = (ResponseMD) getIntent().getSerializableExtra("responseMD");
         this.index = 0;
         this.questions = new ArrayList<>();
         this.toastMethods = new ToastMethods(this);
 
-        getUserFromFireStore(senderId, userMD -> otherPlayer = userMD);
+        getUserNameFromFireStore(responseMD.getUserID())
+                .subscribe(new SingleObserver<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        enemyNameDisposable = d;
+                    }
+                    @Override
+                    public void onSuccess(@NonNull String name) {
+                        enemyName = name;
+                        enemyNameDisposable.dispose();
+                        enemyNameDisposable = null;
+                    }
 
-        getUserFromFireStore(FirebaseAuth.getInstance().getUid(), userMD -> me = userMD);
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
 
-        compositeDisposable.add(
+        getUserNameFromFireStore(FirebaseAuth.getInstance().getUid())
+                .subscribe(new SingleObserver<String>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        playerNameDisposable = d;
+                    }
+                    @Override
+                    public void onSuccess(@NonNull String name) {
+                        playerName = name;
+                        playerNameDisposable.dispose();
+                        playerNameDisposable = null;
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        toastMethods.error(e.getMessage());
+                    }
+                });
+
+        generateGamePlayCompositeDisposable.add(
                 // first : get gamePlay data from fireStore by gamePlay document name (roomId)
-                getGamePlayData()
+                    getGamePlayData()
                         .subscribe(gamePlayMD ->{
-                            compositeDisposable.add(
+                            generateGamePlayCompositeDisposable.add(
                                 // here we got gamePlay object
                                 getQuestionsIndexes(gamePlayMD)
                                         /*
@@ -89,7 +131,7 @@ public class DuoModeActivity extends AppCompatActivity {
                                         then pass it index by index to "getQuestion" method
                                          */
                                         .subscribe(emitterQuestion -> {
-                                            compositeDisposable.add(
+                                            generateGamePlayCompositeDisposable.add(
                                                     // this method take question index then get Question object from the fireStore
                                                     getQuestion(emitterQuestion)
                                                             //here we got all the questions that we need
@@ -105,34 +147,50 @@ public class DuoModeActivity extends AppCompatActivity {
                         })
         );
 
-        gameFlow();
+        compositeDisposable.add(
+          gameFlow()
+          .doOnComplete(this::endGame)
+          .subscribe(gamePlayMD -> {
+              compositeDisposable.add(
+                currentQuestion(0)
+                      .subscribe(()->{
+                          getPlayersProgress();
+                          nextQuestion();
+                          clearAdapters();
+                      })
+              );
+          }));
     }
+
     private void submit(String answer) {
         if (TextUtils.equals(answer, questions.get(index).getAnswer())) {
             toastMethods.success("Nice!!");
             setTheScore();
-            currentQuestion(2, unused -> {
-            });
+            currentQuestion(2).subscribe();
         }
     }
 
     private void setUpRv(QuestionMD questionMD){
+        // after we got all the data we need for gamePlay we dispose there observable
+        generateGamePlayCompositeDisposable.dispose();
+        generateGamePlayCompositeDisposable = null;
+        //
         binding.tvQuestion.setText(questions.get(index).getQuestion());
         binding.rvAnswer.setHasFixedSize(true);
         binding.rvAnswer.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
         binding.rvInput.setHasFixedSize(true);
         binding.rvInput.setLayoutManager(new GridLayoutManager(getApplicationContext(), 5));
 
-        answerAdapter = new TestRvAdapter(makeStringEmpty(questionMD.getAnswer()), false, testRvMD -> {
-            if (testRvMD.getLetter() != ' '){
-                inputAdapter.setChar(testRvMD);
+        answerAdapter = new GamePlayAdapter(makeStringEmpty(questionMD.getAnswer()), false, inputsMD -> {
+            if (inputsMD.getLetter() != ' '){
+                inputAdapter.setChar(inputsMD);
             }
         });
 
-        inputAdapter = new TestRvAdapter(checkAnswerLength(questionMD.getAnswer()), true, testRvMD -> answerAdapter.checkEmpty(list -> {
+        inputAdapter = new GamePlayAdapter(checkAnswerLength(questionMD.getAnswer()), true, inputsMD -> answerAdapter.checkEmpty(list -> {
             if (list.size() != 0) {
-                inputAdapter.setEmpty(testRvMD.getIndex(), testRvMD);
-                answerAdapter.addChar(testRvMD);
+                inputAdapter.setEmpty(inputsMD.getIndex(), inputsMD);
+                answerAdapter.addChar(inputsMD);
             }
             submit(getString(answerAdapter.getMyList()));
         }));
@@ -156,7 +214,7 @@ public class DuoModeActivity extends AppCompatActivity {
         inputAdapter.setMyList(inputAdapter.cutString(checkAnswerLength(questions.get(index).getAnswer()).toCharArray()));
     }
 
-    private String getString(List<TestRvMD> list) {
+    private String getString(List<InputsMD> list) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             stringBuilder.append(list.get(i).getLetter());
@@ -169,40 +227,38 @@ public class DuoModeActivity extends AppCompatActivity {
         binding.tvQuestion.setText(questions.get(this.index).getQuestion());
     }
 
-    private void getUserFromFireStore(String id, GenericListener<UserMD> listener) {
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.USERS_COLLECTION)
-                .document(id)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> listener.getData(documentSnapshot.toObject(UserMD.class)))
-                .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
+    private Single<String> getUserNameFromFireStore(String id) {
+        return Single.create((SingleOnSubscribe<String>) emitter->{
+            FirebaseFirestore.getInstance().collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(id)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        emitter.onSuccess(documentSnapshot.getString("username"));
+                    })
+                    .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     private void endGame() {
-        checkTheWinner(s -> {
-            WinnerDialog winnerDialog = WinnerDialog.newInstance(s);
-            winnerDialog.show(getSupportFragmentManager(), "Winner Dialog");
-        });
+        compositeDisposable.add(
+        checkTheWinner()
+                .subscribe(winner->{
+                   setTheWinner(winner);
+                    WinnerDialog winnerDialog = WinnerDialog.newInstance(winner);
+                    winnerDialog.show(getSupportFragmentManager(), "Winner Dialog");
+                }));
     }
 
-    private void setTheWinner(String winner, GenericListener<Void> listener) {
+    private void setTheWinner(String winner) {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
+                .document(responseMD.getRoomID())
                 .update("winner", winner)
-                .addOnSuccessListener(listener::getData)
-                .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
-    }
-
-    private void getTheWinner(GenericListener<String> listener) {
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).
-                document(roomId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> listener.getData(documentSnapshot.getString("winner")))
                 .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
     }
 
     private void setTheScore() {
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
+                .document(responseMD.getRoomID())
                 .update("ids" + "." + FirebaseAuth.getInstance().getUid(), FieldValue.increment(10))
                 .addOnSuccessListener(unused -> toastMethods.success("Done!"))
                 .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
@@ -210,76 +266,84 @@ public class DuoModeActivity extends AppCompatActivity {
 
     private void getPlayersProgress(){
         FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
+                .document(responseMD.getRoomID())
                 .get()
                 .addOnSuccessListener(d->{
                     GamePlayMD gamePlayMD = d.toObject(GamePlayMD.class);
                     long playerScore = (long) gamePlayMD.getIds().get(FirebaseAuth.getInstance().getUid());
-                    long enemyScore = (long) gamePlayMD.getIds().get(senderId);
+                    long enemyScore = (long) gamePlayMD.getIds().get(responseMD.getUserID());
                     changeProgress(binding.ownerProgressLine, (int) playerScore);
                     changeProgress(binding.enemyProgressLine, (int) enemyScore);
-                })
-                .addOnFailureListener(e->toastMethods.error(e.getMessage()));
+                }).addOnFailureListener(e->toastMethods.error(e.getMessage()));
     }
 
-    private void gameFlow() {
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
-                .addSnapshotListener((value, error) -> {
-                    GamePlayMD gamePlayMD = Objects.requireNonNull(value).toObject(GamePlayMD.class);
-                    if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2) {
-                        if (index != questions.size() - 1) {
-                            currentQuestion(0, unused -> {
-                                getPlayersProgress();
-                                nextQuestion();
-                                clearAdapters();
-                            });
-                        } else {
-                            endGame();
-                        }
-                    }
-                });
-    }
-
-    private void checkTheWinner(GenericListener<String> listener) {
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    GamePlayMD gamePlayMD = documentSnapshot.toObject(GamePlayMD.class);
-                    long myScore = (long) gamePlayMD.getIds().get(FirebaseAuth.getInstance().getUid());
-                    long otherPlayerScore = (long) gamePlayMD.getIds().get(senderId);
-                    long winner = Math.max(myScore, otherPlayerScore);
-                    String win;
-
-                    if (winner == myScore) {
-                        win = me.getUsername();
-                    } else {
-                        win = otherPlayer.getUsername();
-                    }
-
-                    setTheWinner(win, unused -> getTheWinner(listener));
-                }).addOnFailureListener(e -> toastMethods.error(e.getMessage()));
-    }
-
-    private void currentQuestion(int number, GenericListener<Void> listener) {
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                .document(roomId)
-                .update("currentQuestion", number)
-                .addOnSuccessListener(listener::getData)
-                .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
-    }
-    private Observable<GamePlayMD> getGamePlayData() {
-        return Observable.create((ObservableOnSubscribe<GamePlayMD>) emitter -> {
-            FirebaseFirestore.getInstance()
+    private Observable<GamePlayMD> gameFlow() {
+        return Observable.create((ObservableOnSubscribe<GamePlayMD>) emitter->{
+            DocumentReference responseRef = FirebaseFirestore.getInstance()
                     .collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                    .document(roomId)
+                    .document(responseMD.getRoomID());
+            gameFlowListener = responseRef.addSnapshotListener((value, error) -> {
+                GamePlayMD gamePlayMD = Objects.requireNonNull(value).toObject(GamePlayMD.class);
+                if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2){
+                    if (index != questions.size() -1){
+                        emitter.onNext(gamePlayMD);
+                    }else {
+                        emitter.onComplete();
+                    }
+                }
+            });
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Single<String> checkTheWinner() {
+        return Single.create((SingleOnSubscribe<String>) emitter -> {
+            FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
+                    .document(responseMD.getRoomID())
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         GamePlayMD gamePlayMD = documentSnapshot.toObject(GamePlayMD.class);
-                        emitter.onNext(gamePlayMD);
-                    }).addOnFailureListener(e -> Log.d(TAG,e.getMessage()));
-        }).subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
+                        long playerScore = (long) gamePlayMD.getIds().get(FirebaseAuth.getInstance().getUid());
+                        long enemyScore = (long) gamePlayMD.getIds().get(responseMD.getUserID());
+                        long winner = Math.max(playerScore, enemyScore);
+                        String win;
+
+                        if (winner == playerScore) {
+                            win = playerName;
+                        } else {
+                            win = enemyName;
+                        }
+                        emitter.onSuccess(win);
+
+                    }).addOnFailureListener(e -> toastMethods.error(e.getMessage()));
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Completable currentQuestion(int number) {
+        return Completable.create(emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.GAME_PLAY_COLLECTION)
+                    .document(responseMD.getRoomID())
+                    .update("currentQuestion",number)
+                    .addOnSuccessListener(unused -> emitter.onComplete())
+                    .addOnFailureListener(e -> toastMethods.error(e.getMessage()));
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    private Single<GamePlayMD> getGamePlayData() {
+        return Single.create((SingleOnSubscribe<GamePlayMD>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.GAME_PLAY_COLLECTION)
+                    .document(responseMD.getRoomID())
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> emitter.onSuccess(documentSnapshot.toObject(GamePlayMD.class)))
+                    .addOnFailureListener(e -> Log.d(TAG,e.getMessage()));
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io());
     }
 
     private Observable<EmitterQuestion> getQuestionsIndexes(GamePlayMD gamePlayMD){
@@ -335,49 +399,46 @@ public class DuoModeActivity extends AppCompatActivity {
         return String.valueOf(array);
     }
 
-    private void changeProgress(NumberProgressBar progressBar, int targetProgress){
-        ProgressHandler handler  = new ProgressHandler();
-
-        int currentProgress = progressBar.getProgress() ;
-
-        new Thread(new Runnable() {
+    private void changeProgress(NumberProgressBar progressBar,int target){
+        Observer<Long> observer = new Observer<Long>() {
             @Override
-            public void run() {
-                if (targetProgress>=currentProgress){
-                    for (int i = currentProgress  ; i<=targetProgress ; i++){
-                        try {
-
-                            Message message = new Message() ;
-                            message.what = i;
-                            message.obj = progressBar;
-                            handler.sendMessage(message);
-                            Thread.sleep(20);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else {
-                    for (int i = currentProgress  ; i>=targetProgress ; i--){
-                        try {
-                            handler.sendEmptyMessage(i);
-                            Thread.sleep(20);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+            public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {
+                progressDisposable.add(d);
             }
-        }).start();
+
+            @Override
+            public void onNext(@io.reactivex.rxjava3.annotations.NonNull Long aLong) {
+                progressBar.setProgress(Integer.parseInt(String.valueOf(aLong)));
+                if (aLong == target) progressDisposable.clear();
+            }
+
+            @Override
+            public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                Log.d(TAG,e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.d(TAG,"onComplete");
+            }
+        };
+
+        Observable<Long> observable = Observable.interval(20,TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnDispose(()->{
+                    // mission completes here
+                    Log.d(TAG,"doOnDispose") ;
+                });
+
+        observable.subscribe(observer);
     }
 
-    public class ProgressHandler extends Handler {
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            NumberProgressBar bar = (NumberProgressBar) msg.obj;
-            bar.setProgress(msg.what);
-        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.gameFlowListener.remove();
+        this.compositeDisposable.dispose();
+        this.progressDisposable.dispose();
     }
-
 }
