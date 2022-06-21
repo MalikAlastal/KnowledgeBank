@@ -1,19 +1,20 @@
-package com.nameisknowledge.knowledgebank.ModelClasses;
+package com.nameisknowledge.knowledgebank.RoomDatabase.Entity;
 
-import java.io.Serializable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
-public class QuestionMD implements Serializable {
-    private String question,answer,category;
+@Entity
+public class QuestionRMD {
+    @PrimaryKey
     private int index;
-
-    public QuestionMD(String question, String answer, String category,int index) {
+    private String question,answer;
+    public QuestionRMD(String question, String answer, int index) {
         this.question = question;
         this.answer = answer;
-        this.category = category;
         this.index = index;
     }
 
-    public QuestionMD() {
+    public QuestionRMD() {
     }
 
     public String getQuestion() {
@@ -32,14 +33,6 @@ public class QuestionMD implements Serializable {
         this.answer = answer;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
     public int getIndex() {
         return index;
     }
@@ -47,5 +40,4 @@ public class QuestionMD implements Serializable {
     public void setIndex(int index) {
         this.index = index;
     }
-
 }

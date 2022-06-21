@@ -67,26 +67,26 @@ public class AddQuestionDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         binding = CustomDialogAddQuestionBinding.bind(view);
 
-        binding.btnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String question = binding.edQuestion.getText().toString();
-                String answer = binding.edAnswer.getText().toString();
-                FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(gamePlay).update(
-                        "data."+FirebaseAuth.getInstance().getUid(), FieldValue.arrayUnion(new QuestionMD(question,answer))
-                ).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        Toast.makeText(requireContext(), "done!", Toast.LENGTH_SHORT).show();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-
-                    }
-                });
-            }
-        });
+//        binding.btnAdd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String question = binding.edQuestion.getText().toString();
+//                String answer = binding.edAnswer.getText().toString();
+//                FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(gamePlay).update(
+//                        "data."+FirebaseAuth.getInstance().getUid(), FieldValue.arrayUnion(new QuestionMD(question,answer))
+//                ).addOnSuccessListener(new OnSuccessListener<Void>() {
+//                    @Override
+//                    public void onSuccess(Void unused) {
+//                        Toast.makeText(requireContext(), "done!", Toast.LENGTH_SHORT).show();
+//                    }
+//                }).addOnFailureListener(new OnFailureListener() {
+//                    @Override
+//                    public void onFailure(@NonNull Exception e) {
+//
+//                    }
+//                });
+//            }
+//        });
 
         binding.txtCounter.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -258,7 +258,7 @@ public class MapModeActivity extends AppCompatActivity {
             annotationBinding.btnAttack.setOnClickListener(getAttackClickListener(area));
             if (area.getOwnerUser()!=null){
                 annotationBinding.ownerInfoLayout.setVisibility(View.VISIBLE);
-                annotationBinding.ivUserImage.setImageResource(Integer.parseInt(area.getOwnerUser().getAvatarRes()));
+              //  annotationBinding.ivUserImage.setImageResource(Integer.parseInt(area.getOwnerUser().getAvatarRes()));
                 annotationBinding.tvUserUsername.setText(area.getOwnerUser().getUsername());
             }
     }

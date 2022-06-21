@@ -19,8 +19,8 @@ import java.util.List;
 
 public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
     private List<TestRvMD> myList;
-    private GenericListener<TestRvMD> listener;
-    private boolean isInput;
+    private final GenericListener<TestRvMD> listener;
+    private final boolean isInput;
     private Context context ;
 
 
@@ -97,7 +97,6 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
         }
         return listC;
     }
-
 
     @Override
     public int getItemCount() {

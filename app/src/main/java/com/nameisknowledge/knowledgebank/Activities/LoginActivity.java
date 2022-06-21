@@ -3,7 +3,9 @@ package com.nameisknowledge.knowledgebank.Activities;
 import android.animation.Animator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,21 +46,14 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
-
     // حالة الواجهة : تسجيل دخول أو تسجيل مستخدم جديد
     private String state ;
     private final String login_state = "login_state" ;
+    private String token;
     private final String register_state = "register_state" ;
-
-
     FirebaseAuth auth ;
     FirebaseFirestore firestore ;
-
-
     ToastMethods toastMethods ;
-
-
-
     List<AvatarMD> avatars ;
     AvatarsBannerAdapter bannerAdapter;
 
@@ -73,6 +68,11 @@ public class LoginActivity extends AppCompatActivity {
 //            startActivity(new Intent(getBaseContext(),MainActivity.class));
 //            finish();
 //        }
+
+        FirebaseMessaging.getInstance().getToken()
+                .addOnSuccessListener(token->{
+                    this.token  = token;
+                });
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,16 +94,19 @@ public class LoginActivity extends AppCompatActivity {
                                 .document(Objects.requireNonNull(authResult.getUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-
-                                UserMD currentUser = documentSnapshot.toObject(UserMD.class);
-
-                                if (currentUser==null)
-                                    return;
-
-                                UserConstants.setCurrentUser(currentUser , getBaseContext());
-                                startActivity(new Intent(getBaseContext(),MainActivity.class));
-                                stopLoading();
-                                finish();
+                                        FirebaseFirestore.getInstance()
+                                                .collection(FirebaseConstants.USERS_COLLECTION)
+                                                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                                                .update("notificationToken",token)
+                                                .addOnSuccessListener(u->{
+                                                    UserMD currentUser = documentSnapshot.toObject(UserMD.class);
+                                                    if (currentUser==null)
+                                                        return;
+                                                    UserConstants.setCurrentUser(currentUser , getBaseContext());
+                                                    startActivity(new Intent(getBaseContext(),MainActivity.class));
+                                                    stopLoading();
+                                                    finish();
+                                                });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
@@ -138,12 +141,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserMD user = getEnteredData();
                 if (user!=null){
                     startLoading(binding.progressRegister);
-                    getNotificationToken(new GenericListener<String>() {
-                        @Override
-                        public void getData(String s) {
-                            user.setNotificationToken(s);
-                        }
-                    });
+                    user.setNotificationToken(token);
                     auth.createUserWithEmailAndPassword(user.getEmail() , user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
@@ -389,16 +387,5 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
         }
-    }
-
-    private void getNotificationToken(GenericListener<String> genericListener){
-        FirebaseMessaging.getInstance()
-                .getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        genericListener.getData(task.getResult());
-                    }
-                });
     }
 }
