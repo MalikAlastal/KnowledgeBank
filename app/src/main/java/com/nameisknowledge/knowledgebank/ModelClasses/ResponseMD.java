@@ -6,10 +6,10 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class ResponseMD implements Serializable {
-    private String roomID,userID;
-    public ResponseMD(String roomID,String userID) {
+    private String roomID,senderName;
+    public ResponseMD(String roomID,String senderName) {
         this.roomID = roomID;
-        this.userID = userID;
+        this.senderName = senderName;
     }
 
     public ResponseMD() {
@@ -23,11 +23,11 @@ public class ResponseMD implements Serializable {
         this.roomID = roomID;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setSenderName(String userID) {
+        this.senderName = userID;
     }
 }

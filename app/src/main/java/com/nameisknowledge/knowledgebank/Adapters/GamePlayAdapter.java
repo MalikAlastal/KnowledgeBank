@@ -18,34 +18,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GamePlayAdapter extends RecyclerView.Adapter<GamePlayAdapter.Holder>{
-    private List<InputsMD> myList;
+    private List<InputsMD> answer = new ArrayList<>();
     private final GenericListener<InputsMD> listener;
     private final boolean isInput;
     private Context context ;
 
 
     public GamePlayAdapter(String answer, boolean isInput, GenericListener<InputsMD> listener) {
-        this.myList = cutString(answer.toCharArray());
+        this.answer = cutString(answer.toCharArray());
+        this.listener = listener;
+        this.isInput = isInput;
+    }
+
+    public GamePlayAdapter(boolean isInput, GenericListener<InputsMD> listener) {
         this.listener = listener;
         this.isInput = isInput;
     }
 
     public List<InputsMD> getMyList() {
-        return myList;
+        return answer;
+    }
+
+    public String covertToString(List<InputsMD> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            stringBuilder.append(list.get(i).getLetter());
+        }
+        return stringBuilder.toString();
+    }
+
+    public String getAnswer() {
+        return covertToString(answer);
     }
 
     public void clearArray(){
-        myList.removeAll(myList);
+        answer.removeAll(answer);
         notifyDataSetChanged();
     }
 
-    public void setAnswer(String answer){
-        myList = cutString(answer.toCharArray());
+    public void setAnswer(String mAnswer){
+        answer = cutString(mAnswer.toCharArray());
         notifyDataSetChanged();
-    }
-
-    public void setMyList(List<InputsMD> myList) {
-        this.myList = myList;
     }
 
     @Override
@@ -56,23 +69,23 @@ public class GamePlayAdapter extends RecyclerView.Adapter<GamePlayAdapter.Holder
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder,int position) {
-        holder.bind(myList.get(position),position);
+        holder.bind(answer.get(position),position);
     }
 
     public void setEmpty(int position, InputsMD inputsMD){
-        myList.set(position,new InputsMD(' ', inputsMD.getIndex()));
+        answer.set(position,new InputsMD(' ', inputsMD.getIndex()));
         notifyDataSetChanged();
     }
 
     public void addChar(InputsMD chr){
-        checkEmpty(list -> myList.set(list.get(0),chr));
+        checkEmpty(list -> answer.set(list.get(0),chr));
         notifyDataSetChanged();
     }
 
     public void checkEmpty(GenericListener<List<Integer>> indexes){
         List<Integer> num = new ArrayList<>();
-        for (int i=0;i<myList.size();i++){
-            if (myList.get(i).getLetter() == ' '){
+        for (int i=0;i<answer.size();i++){
+            if (answer.get(i).getLetter() == ' '){
                 num.add(i);
                 break;
             }
@@ -81,7 +94,7 @@ public class GamePlayAdapter extends RecyclerView.Adapter<GamePlayAdapter.Holder
     }
 
     public void setChar(InputsMD chr){
-        myList.set(chr.getIndex(),chr);
+        answer.set(chr.getIndex(),chr);
         notifyDataSetChanged();
     }
 
@@ -95,7 +108,7 @@ public class GamePlayAdapter extends RecyclerView.Adapter<GamePlayAdapter.Holder
 
     @Override
     public int getItemCount() {
-        return myList.size();
+        return answer.size();
     }
 
     class Holder extends RecyclerView.ViewHolder {

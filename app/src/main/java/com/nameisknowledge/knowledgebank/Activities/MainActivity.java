@@ -1,30 +1,23 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeActivity;
 import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
-import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
@@ -33,7 +26,6 @@ import com.nameisknowledge.knowledgebank.Retroift.Data;
 import com.nameisknowledge.knowledgebank.Retroift.NotificationData;
 import com.nameisknowledge.knowledgebank.Retroift.PushNotification;
 import com.nameisknowledge.knowledgebank.Retroift.RetrofitInstance;
-import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 import com.zhpan.bannerview.BannerViewPager;
 import com.zhpan.bannerview.constants.PageStyle;
 
@@ -77,12 +69,9 @@ public class MainActivity extends AppCompatActivity {
         userMDs = new ArrayList<>();
 
 
-        usersAdapter = new UsersAdapter(userMDs, new GenericListener<UserMD>() {
-            @Override
-            public void getData(UserMD userMD) {
-                sendMessage(userMD.getNotificationToken(), userMD.getUsername(), FirebaseAuth.getInstance().getUid());
-                startActivity(new Intent(getApplicationContext(),RenderGamePlayActivity.class));
-            }
+        usersAdapter = new UsersAdapter(userMDs, userMD -> {
+            sendMessage(userMD.getNotificationToken(),userMD.getUsername(),UserConstants.getCurrentUser(this).getUsername());
+            startActivity(new Intent(getApplicationContext(),RenderGamePlayActivity.class));
         });
 
         binding.rvUsers.setAdapter(usersAdapter);
@@ -168,10 +157,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goSoloActivity);
     }
 
-    private void sendMessage(String to, String msg, String senderId) {
-        NotificationData notificationData = new NotificationData("Play Request", msg);
-        Data data = new Data(senderId);
-        PushNotification pushNotification = new PushNotification(notificationData, to, data);
+    private void sendMessage(String to, String msg, String senderName) {
+        NotificationData notificationData = new NotificationData("Play Request",msg);
+        Data data = new Data(senderName);
+        PushNotification pushNotification = new PushNotification(notificationData,to,data);
         RetrofitInstance.getInstance().sentNot(pushNotification);
     }
 
