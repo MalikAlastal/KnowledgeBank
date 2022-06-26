@@ -1,23 +1,39 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class UserMD {
+public class UserMD implements Serializable {
 
-    private String uid , username , email , password , gender , avatar ;
+    private String uid , username , email , password , gender , avatarRes ,notificationToken;
     private Date birthdate , creationDate ;
+    int areaAttackPoints ;
 
-    public UserMD(String username, String email, String password, String gender, String avatar, Date birthdate, Date creationDate) {
+    public UserMD(String uid, String username, String email, String password, String gender, String avatarRes, String notificationToken, Date birthdate, Date creationDate, int areaAttackPoints) {
+        this.uid = uid;
         this.username = username;
         this.email = email;
         this.password = password;
         this.gender = gender;
-        this.avatar = avatar;
+        this.avatarRes = avatarRes;
+        this.notificationToken = notificationToken;
         this.birthdate = birthdate;
         this.creationDate = creationDate;
+        this.areaAttackPoints = areaAttackPoints;
     }
 
+
+
+
     public UserMD() {
+    }
+
+    public int getAreaAttackPoints() {
+        return areaAttackPoints;
+    }
+
+    public void setAreaAttackPoints(int areaAttackPoints) {
+        this.areaAttackPoints = areaAttackPoints;
     }
 
     public String getUid() {
@@ -60,12 +76,12 @@ public class UserMD {
         this.gender = gender;
     }
 
-    public String getAvatar() {
-        return avatar;
+    public String getAvatarRes() {
+        return avatarRes;
     }
 
-    public void setAvatar(String avatar) {
-        this.avatar = avatar;
+    public void setAvatarRes(String avatarRes) {
+        this.avatarRes = avatarRes;
     }
 
     public Date getBirthdate() {
@@ -82,5 +98,13 @@ public class UserMD {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public String getNotificationToken() {
+        return notificationToken;
+    }
+
+    public void setNotificationToken(String notificationToken) {
+        this.notificationToken = notificationToken;
     }
 }

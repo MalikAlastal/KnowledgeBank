@@ -1,12 +1,15 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
-public class QuestionMD {
-    private String question,answer;
+import java.io.Serializable;
+
+public class QuestionMD implements Serializable {
+    private String question,answer,category;
     private int index;
 
-    public QuestionMD(String question, String answer, int index) {
+    public QuestionMD(String question, String answer, String category,int index) {
         this.question = question;
         this.answer = answer;
+        this.category = category;
         this.index = index;
     }
 
@@ -29,6 +32,14 @@ public class QuestionMD {
         this.answer = answer;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public int getIndex() {
         return index;
     }
@@ -36,4 +47,5 @@ public class QuestionMD {
     public void setIndex(int index) {
         this.index = index;
     }
+
 }

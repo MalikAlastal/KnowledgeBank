@@ -1,33 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.nameisknowledge.knowledgebank">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
-        <receiver
-            android:name=".BroadCastRecivers.NotificationBroadCast"
-            android:enabled="true"
-            android:exported="false">
 
-        </receiver>
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2571963362996797~4761517646"/>
+
+        <activity
+            android:name="com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.AttackAreaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.QuestionsModeActivity"
+            android:exported="false" />
 
         <service
-            android:name=".Services.RequestsService"
+            android:name=".Services.MyFirebaseMessagingService"
             android:enabled="true"
-            android:exported="false">
-
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
         </service>
 
         <activity
-            android:name=".Activities.DuoModeActivity"
-            android:exported="false" />
+            android:name=".Activities.duoMode.DuoModeActivity"
+            android:exported="true">
+        </activity>
         <activity
             android:name=".Activities.SoloModeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activities.MapModeActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.LoginActivity"
