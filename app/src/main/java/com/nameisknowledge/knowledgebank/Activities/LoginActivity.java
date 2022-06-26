@@ -30,6 +30,7 @@ import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.AvatarMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivityLoginBinding;
@@ -47,14 +48,14 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 public class LoginActivity extends AppCompatActivity {
     ActivityLoginBinding binding;
     // حالة الواجهة : تسجيل دخول أو تسجيل مستخدم جديد
-    private String state ;
-    private final String login_state = "login_state" ;
+    private String state;
+    private final String login_state = "login_state";
     private String token;
-    private final String register_state = "register_state" ;
-    FirebaseAuth auth ;
-    FirebaseFirestore firestore ;
-    ToastMethods toastMethods ;
-    List<AvatarMD> avatars ;
+    private final String register_state = "register_state";
+    FirebaseAuth auth;
+    FirebaseFirestore firestore;
+    ToastMethods toastMethods;
+    List<AvatarMD> avatars;
     AvatarsBannerAdapter bannerAdapter;
 
     @Override
@@ -70,14 +71,14 @@ public class LoginActivity extends AppCompatActivity {
 //        }
 
         FirebaseMessaging.getInstance().getToken()
-                .addOnSuccessListener(token->{
-                    this.token  = token;
+                .addOnSuccessListener(token -> {
+                    this.token = token;
                 });
 
         binding.btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ViewMethods.isTextInputEmpty(binding.edEmail , binding.edPassword)){
+                if (ViewMethods.isTextInputEmpty(binding.edEmail, binding.edPassword)) {
                     return;
                 }
 
@@ -86,7 +87,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 startLoading(binding.progressLogin);
 
-                FirebaseAuth.getInstance().signInWithEmailAndPassword(email,password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
 
@@ -94,25 +95,25 @@ public class LoginActivity extends AppCompatActivity {
                                 .document(Objects.requireNonNull(authResult.getUser()).getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        FirebaseFirestore.getInstance()
-                                                .collection(FirebaseConstants.USERS_COLLECTION)
-                                                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
-                                                .update("notificationToken",token)
-                                                .addOnSuccessListener(u->{
-                                                    UserMD currentUser = documentSnapshot.toObject(UserMD.class);
-                                                    if (currentUser==null)
-                                                        return;
-                                                    UserConstants.setCurrentUser(currentUser , getBaseContext());
-                                                    startActivity(new Intent(getBaseContext(),MainActivity.class));
-                                                    stopLoading();
-                                                    finish();
-                                                });
+                                FirebaseFirestore.getInstance()
+                                        .collection(FirebaseConstants.USERS_COLLECTION)
+                                        .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                                        .update("notificationToken", token)
+                                        .addOnSuccessListener(u -> {
+                                            UserMD currentUser = documentSnapshot.toObject(UserMD.class);
+                                            if (currentUser == null)
+                                                return;
+                                            UserConstants.setCurrentUser(currentUser, getBaseContext());
+                                            startActivity(new Intent(getBaseContext(), MainActivity.class));
+                                            stopLoading();
+                                            finish();
+                                        });
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 stopLoading();
-                                toastMethods.error(  "حدث خطأ أثناء البحث على معلوماتك" + e.getMessage());
+                                toastMethods.error("حدث خطأ أثناء البحث على معلوماتك" + e.getMessage());
                             }
                         });
 
@@ -139,20 +140,23 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 UserMD user = getEnteredData();
-                if (user!=null){
+                if (user != null) {
                     startLoading(binding.progressRegister);
                     user.setNotificationToken(token);
-                    auth.createUserWithEmailAndPassword(user.getEmail() , user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    auth.createUserWithEmailAndPassword(user.getEmail(), user.getPassword()).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                         @Override
                         public void onSuccess(AuthResult authResult) {
                             user.setUid(Objects.requireNonNull(authResult.getUser()).getUid());
-                            firestore.collection(FirebaseConstants.USERS_COLLECTION).document(user.getUid()).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            firestore.collection(FirebaseConstants.RESPONSES_COLLECTION).document(user.getUsername()).collection(FirebaseConstants.CONTAINER_COLLECTION).add(new ResponseMD("",""));
+                            firestore.collection(FirebaseConstants.USERS_COLLECTION)
+                                    .document(user.getUid())
+                                    .set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
                                     stopLoading();
                                     ViewMethods.clearEditText(binding.edUsername, binding.edRePassword);
                                     binding.dpBirthdate.clear();
-                                    binding.rbGenderLayout.setPosition(0 , true);
+                                    binding.rbGenderLayout.setPosition(0, true);
                                     prepareForLogin();
                                     toastMethods.success("success");
                                 }
@@ -171,8 +175,7 @@ public class LoginActivity extends AppCompatActivity {
                             stopLoading();
                         }
                     });
-                }
-                else {
+                } else {
                 }
             }
         });
@@ -187,45 +190,45 @@ public class LoginActivity extends AppCompatActivity {
         binding.rbGenderLayout.setOnPositionChangedListener(new SegmentedButtonGroup.OnPositionChangedListener() {
             @Override
             public void onPositionChanged(int position) {
-               if (position==0){
-                   syncAvatarsWithGender(UserConstants.GENDER_MALE);
-               }
-               else if (position==1){
-                   syncAvatarsWithGender(UserConstants.GENDER_FEMALE);
-               }
+                if (position == 0) {
+                    syncAvatarsWithGender(UserConstants.GENDER_MALE);
+                } else if (position == 1) {
+                    syncAvatarsWithGender(UserConstants.GENDER_FEMALE);
+                }
             }
         });
     }
 
-    private void prepareActivity(){
-        ViewMethods.goneView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout
-                , binding.rbGenderLayout, binding.btnRegister , binding.btnCancel
-                , binding.progressLogin , binding.progressRegister );
+    private void prepareActivity() {
+        ViewMethods.goneView(binding.edRePasswordLayout, binding.edUsernameLayout, binding.edBirthdateLayout
+                , binding.rbGenderLayout, binding.btnRegister, binding.btnCancel
+                , binding.progressLogin, binding.progressRegister);
 
-        auth = FirebaseAuth.getInstance() ;
-        firestore = FirebaseFirestore.getInstance() ;
+        auth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
 
-        state = login_state ;
+        state = login_state;
         Calendar calendar = Calendar.getInstance();
 
-        calendar.set(Calendar.YEAR , calendar.get(Calendar.YEAR) - UserConstants.MIN_AGE);
+        calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) - UserConstants.MIN_AGE);
         binding.dpBirthdate.setMaxDate(calendar.getTime());
 
 
-        toastMethods= new ToastMethods(this);
+        toastMethods = new ToastMethods(this);
         avatars = new ArrayList<>();
         bannerAdapter = new AvatarsBannerAdapter();
 
-        binding.progressLogin.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
-        binding.progressRegister.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color) , getResources().getColor(R.color.dark_main_color)});
+        binding.progressLogin.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color), getResources().getColor(R.color.dark_main_color)});
+        binding.progressRegister.setSmoothProgressDrawableColors(new int[]{getResources().getColor(R.color.light_main_color), getResources().getColor(R.color.dark_main_color)});
 
-        try{
-        String currentEmail = auth.getCurrentUser().getEmail();
+        try {
+            String currentEmail = auth.getCurrentUser().getEmail();
 
-        if (currentEmail!=null){
-        binding.edEmail.setText(currentEmail);}}
-        catch (Exception e){
-            
+            if (currentEmail != null) {
+                binding.edEmail.setText(currentEmail);
+            }
+        } catch (Exception e) {
+
         }
 
         binding.edPassword.setText(UserConstants.getCurrentUser(this).getPassword());
@@ -236,77 +239,76 @@ public class LoginActivity extends AppCompatActivity {
 
     private void prepareForRegister() {
         // Animations
-        AnimationMethods.slideOutRight(DurationConstants.DURATION_SHORT , binding.btnLogin);
+        AnimationMethods.slideOutRight(DurationConstants.DURATION_SHORT, binding.btnLogin);
 
-        ViewMethods.visibleView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout
-                , binding.rbGenderLayout , binding.btnRegister , binding.btnCancel , binding.bvpAvatars);
+        ViewMethods.visibleView(binding.edRePasswordLayout, binding.edUsernameLayout, binding.edBirthdateLayout
+                , binding.rbGenderLayout, binding.btnRegister, binding.btnCancel, binding.bvpAvatars);
         ViewMethods.goneView(binding.btnPrepareRegister);
-        AnimationMethods.flipInX(DurationConstants.DURATION_SHORT , binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout , binding.rbGenderLayout);
+        AnimationMethods.flipInX(DurationConstants.DURATION_SHORT, binding.edRePasswordLayout, binding.edUsernameLayout, binding.edBirthdateLayout, binding.rbGenderLayout);
 
-        AnimationMethods.bounceInDown(DurationConstants.DURATION_SHORT , binding.btnRegister , binding.btnCancel);
-        AnimationMethods.slideInDown(DurationConstants.DURATION_SHORT , binding.bvpAvatars);
+        AnimationMethods.bounceInDown(DurationConstants.DURATION_SHORT, binding.btnRegister, binding.btnCancel);
+        AnimationMethods.slideInDown(DurationConstants.DURATION_SHORT, binding.bvpAvatars);
 
         changeState();
     }
 
-    private void prepareForLogin(){
+    private void prepareForLogin() {
 
         // Animations
         AnimationMethods.slideInRight(DurationConstants.DURATION_SHORT, binding.btnLogin);
         AnimationMethods.flipOutX(DurationConstants.DURATION_SO_SHORT, new YoYo.AnimatorCallback() {
             @Override
             public void call(Animator animator) {
-                ViewMethods.goneView(binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout
-                        , binding.rbGenderLayout, binding.btnRegister , binding.btnCancel);
-                AnimationMethods.bounceInUp(DurationConstants.DURATION_SHORT , binding.btnPrepareRegister);
+                ViewMethods.goneView(binding.edRePasswordLayout, binding.edUsernameLayout, binding.edBirthdateLayout
+                        , binding.rbGenderLayout, binding.btnRegister, binding.btnCancel);
+                AnimationMethods.bounceInUp(DurationConstants.DURATION_SHORT, binding.btnPrepareRegister);
                 ViewMethods.visibleView(binding.btnPrepareRegister);
             }
-        }, binding.edRePasswordLayout , binding.edUsernameLayout , binding.edBirthdateLayout, binding.rbGenderLayout);
+        }, binding.edRePasswordLayout, binding.edUsernameLayout, binding.edBirthdateLayout, binding.rbGenderLayout);
 
         AnimationMethods.slideOutUp(DurationConstants.DURATION_SHORT, new YoYo.AnimatorCallback() {
-            @Override
-            public void call(Animator animator) {
-                ViewMethods.goneView(binding.bvpAvatars);
-            }
-        }
-        , binding.bvpAvatars);
+                    @Override
+                    public void call(Animator animator) {
+                        ViewMethods.goneView(binding.bvpAvatars);
+                    }
+                }
+                , binding.bvpAvatars);
         changeState();
     }
 
-    private void changeState(){
-        if (state.equals(login_state)){
-            state=register_state ;}
-
-        else if(state.equals(register_state)){
-            state = login_state ;
+    private void changeState() {
+        if (state.equals(login_state)) {
+            state = register_state;
+        } else if (state.equals(register_state)) {
+            state = login_state;
         }
     }
 
-    private UserMD getEnteredData(){
+    private UserMD getEnteredData() {
 
-        Date birthdate  = binding.dpBirthdate.getDate();
+        Date birthdate = binding.dpBirthdate.getDate();
 
-        if (ViewMethods.isTextInputEmpty(binding.edEmail , binding.edPassword , binding.edRePassword , binding.edUsername))
-            return null ;
+        if (ViewMethods.isTextInputEmpty(binding.edEmail, binding.edPassword, binding.edRePassword, binding.edUsername))
+            return null;
 
-        else if (birthdate == null){
+        else if (birthdate == null) {
             binding.dpBirthdate.shake();
-            return null ;
+            return null;
         }
 
-        String gender = UserConstants.GENDER_MALE ;
+        String gender = UserConstants.GENDER_MALE;
 
-        if (binding.rbGenderLayout.getPosition()==1)
-            gender = UserConstants.GENDER_FEMALE ;
+        if (binding.rbGenderLayout.getPosition() == 1)
+            gender = UserConstants.GENDER_FEMALE;
 
         String email = ViewMethods.getText(binding.edEmail);
         String password = ViewMethods.getText(binding.edPassword);
         String rePassword = ViewMethods.getText(binding.edRePassword);
         String username = ViewMethods.getText(binding.edUsername);
 
-        if (!password.equals(rePassword)){
-            ViewMethods.editTextEmptyError(binding.edPassword , binding.edRePassword);
-            return null ;
+        if (!password.equals(rePassword)) {
+            ViewMethods.editTextEmptyError(binding.edPassword, binding.edRePassword);
+            return null;
         }
 
         Date creationDate = Calendar.getInstance().getTime();
@@ -314,39 +316,39 @@ public class LoginActivity extends AppCompatActivity {
         int avatarRes = avatars.get(binding.bvpAvatars.getCurrentItem()).getAvatarRes();
 
 
-        String avatar = String.valueOf(avatarRes) ;
+        String avatar = String.valueOf(avatarRes);
 
-        UserMD user = new UserMD("",username ,email , password , gender , avatar , "" , birthdate , creationDate , UserConstants.DEFAULT_AREA_ATTACK_POINTS) ;
+        UserMD user = new UserMD("", username, email, password, gender, avatar, "", birthdate, creationDate, UserConstants.DEFAULT_AREA_ATTACK_POINTS);
 
-        return user ;
+        return user;
     }
 
-    private void startLoading(SmoothProgressBar progress){
-        ViewMethods.enableView(false , binding.edEmail , binding.edPassword ,  binding.edRePassword , binding.edUsername
-                , binding.dpBirthdate , binding.rbGenderLayout, binding.btnRegister , binding.btnCancel
-                , binding.btnLogin , binding.btnPrepareRegister);
+    private void startLoading(SmoothProgressBar progress) {
+        ViewMethods.enableView(false, binding.edEmail, binding.edPassword, binding.edRePassword, binding.edUsername
+                , binding.dpBirthdate, binding.rbGenderLayout, binding.btnRegister, binding.btnCancel
+                , binding.btnLogin, binding.btnPrepareRegister);
 
         ViewMethods.visibleView(progress);
     }
 
-    private void stopLoading(){
-        ViewMethods.enableView(true , binding.edEmail , binding.edPassword ,  binding.edRePassword , binding.edUsername
-                , binding.dpBirthdate , binding.rbGenderLayout, binding.btnRegister , binding.btnCancel
-                , binding.btnLogin , binding.btnPrepareRegister);
+    private void stopLoading() {
+        ViewMethods.enableView(true, binding.edEmail, binding.edPassword, binding.edRePassword, binding.edUsername
+                , binding.dpBirthdate, binding.rbGenderLayout, binding.btnRegister, binding.btnCancel
+                , binding.btnLogin, binding.btnPrepareRegister);
 
-        ViewMethods.goneView(binding.progressRegister , binding.progressLogin);
+        ViewMethods.goneView(binding.progressRegister, binding.progressLogin);
     }
 
-    private void prepareAvatars(){
+    private void prepareAvatars() {
 
-        avatars.add(new AvatarMD(R.drawable.avatar_man_1 , UserConstants.GENDER_MALE , "الداهية"));
-        avatars.add(new AvatarMD(R.drawable.avatar_man_2 , UserConstants.GENDER_MALE , "اللعيب"));
-        avatars.add(new AvatarMD(R.drawable.avatar_man_3 , UserConstants.GENDER_MALE , "جنتل مان"));
-        avatars.add(new AvatarMD(R.drawable.avatar_man_4 , UserConstants.GENDER_MALE , "الهاكر"));
-        avatars.add(new AvatarMD(R.drawable.avatar_man_5 , UserConstants.GENDER_MALE , "البروفيسور"));
-        avatars.add(new AvatarMD(R.drawable.avatar_woman_1 , UserConstants.GENDER_FEMALE , "سمية"));
-        avatars.add(new AvatarMD(R.drawable.avatar_woman_2 , UserConstants.GENDER_FEMALE , "ياسمين"));
-        avatars.add(new AvatarMD(R.drawable.avatar_woman_3 , UserConstants.GENDER_FEMALE , "أزهار"));
+        avatars.add(new AvatarMD(R.drawable.avatar_man_1, UserConstants.GENDER_MALE, "الداهية"));
+        avatars.add(new AvatarMD(R.drawable.avatar_man_2, UserConstants.GENDER_MALE, "اللعيب"));
+        avatars.add(new AvatarMD(R.drawable.avatar_man_3, UserConstants.GENDER_MALE, "جنتل مان"));
+        avatars.add(new AvatarMD(R.drawable.avatar_man_4, UserConstants.GENDER_MALE, "الهاكر"));
+        avatars.add(new AvatarMD(R.drawable.avatar_man_5, UserConstants.GENDER_MALE, "البروفيسور"));
+        avatars.add(new AvatarMD(R.drawable.avatar_woman_1, UserConstants.GENDER_FEMALE, "سمية"));
+        avatars.add(new AvatarMD(R.drawable.avatar_woman_2, UserConstants.GENDER_FEMALE, "ياسمين"));
+        avatars.add(new AvatarMD(R.drawable.avatar_woman_3, UserConstants.GENDER_FEMALE, "أزهار"));
 
         binding.bvpAvatars.setAdapter(bannerAdapter)
                 .setLifecycleRegistry(getLifecycle())
@@ -360,7 +362,7 @@ public class LoginActivity extends AppCompatActivity {
                 .setOnPageClickListener(new BannerViewPager.OnPageClickListener() {
                     @Override
                     public void onPageClick(View clickedView, int position) {
-                        if(binding.bvpAvatars.getCurrentItem() != position){
+                        if (binding.bvpAvatars.getCurrentItem() != position) {
                             binding.bvpAvatars.setCurrentItem(position);
                         }
                     }
@@ -372,17 +374,17 @@ public class LoginActivity extends AppCompatActivity {
         ViewMethods.invisibleView(binding.bvpAvatars);
     }
 
-    private void syncAvatarsWithGender(String gender){
+    private void syncAvatarsWithGender(String gender) {
 
         String currentGender = avatars.get(binding.bvpAvatars.getCurrentItem()).getAvatarGender();
         if (currentGender.equals(gender))
             return;
 
-        int avatarsSize = avatars.size() ;
-        for (int i =0 ; i<avatarsSize ; i++){
+        int avatarsSize = avatars.size();
+        for (int i = 0; i < avatarsSize; i++) {
             String avatarGender = avatars.get(i).getAvatarGender();
 
-            if (avatarGender.equals(gender)){
+            if (avatarGender.equals(gender)) {
                 binding.bvpAvatars.setCurrentItem(i);
                 return;
             }
