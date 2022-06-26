@@ -18,14 +18,15 @@
             android:value="ca-app-pub-2571963362996797~4761517646"/>
 
         <activity
-            android:name="com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity"
+            android:name="com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.AttackAreaActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.QuestionsModeActivity"
-            android:exported="false" />
+            android:exported="true">
+        </activity>
 
         <service
             android:name=".Services.MyFirebaseMessagingService"

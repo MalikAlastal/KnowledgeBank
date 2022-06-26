@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GamePlay2MD {
-    private Map<String,Integer> ids;
+    private Map<String,Integer> players;
     private Map<String,List<QuestionMD>> data;
     private String winner;
     private int currentQuestion;
@@ -12,19 +12,19 @@ public class GamePlay2MD {
     public GamePlay2MD() {
     }
 
-    public GamePlay2MD(Map<String, Integer> ids, Map<String, List<QuestionMD>> data) {
-        this.ids = ids;
+    public GamePlay2MD(Map<String, Integer> players, Map<String, List<QuestionMD>> data) {
+        this.players = players;
         this.data = data;
         this.winner = "";
         this.currentQuestion = 0;
     }
 
-    public Map<String, Integer> getIds() {
-        return ids;
+    public Map<String, Integer> getPlayers() {
+        return players;
     }
 
-    public void setIds(Map<String, Integer> ids) {
-        this.ids = ids;
+    public void setPlayers(Map<String, Integer> players) {
+        this.players = players;
     }
 
     public Map<String, List<QuestionMD>> getData() {

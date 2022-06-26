@@ -1,22 +1,25 @@
 package com.nameisknowledge.knowledgebank.Activities.duoMode;
 
+
 import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.FireBaseRepository;
-import com.nameisknowledge.knowledgebank.ModelClasses.EmitterQuestion;
+import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 
 import com.nameisknowledge.knowledgebank.ModelClasses.GamePlayMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.PlayerMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
+import com.nameisknowledge.knowledgebank.MyApplication;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -33,12 +36,14 @@ public class DuoActivityViewModel extends ViewModel {
     private final String[] letters = {
             "أ", "ب", "ت", "ث", "ج", "ح","خ", "د","ذ","ر","ز","س","ش", "ص", "ض", "ط","ظ","ع", "غ","ف", "ق","م","ل","ك","ن", "ه","و","ي"
     };
-    private List<EmitterQuestion> emitterQuestions = new ArrayList<>();
-    private final String playerName;
-    private final ResponseMD responseMD;
+    private GamePlayMD gamePlayMD;
+    private PlayerMD player;
+    private PlayerMD enemy;
+    private final String roomID;
     private final FireBaseRepository fireBaseRepository;
     private ListenerRegistration gameFlowListenerRegistration;
     private int questionIndex = 0;
+    private int setScoreIndex;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Disposable initialCompositeDisposable;
     public MutableLiveData<String> question = new MutableLiveData<>();
@@ -47,40 +52,62 @@ public class DuoActivityViewModel extends ViewModel {
     public MutableLiveData<String> longAnswer = new MutableLiveData<>();
     public MutableLiveData<String> realAnswer = new MutableLiveData<>();
 
-    public DuoActivityViewModel(ResponseMD responseMD,String playerName) {
-        this.responseMD = responseMD;
-        this.playerName = playerName;
-        this.fireBaseRepository = FireBaseRepository.getInstance(responseMD);
-        fireBaseRepository.getQuestionsIndexesObservable().subscribe(getQuestionsIndexesObserver());
+    public DuoActivityViewModel(String roomID) {
+        this.roomID = roomID;
+        this.fireBaseRepository = FireBaseRepository.getInstance();
+        fireBaseRepository.getGamePlayObservable(roomID).subscribe(getGamePlayObserver());
     }
 
     public void submit(String answer,String input){
         if (answer.equals(input)){
-            fireBaseRepository.setTheScore(playerName);
-            fireBaseRepository.questionAnsweredObservable(2).subscribe();
+            fireBaseRepository.setTheScore(player.getPlayerName(),roomID);
+            fireBaseRepository.questionAnsweredObservable(2,roomID).subscribe();
         }
     }
 
     public void setTheWinner(String name){
-        fireBaseRepository.setTheWinner(name);
+        fireBaseRepository.setTheWinner(name,roomID);
     }
 
     public void getTheQuestionByIndex(int index) {
         fireBaseRepository
-                .getQuestionObservable(emitterQuestions.get(index))
+                .getQuestionObservable(gamePlayMD.getIndex().get(index))
                 .subscribe(getQuestionObserver());
     }
 
-    private SingleObserver<List<EmitterQuestion>> getQuestionsIndexesObserver() {
-        return new SingleObserver<List<EmitterQuestion>>() {
+//    private SingleObserver<List<EmitterQuestion>> getQuestionsIndexesObserver() {
+//        return new SingleObserver<List<EmitterQuestion>>() {
+//            @Override
+//            public void onSubscribe(@NonNull Disposable d) {
+//                initialCompositeDisposable = d;
+//            }
+//
+//            @Override
+//            public void onSuccess(@NonNull List<EmitterQuestion> questions) {
+//                emitterQuestions = questions;
+//                getTheQuestionByIndex(questionIndex);
+//                gameFlowObservable().subscribe(gameFlowObserver());
+//                initialCompositeDisposable.dispose();
+//            }
+//
+//            @Override
+//            public void onError(@NonNull Throwable e) {
+//                //
+//            }
+//        };
+//    }
+
+    private SingleObserver<GamePlayMD> getGamePlayObserver(){
+        return new SingleObserver<GamePlayMD>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 initialCompositeDisposable = d;
             }
 
             @Override
-            public void onSuccess(@NonNull List<EmitterQuestion> questions) {
-                emitterQuestions = questions;
+            public void onSuccess(@NonNull GamePlayMD gamePlay) {
+                gamePlayMD = gamePlay;
+                setPlayers(gamePlayMD.getPlayers());
                 getTheQuestionByIndex(questionIndex);
                 gameFlowObservable().subscribe(gameFlowObserver());
                 initialCompositeDisposable.dispose();
@@ -144,13 +171,9 @@ public class DuoActivityViewModel extends ViewModel {
             @Override
             public void onNext(@NonNull DocumentReference documentReference) {
                 compositeDisposable.add(
-                fireBaseRepository.questionAnsweredObservable(0)
+                fireBaseRepository.questionAnsweredObservable(0,roomID)
                         .subscribe(()->{
                             questionIndex++;
-                            Log.d("abood","index "+questionIndex);
-                            Log.d("abood","index at array "+emitterQuestions.get(questionIndex).getIndex());
-                            Log.d("abood","tag at array "+emitterQuestions.get(questionIndex).getTag());
-                            Log.d("abood","indexes size "+emitterQuestions.size());
                             getTheQuestionByIndex(questionIndex);
                         }));
             }
@@ -162,20 +185,20 @@ public class DuoActivityViewModel extends ViewModel {
 
             @Override
             public void onComplete() {
-                fireBaseRepository.endTheGameObservable().subscribe(endTheGameObserver());
+                fireBaseRepository.endTheGameObservable(player.getPlayerName(),enemy.getPlayerName(),roomID).subscribe(endTheGameObserver());
             }
         };
     }
 
     private Observable<DocumentReference> gameFlowObservable(){
         return Observable.create((ObservableOnSubscribe<DocumentReference>) emitter->{
-            DocumentReference documentReference = FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(responseMD.getRoomID());
+            DocumentReference documentReference = FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(roomID);
             gameFlowListenerRegistration = documentReference
                     .addSnapshotListener(((value, error) -> {
                         assert value != null;
                         GamePlayMD gamePlayMD = value.toObject(GamePlayMD.class);
                         if (Objects.requireNonNull(gamePlayMD).getCurrentQuestion() == 2){
-                            if (questionIndex != emitterQuestions.size()-1){
+                            if (questionIndex != gamePlayMD.getIndex().size()-1){
                                 emitter.onNext(documentReference);
                             }else {
                                 emitter.onComplete();
@@ -223,10 +246,24 @@ public class DuoActivityViewModel extends ViewModel {
         return randomTheAnswer(finalAnswer.toString());
     }
 
+    private void setPlayers(List<PlayerMD> players){
+        String playerName = UserConstants.getCurrentUser(MyApplication.getContext()).getUsername();
+        if (players.get(0).getPlayerName().equals(playerName)){
+            setScoreIndex = 0;
+            player = players.get(0);
+            enemy = players.get(1);
+        }else {
+            setScoreIndex = 1;
+            player = players.get(1);
+            enemy = players.get(0);
+        }
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();
         gameFlowListenerRegistration.remove();
         compositeDisposable.dispose();
     }
+
 }

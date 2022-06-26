@@ -1,6 +1,8 @@
 package com.nameisknowledge.knowledgebank.Activities.duoMode;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -27,9 +29,9 @@ public class DuoModeActivity extends AppCompatActivity {
         ViewMethods.setLocale(this , "ar");
         setContentView(binding.getRoot());
 
-        ResponseMD responseMD = (ResponseMD) getIntent().getSerializableExtra("responseMD");
+        String roomID = getIntent().getStringExtra("roomID");
 
-        viewModel = new ViewModelProvider(this,new ViewModelsFactory(responseMD,UserConstants.getCurrentUser(this).getUsername())).get(DuoActivityViewModel.class);
+        viewModel = new ViewModelProvider(this,new ViewModelsFactory(roomID)).get(DuoActivityViewModel.class);
 
         setUpRv();
 
@@ -53,8 +55,7 @@ public class DuoModeActivity extends AppCompatActivity {
 
         viewModel.winnerName.observe(this,winner->{
             viewModel.setTheWinner(winner);
-            WinnerDialog winnerDialog = WinnerDialog.newInstance(winner);
-            winnerDialog.show(getSupportFragmentManager(), "Winner Dialog");
+            WinnerDialog.newInstance(winner).show(getSupportFragmentManager(), "Winner Dialog");
         });
     }
 
@@ -80,4 +81,5 @@ public class DuoModeActivity extends AppCompatActivity {
         binding.rvAnswer.setAdapter(answerAdapter);
         binding.rvInput.setAdapter(inputAdapter);
     }
+
 }
