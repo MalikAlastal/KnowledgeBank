@@ -2,11 +2,11 @@ package com.nameisknowledge.knowledgebank.ModelClasses;
 
 import java.io.Serializable;
 
-public class TestRvMD implements Serializable {
+public class InputsMD implements Serializable {
     private char letter;
     private int index;
 
-    public TestRvMD(char letter, int index) {
+    public InputsMD(char letter, int index) {
         this.letter = letter;
         this.index = index;
     }

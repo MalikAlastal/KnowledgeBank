@@ -10,42 +10,55 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
-import com.nameisknowledge.knowledgebank.ModelClasses.TestRvMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.InputsMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.CustomTestRvItemBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
-    private List<TestRvMD> myList;
-    private final GenericListener<TestRvMD> listener;
+public class GamePlayAdapter extends RecyclerView.Adapter<GamePlayAdapter.Holder>{
+    private List<InputsMD> answer = new ArrayList<>();
+    private final GenericListener<InputsMD> listener;
     private final boolean isInput;
     private Context context ;
 
 
-    public TestRvAdapter(String answer, boolean isInput, GenericListener<TestRvMD> listener) {
-        this.myList = cutString(answer.toCharArray());
+    public GamePlayAdapter(String answer, boolean isInput, GenericListener<InputsMD> listener) {
+        this.answer = cutString(answer.toCharArray());
         this.listener = listener;
         this.isInput = isInput;
     }
 
-    public List<TestRvMD> getMyList() {
-        return myList;
+    public GamePlayAdapter(boolean isInput, GenericListener<InputsMD> listener) {
+        this.listener = listener;
+        this.isInput = isInput;
+    }
+
+    public List<InputsMD> getMyList() {
+        return answer;
+    }
+
+    public String covertToString(List<InputsMD> list) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            stringBuilder.append(list.get(i).getLetter());
+        }
+        return stringBuilder.toString();
+    }
+
+    public String getAnswer() {
+        return covertToString(answer);
     }
 
     public void clearArray(){
-        myList.removeAll(myList);
+        answer.removeAll(answer);
         notifyDataSetChanged();
     }
 
-    public void setAnswer(String answer){
-        myList = cutString(answer.toCharArray());
+    public void setAnswer(String mAnswer){
+        answer = cutString(mAnswer.toCharArray());
         notifyDataSetChanged();
-    }
-
-    public void setMyList(List<TestRvMD> myList) {
-        this.myList = myList;
     }
 
     @Override
@@ -56,28 +69,23 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
 
     @Override
     public void onBindViewHolder(@NonNull Holder holder,int position) {
-        holder.bind(myList.get(position),position);
+        holder.bind(answer.get(position),position);
     }
 
-    public void setEmpty(int position,TestRvMD testRvMD){
-        myList.set(position,new TestRvMD(' ',testRvMD.getIndex()));
+    public void setEmpty(int position, InputsMD inputsMD){
+        answer.set(position,new InputsMD(' ', inputsMD.getIndex()));
         notifyDataSetChanged();
     }
 
-    public void addChar(TestRvMD chr){
-        checkEmpty(new GenericListener<List<Integer>>() {
-            @Override
-            public void getData(List<Integer> list) {
-                myList.set(list.get(0),chr);
-            }
-        });
+    public void addChar(InputsMD chr){
+        checkEmpty(list -> answer.set(list.get(0),chr));
         notifyDataSetChanged();
     }
 
     public void checkEmpty(GenericListener<List<Integer>> indexes){
         List<Integer> num = new ArrayList<>();
-        for (int i=0;i<myList.size();i++){
-            if (myList.get(i).getLetter() == ' '){
+        for (int i=0;i<answer.size();i++){
+            if (answer.get(i).getLetter() == ' '){
                 num.add(i);
                 break;
             }
@@ -85,43 +93,40 @@ public class TestRvAdapter extends RecyclerView.Adapter<TestRvAdapter.Holder>{
         indexes.getData(num);
     }
 
-    public void setChar(TestRvMD chr){
-        myList.set(chr.getIndex(),chr);
+    public void setChar(InputsMD chr){
+        answer.set(chr.getIndex(),chr);
         notifyDataSetChanged();
     }
 
-    public List<TestRvMD> cutString(char[] chars){
-        List<TestRvMD> listC = new ArrayList<TestRvMD>();
+    public List<InputsMD> cutString(char[] chars){
+        List<InputsMD> listC = new ArrayList<>();
         for (int i=0;i<chars.length;i++) {
-            listC.add(new TestRvMD(chars[i],i));
+            listC.add(new InputsMD(chars[i],i));
         }
         return listC;
     }
 
     @Override
     public int getItemCount() {
-        return myList.size();
+        return answer.size();
     }
 
     class Holder extends RecyclerView.ViewHolder {
-        private CustomTestRvItemBinding binding;
-        private TestRvMD test;
+        private final CustomTestRvItemBinding binding;
+        private InputsMD test;
         private int position;
         public Holder(@NonNull View itemView) {
             super(itemView);
             binding = CustomTestRvItemBinding.bind(itemView);
-            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!isInput){
-                        setEmpty(position,new TestRvMD(' ',position));
-                    }
-                    listener.getData(test);
+            binding.getRoot().setOnClickListener(view -> {
+                if (!isInput){
+                    setEmpty(position,new InputsMD(' ',position));
                 }
+                listener.getData(test);
             });
         }
 
-        private void bind(TestRvMD string,int position){
+        private void bind(InputsMD string, int position){
             this.test = string;
             this.position = position;
             binding.textView.setText(String.valueOf(string.getLetter()));

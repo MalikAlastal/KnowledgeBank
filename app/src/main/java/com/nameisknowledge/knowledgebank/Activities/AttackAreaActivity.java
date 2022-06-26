@@ -29,7 +29,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.nameisknowledge.knowledgebank.Adapters.TestRvAdapter;
+import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
@@ -40,7 +40,7 @@ import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapQuestionMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.TestRvMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.InputsMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivityAttackAreaBinding;
@@ -59,8 +59,8 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     ToastMethods toastMethods ;
 
     List<MapQuestionMD> questionList ;
-    TestRvAdapter inputAdapter ;
-    TestRvAdapter answerAdapter ;
+    GamePlayAdapter inputAdapter ;
+    GamePlayAdapter answerAdapter ;
 
     MediaPlayer clickSound;
     MediaPlayer swingSound;
@@ -182,16 +182,16 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
     private void prepareRecyclers(){
 
-        inputAdapter = new TestRvAdapter(updateInput(questionList.get(currentQuestion).getAnswer()), true, new GenericListener<TestRvMD>() {
+        inputAdapter = new GamePlayAdapter(updateInput(questionList.get(currentQuestion).getAnswer()), true, new GenericListener<InputsMD>() {
             @Override
-            public void getData(TestRvMD testRvMD) {
+            public void getData(InputsMD inputsMD) {
                 answerAdapter.checkEmpty(new GenericListener<List<Integer>>() {
                     @Override
                     public void getData(List<Integer> integers) {
                         buttonClickedSound();
                         if (integers.size() !=0){
-                            inputAdapter.setEmpty(testRvMD.getIndex(), testRvMD);
-                            answerAdapter.addChar(testRvMD);
+                            inputAdapter.setEmpty(inputsMD.getIndex(), inputsMD);
+                            answerAdapter.addChar(inputsMD);
                         }
 
                         submit(mergeAnswerChars(answerAdapter.getMyList()));
@@ -200,10 +200,10 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
             }
         });
 
-       answerAdapter = new TestRvAdapter(makeStringEmpty(questionList.get(currentQuestion).getAnswer()), false, new GenericListener<TestRvMD>() {
+       answerAdapter = new GamePlayAdapter(makeStringEmpty(questionList.get(currentQuestion).getAnswer()), false, new GenericListener<InputsMD>() {
             @Override
-            public void getData(TestRvMD testRvMD) {
-                inputAdapter.setChar(testRvMD);
+            public void getData(InputsMD inputsMD) {
+                inputAdapter.setChar(inputsMD);
                 buttonClickedSound();
             }
         });
@@ -270,7 +270,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
         }
     }
 
-    private String mergeAnswerChars(List<TestRvMD> list) {
+    private String mergeAnswerChars(List<InputsMD> list) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {
             stringBuilder.append(list.get(i).getLetter());

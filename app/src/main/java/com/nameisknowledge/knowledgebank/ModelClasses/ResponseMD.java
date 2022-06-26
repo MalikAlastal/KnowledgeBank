@@ -2,13 +2,14 @@ package com.nameisknowledge.knowledgebank.ModelClasses;
 
 import com.google.firebase.auth.FirebaseUser;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ResponseMD {
-    private String roomID,userID;
-    public ResponseMD(String roomID,String userID) {
+public class ResponseMD implements Serializable {
+    private String roomID,senderName;
+    public ResponseMD(String roomID,String senderName) {
         this.roomID = roomID;
-        this.userID = userID;
+        this.senderName = senderName;
     }
 
     public ResponseMD() {
@@ -22,11 +23,11 @@ public class ResponseMD {
         this.roomID = roomID;
     }
 
-    public String getUserID() {
-        return userID;
+    public String getSenderName() {
+        return senderName;
     }
 
-    public void setUserID(String userID) {
-        this.userID = userID;
+    public void setSenderName(String userID) {
+        this.senderName = userID;
     }
 }
