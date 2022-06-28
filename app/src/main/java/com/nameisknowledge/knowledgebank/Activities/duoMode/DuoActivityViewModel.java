@@ -43,7 +43,6 @@ public class DuoActivityViewModel extends ViewModel {
     private final FireBaseRepository fireBaseRepository;
     private ListenerRegistration gameFlowListenerRegistration;
     private int questionIndex = 0;
-    private int setScoreIndex;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Disposable initialCompositeDisposable;
     public MutableLiveData<String> question = new MutableLiveData<>();
@@ -249,11 +248,9 @@ public class DuoActivityViewModel extends ViewModel {
     private void setPlayers(List<PlayerMD> players){
         String playerName = UserConstants.getCurrentUser(MyApplication.getContext()).getUsername();
         if (players.get(0).getPlayerName().equals(playerName)){
-            setScoreIndex = 0;
             player = players.get(0);
             enemy = players.get(1);
         }else {
-            setScoreIndex = 1;
             player = players.get(1);
             enemy = players.get(0);
         }
