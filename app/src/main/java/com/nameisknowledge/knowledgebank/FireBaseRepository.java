@@ -1,6 +1,9 @@
 package com.nameisknowledge.knowledgebank;
 
 
+import android.preference.PreferenceManager;
+import android.util.Log;
+
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
@@ -8,6 +11,8 @@ import com.nameisknowledge.knowledgebank.ModelClasses.EmitterQuestion;
 import com.nameisknowledge.knowledgebank.ModelClasses.GamePlayMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,18 +78,6 @@ public class FireBaseRepository {
         })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<List<EmitterQuestion>> getQuestionsIndexesObservable(String roomID) {
-        return Single.create((SingleOnSubscribe<List<EmitterQuestion>>) emitter -> {
-            FirebaseFirestore.getInstance()
-                    .collection(FirebaseConstants.GAME_PLAY_COLLECTION)
-                    .document(roomID)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        emitter.onSuccess(Objects.requireNonNull(documentSnapshot.toObject(GamePlayMD.class)).getIndex());
-                    }).addOnFailureListener(emitter::onError);
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
     }
 
     public Single<GamePlayMD> getGamePlayObservable(String roomID){
@@ -160,13 +153,13 @@ public class FireBaseRepository {
         return Observable.create((ObservableOnSubscribe<EmitterQuestion>) emitter -> {
             FirebaseFirestore.getInstance()
                     .collection("Questions")
-                    .document("Hard")
+                    .document(hardLeve)
                     .collection("QuestionsContainer")
                     .get()
                     .addOnSuccessListener(documentSnapshots -> {
                         List<Integer> list = new ArrayList<>();
                         for (int i = 0; i < 3; i++) {
-                            int x = new Random().nextInt(documentSnapshots.getDocuments().size());
+                            int x = new Random().nextInt(documentSnapshots.getDocuments().size()+1);
                             if (list.contains(x)) {
                                 while (list.contains(x)) {
                                     x = new Random().nextInt(documentSnapshots.getDocuments().size());
@@ -181,4 +174,21 @@ public class FireBaseRepository {
         });
     }
     // ********************************************************************* //
+
+    public Single<QuestionMD> generateRandomQuestionObservable(){
+        return Single.create((SingleOnSubscribe<QuestionMD>) emitter->{
+            String[] levels = {"Hard","Easy","Medium"};
+            int levelIndex = new Random().nextInt(levels.length+1);
+            int questionIndex = new Random().nextInt(PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getInt(levels[levelIndex],0)+1);
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.QUESTIONS_COLLECTION)
+                    .document(levels[levelIndex])
+                    .collection(FirebaseConstants.QUESTIONS_CONTAINER)
+                    .document(questionIndex+"")
+                    .get()
+                    .addOnSuccessListener(question->{
+                        emitter.onSuccess(question.toObject(QuestionMD.class));
+                    });
+        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io());
+    }
 }

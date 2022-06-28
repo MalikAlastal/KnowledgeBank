@@ -1,4 +1,4 @@
-package com.nameisknowledge.knowledgebank.Activities;
+package com.nameisknowledge.knowledgebank.Activities.questionsMode;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +14,6 @@ public class QuestionsModeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityQuastionsModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Log.d(TAG,"onCreate");
         AddQuestionDialog.newInstance("", "", questionMDS -> {
         }).show(getSupportFragmentManager(),"abood");
     }

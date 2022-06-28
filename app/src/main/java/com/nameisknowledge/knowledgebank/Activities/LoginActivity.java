@@ -2,7 +2,9 @@ package com.nameisknowledge.knowledgebank.Activities;
 
 import android.animation.Animator;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -65,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         prepareActivity();
 
+        getQuestionsLevelsSize();
 //        if (auth.getCurrentUser()!=null){
 //            startActivity(new Intent(getBaseContext(),MainActivity.class));
 //            finish();
@@ -388,6 +391,25 @@ public class LoginActivity extends AppCompatActivity {
                 binding.bvpAvatars.setCurrentItem(i);
                 return;
             }
+        }
+    }
+
+
+
+    private void getQuestionsLevelsSize(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String[] levels = new String[]{"Hard","Medium","Easy"};
+        for (String level:levels){
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.QUESTIONS_COLLECTION)
+                    .document(level)
+                    .collection(FirebaseConstants.QUESTIONS_CONTAINER)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        editor.putInt(level,documentSnapshot.getDocuments().size());
+                        editor.apply();
+                    });
         }
     }
 }

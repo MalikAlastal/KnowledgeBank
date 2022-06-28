@@ -43,7 +43,6 @@ public class DuoActivityViewModel extends ViewModel {
     private final FireBaseRepository fireBaseRepository;
     private ListenerRegistration gameFlowListenerRegistration;
     private int questionIndex = 0;
-    private int setScoreIndex;
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Disposable initialCompositeDisposable;
     public MutableLiveData<String> question = new MutableLiveData<>();
@@ -74,28 +73,6 @@ public class DuoActivityViewModel extends ViewModel {
                 .getQuestionObservable(gamePlayMD.getIndex().get(index))
                 .subscribe(getQuestionObserver());
     }
-
-//    private SingleObserver<List<EmitterQuestion>> getQuestionsIndexesObserver() {
-//        return new SingleObserver<List<EmitterQuestion>>() {
-//            @Override
-//            public void onSubscribe(@NonNull Disposable d) {
-//                initialCompositeDisposable = d;
-//            }
-//
-//            @Override
-//            public void onSuccess(@NonNull List<EmitterQuestion> questions) {
-//                emitterQuestions = questions;
-//                getTheQuestionByIndex(questionIndex);
-//                gameFlowObservable().subscribe(gameFlowObserver());
-//                initialCompositeDisposable.dispose();
-//            }
-//
-//            @Override
-//            public void onError(@NonNull Throwable e) {
-//                //
-//            }
-//        };
-//    }
 
     private SingleObserver<GamePlayMD> getGamePlayObserver(){
         return new SingleObserver<GamePlayMD>() {
@@ -134,7 +111,7 @@ public class DuoActivityViewModel extends ViewModel {
 
             @Override
             public void onError(@NonNull Throwable e) {
-
+                //
             }
         };
     }
@@ -156,7 +133,7 @@ public class DuoActivityViewModel extends ViewModel {
 
             @Override
             public void onError(@NonNull Throwable e) {
-
+                //
             }
         };
     }
@@ -180,7 +157,7 @@ public class DuoActivityViewModel extends ViewModel {
 
             @Override
             public void onError(@NonNull Throwable e) {
-
+                //
             }
 
             @Override
@@ -208,7 +185,7 @@ public class DuoActivityViewModel extends ViewModel {
         }).subscribeOn(Schedulers.io()).observeOn(Schedulers.io());
     }
 
-    public String makeStringEmpty(String s) {
+     public String makeStringEmpty(String s) {
         char[] array = s.toCharArray();
         for (int i = 0; i < s.length(); i++) {
             array[i] = ' ';
@@ -249,11 +226,9 @@ public class DuoActivityViewModel extends ViewModel {
     private void setPlayers(List<PlayerMD> players){
         String playerName = UserConstants.getCurrentUser(MyApplication.getContext()).getUsername();
         if (players.get(0).getPlayerName().equals(playerName)){
-            setScoreIndex = 0;
             player = players.get(0);
             enemy = players.get(1);
         }else {
-            setScoreIndex = 1;
             player = players.get(1);
             enemy = players.get(0);
         }

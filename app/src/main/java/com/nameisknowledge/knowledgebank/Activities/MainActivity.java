@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeActivity;
 import com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity;
+import com.nameisknowledge.knowledgebank.Activities.soloMode.SoloModeActivity;
 import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
@@ -21,6 +22,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.NotificationMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.Retroift.Data;
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         usersAdapter = new UsersAdapter(userMDs, userMD -> {
-            sendMessage(userMD.getNotificationToken(), UserConstants.getCurrentUser(this).getUsername(),UserConstants.getCurrentUser(this).getUid());
+            sendMessage(new NotificationMD(userMD.getNotificationToken(),UserConstants.getCurrentUser(this).getUsername(),UserConstants.getCurrentUser(this).getUid(),"DuoMode"));
             startActivity(new Intent(getApplicationContext(), RenderGamePlayActivity.class));
         });
 
@@ -94,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 binding.ivUserImage.setImageResource(R.drawable.avatar_man_1);
             else if (userGender.equals(UserConstants.GENDER_FEMALE))
                 binding.ivUserImage.setImageResource(R.drawable.avatar_woman_1);
-
-
         }
     }
 
@@ -159,10 +159,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goSoloActivity);
     }
 
-    private void sendMessage(String to,String senderName, String senderId) {
+    private void sendMessage(NotificationMD notification) {
         NotificationData notificationData = new NotificationData("Play Request", "hello");
-        Data data = new Data(senderName,senderId);
-        PushNotification pushNotification = new PushNotification(notificationData,to,data);
+        Data data = new Data(notification.getSenderName(),notification.getSenderId(),notification.getMode());
+        PushNotification pushNotification = new PushNotification(notificationData,notification.getTargetToken(),data);
         RetrofitInstance.getInstance().sentNot(pushNotification);
     }
 

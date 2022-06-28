@@ -24,7 +24,7 @@
             android:name=".Activities.AttackAreaActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.QuestionsModeActivity"
+            android:name=".Activities.questionsMode.QuestionsModeActivity"
             android:exported="true">
         </activity>
 
@@ -42,7 +42,7 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".Activities.SoloModeActivity"
+            android:name=".Activities.soloMode.SoloModeActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.MapModeActivity"
