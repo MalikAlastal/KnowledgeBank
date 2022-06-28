@@ -13,6 +13,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeActivity;
+import com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity;
+import com.nameisknowledge.knowledgebank.Activities.soloMode.SoloModeActivity;
 import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
@@ -20,12 +22,14 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.ModeMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.NotificationMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.Retroift.Data;
 import com.nameisknowledge.knowledgebank.Retroift.NotificationData;
 import com.nameisknowledge.knowledgebank.Retroift.PushNotification;
 import com.nameisknowledge.knowledgebank.Retroift.RetrofitInstance;
+import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
 import com.zhpan.bannerview.BannerViewPager;
 import com.zhpan.bannerview.constants.PageStyle;
 
@@ -70,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
 
 
         usersAdapter = new UsersAdapter(userMDs, userMD -> {
-            sendMessage(userMD.getNotificationToken(),userMD.getUsername(),UserConstants.getCurrentUser(this).getUsername());
-            startActivity(new Intent(getApplicationContext(),RenderGamePlayActivity.class));
+            sendMessage(new NotificationMD(userMD.getNotificationToken(),UserConstants.getCurrentUser(this).getUsername(),UserConstants.getCurrentUser(this).getUid(),"DuoMode"));
+            startActivity(new Intent(getApplicationContext(), RenderGamePlayActivity.class));
         });
 
         binding.rvUsers.setAdapter(usersAdapter);
@@ -92,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
                 binding.ivUserImage.setImageResource(R.drawable.avatar_man_1);
             else if (userGender.equals(UserConstants.GENDER_FEMALE))
                 binding.ivUserImage.setImageResource(R.drawable.avatar_woman_1);
-
-
         }
     }
 
@@ -157,10 +159,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(goSoloActivity);
     }
 
-    private void sendMessage(String to, String msg, String senderName) {
-        NotificationData notificationData = new NotificationData("Play Request",msg);
-        Data data = new Data(senderName);
-        PushNotification pushNotification = new PushNotification(notificationData,to,data);
+    private void sendMessage(NotificationMD notification) {
+        NotificationData notificationData = new NotificationData("Play Request", "hello");
+        Data data = new Data(notification.getSenderName(),notification.getSenderId(),notification.getMode());
+        PushNotification pushNotification = new PushNotification(notificationData,notification.getTargetToken(),data);
         RetrofitInstance.getInstance().sentNot(pushNotification);
     }
 

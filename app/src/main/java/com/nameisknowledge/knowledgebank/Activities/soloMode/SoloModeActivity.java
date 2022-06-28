@@ -1,37 +1,32 @@
-package com.nameisknowledge.knowledgebank.Activities.duoMode;
+package com.nameisknowledge.knowledgebank.Activities.soloMode;
 
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
-import com.nameisknowledge.knowledgebank.Constants.UserConstants;
-import com.nameisknowledge.knowledgebank.Dialogs.WinnerDialog;
-import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
-import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
-import com.nameisknowledge.knowledgebank.ViewModelsFactory;
-import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
-public class DuoModeActivity extends AppCompatActivity {
-    private final String TAG = "DuoModeActivity";
+import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
+import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
+import com.nameisknowledge.knowledgebank.MyApplication;
+import com.nameisknowledge.knowledgebank.databinding.ActivitySoloModeBinding;
+
+public class SoloModeActivity extends AppCompatActivity {
+    private ActivitySoloModeBinding binding;
     private String currentQuestionAnswer;
-    private ActivityDuoModeBinding binding;
+    private SoloModeActivityViewModel viewModel;
     private GamePlayAdapter inputAdapter,answerAdapter;
-    private DuoActivityViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityDuoModeBinding.inflate(getLayoutInflater());
         ViewMethods.setLocale(this , "ar");
+        binding = ActivitySoloModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String roomID = getIntent().getStringExtra("roomID");
-
-        viewModel = new ViewModelProvider(this,new ViewModelsFactory(roomID)).get(DuoActivityViewModel.class);
+        viewModel = new ViewModelProvider(this).get(SoloModeActivityViewModel.class);
 
         setUpRv();
 
@@ -39,7 +34,7 @@ public class DuoModeActivity extends AppCompatActivity {
             binding.tvQuestion.setText(question);
         });
 
-        viewModel.realAnswer.observe(this,answer->{
+        viewModel.realAnswer.observe(this,answer ->{
             this.currentQuestionAnswer = answer;
         });
 
@@ -53,10 +48,7 @@ public class DuoModeActivity extends AppCompatActivity {
             answerAdapter.setAnswer(emptyAnswer);
         });
 
-        viewModel.winnerName.observe(this,winner->{
-            viewModel.setTheWinner(winner);
-            WinnerDialog.newInstance(winner).show(getSupportFragmentManager(), "Winner Dialog");
-        });
+
     }
 
     private void setUpRv(){
@@ -81,5 +73,4 @@ public class DuoModeActivity extends AppCompatActivity {
         binding.rvAnswer.setAdapter(answerAdapter);
         binding.rvInput.setAdapter(inputAdapter);
     }
-
 }

@@ -113,6 +113,8 @@ dependencies {
     implementation 'com.mapbox.maps:android:10.5.0'
 
 
+    implementation 'androidx.work:work-runtime:2.7.0-alpha05'
+
     //retrofit
     implementation 'com.google.code.gson:gson:2.8.9'
     implementation 'com.squareup.retrofit:retrofit:2.0.0-beta2'

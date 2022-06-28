@@ -1,20 +1,24 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GamePlayMD {
+public class GamePlayMD implements Serializable {
     private String winner;
-    private Map<String,Integer> players;
+    private final List<PlayerMD> players = new ArrayList<>();
+    private final Map<String,Integer> scores = new HashMap<>();
     private int currentQuestion;
     private List<EmitterQuestion> index;
 
-    public GamePlayMD(List<EmitterQuestion> index,String player,String enemy) {
-        this.players = new HashMap<>();
-        this.players.put(player,0);
-        this.players.put(enemy,0);
+    public GamePlayMD(List<EmitterQuestion> index,PlayerMD player,PlayerMD enemy) {
         this.index = index;
+        this.players.add(player);
+        this.players.add(enemy);
+        this.scores.put(player.getPlayerName(),0);
+        this.scores.put(enemy.getPlayerName(),0);
     }
 
     public GamePlayMD() {
@@ -44,11 +48,11 @@ public class GamePlayMD {
         this.index = index;
     }
 
-    public Map<String, Integer> getPlayers() {
+    public List<PlayerMD> getPlayers() {
         return players;
     }
 
-    public void setPlayers(Map<String, Integer> players) {
-        this.players = players;
+    public Map<String, Integer> getScores() {
+        return scores;
     }
 }
