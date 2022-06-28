@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(AuthResult authResult) {
                             user.setUid(Objects.requireNonNull(authResult.getUser()).getUid());
-                            firestore.collection(FirebaseConstants.RESPONSES_COLLECTION).document(user.getUid()).collection(FirebaseConstants.CONTAINER_COLLECTION).add(new ResponseMD(""));
+                            firestore.collection(FirebaseConstants.RESPONSES_COLLECTION).document(user.getUid()).collection(FirebaseConstants.CONTAINER_COLLECTION).add(new ResponseMD("",""));
                             firestore.collection(FirebaseConstants.USERS_COLLECTION)
                                     .document(user.getUid())
                                     .set(user).addOnSuccessListener(new OnSuccessListener<Void>() {

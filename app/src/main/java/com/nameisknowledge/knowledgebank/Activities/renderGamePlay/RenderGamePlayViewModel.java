@@ -11,7 +11,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.FireBaseRepository;
 import com.nameisknowledge.knowledgebank.ModelClasses.EmitterQuestion;
-import com.nameisknowledge.knowledgebank.ModelClasses.GamePlayMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.gamePlay.DuoModeGamePlayMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.PlayerMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
 import com.nameisknowledge.knowledgebank.MyApplication;
@@ -33,25 +33,35 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class RenderActivityViewModel extends ViewModel {
-    private final String senderName,senderId;
+public class RenderGamePlayViewModel extends ViewModel {
+    private final String senderName,senderId,mode;
     private final FireBaseRepository fireBaseRepository;
     private ListenerRegistration registration;
     private final List<EmitterQuestion> questions = new ArrayList<>();
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-    public final MutableLiveData<String> responseListener = new MutableLiveData<>();
-    public final MutableLiveData<String> responseObj = new MutableLiveData<>();
+    public final MutableLiveData<ResponseMD> responseListener = new MutableLiveData<>();
+    public final MutableLiveData<ResponseMD> responseObj = new MutableLiveData<>();
     public final MutableLiveData<String> timeOut = new MutableLiveData<>();
 
-    public RenderActivityViewModel(String senderName,String senderId) {
+    public RenderGamePlayViewModel(String senderName, String senderId,String mode) {
         this.senderName = senderName;
+        this.mode = mode;
         this.senderId = senderId;
         this.fireBaseRepository = FireBaseRepository.getInstance();
     }
 
     public void init(){
         if (senderName!=null){
-            fireBaseRepository.generateEmitterQuestionsObservable().subscribe(generateEmitterQuestionsObserver());
+            switch (mode){
+                case "DuoMode":
+                    fireBaseRepository.generateEmitterQuestionsObservable().subscribe(generateEmitterQuestionsObserver());
+                    break;
+                case "QuestionsMode":
+                    String playerName = UserConstants.getCurrentUser(MyApplication.getContext()).getUsername();
+                    String playerId = UserConstants.getCurrentUser(MyApplication.getContext()).getUid();
+                    fireBaseRepository.generateGamePlay2Observable(new PlayerMD(playerName,playerId),new PlayerMD(senderName,senderId)).subscribe(generateGamePlayObserve());
+                    break;
+            }
         }else {
             responsesListenerObservable(UserConstants.getCurrentUser(MyApplication.getContext()).getUid()).subscribe(responsesListenerObserver());
             timer();
@@ -66,8 +76,8 @@ public class RenderActivityViewModel extends ViewModel {
             }
 
             @Override
-            public void onSuccess(@NonNull String s) {
-                fireBaseRepository.generateResponseObservable(s,senderId).subscribe(generateResponseObserver());
+            public void onSuccess(@NonNull String roomID) {
+                fireBaseRepository.generateResponseObservable(roomID,senderId,mode).subscribe(generateResponseObserver());
             }
 
             @Override
@@ -103,16 +113,16 @@ public class RenderActivityViewModel extends ViewModel {
         };
     }
 
-    private SingleObserver<String> generateResponseObserver(){
-        return new SingleObserver<String>() {
+    private SingleObserver<ResponseMD> generateResponseObserver(){
+        return new SingleObserver<ResponseMD>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 compositeDisposable.add(d);
             }
 
             @Override
-            public void onSuccess(@NonNull String roomID) {
-                responseObj.setValue(roomID);
+            public void onSuccess(@NonNull ResponseMD response) {
+                responseObj.setValue(response);
             }
 
             @Override
@@ -122,16 +132,16 @@ public class RenderActivityViewModel extends ViewModel {
         };
     }
 
-    public Observer<String> responsesListenerObserver(){
-        return new Observer<String>() {
+    public Observer<ResponseMD> responsesListenerObserver(){
+        return new Observer<ResponseMD>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 compositeDisposable.add(d);
             }
 
             @Override
-            public void onNext(@NonNull String roomID) {
-                responseListener.setValue(roomID);
+            public void onNext(@NonNull ResponseMD response) {
+                responseListener.setValue(response);
             }
 
             @Override
@@ -146,7 +156,7 @@ public class RenderActivityViewModel extends ViewModel {
         };
     }
 
-    private Observable<String> responsesListenerObservable(String player) {
+    private Observable<ResponseMD> responsesListenerObservable(String player) {
         return Observable.create((ObservableOnSubscribe<List<DocumentChange>>) emitter -> {
             CollectionReference container = FirebaseFirestore.getInstance()
                     .collection(FirebaseConstants.RESPONSES_COLLECTION)
@@ -158,14 +168,14 @@ public class RenderActivityViewModel extends ViewModel {
                 .filter(documentChanges -> documentChanges.size() == 1
                 && !(documentChanges.get(0).getDocument().toObject(ResponseMD.class).getRoomID().isEmpty())
                 && documentChanges.get(0).getType() == DocumentChange.Type.ADDED)
-                .map(documentChanges -> documentChanges.get(0).getDocument().toObject(ResponseMD.class).getRoomID());
+                .map(documentChanges -> documentChanges.get(0).getDocument().toObject(ResponseMD.class));
     }
 
 
-    public GamePlayMD prepareGamePlay(){
-        PlayerMD player = new PlayerMD(UserConstants.getCurrentUser(MyApplication.getContext()).getUsername(),UserConstants.getCurrentUser(MyApplication.getContext()).getUid(),0);
-        PlayerMD enemy = new PlayerMD(senderName,senderId,0);
-        return new GamePlayMD(questions,player,enemy);
+    public DuoModeGamePlayMD prepareGamePlay(){
+        PlayerMD player = new PlayerMD(UserConstants.getCurrentUser(MyApplication.getContext()).getUsername(),UserConstants.getCurrentUser(MyApplication.getContext()).getUid());
+        PlayerMD enemy = new PlayerMD(senderName,senderId);
+        return new DuoModeGamePlayMD(questions,player,enemy);
     }
 
     public void timer() {

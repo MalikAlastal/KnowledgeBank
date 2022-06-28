@@ -6,18 +6,15 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
-import com.nameisknowledge.knowledgebank.MyApplication;
 import com.nameisknowledge.knowledgebank.databinding.ActivitySoloModeBinding;
 
 public class SoloModeActivity extends AppCompatActivity {
     private ActivitySoloModeBinding binding;
     private String currentQuestionAnswer;
-    private SoloModeActivityViewModel viewModel;
+    private SoloModeViewModel viewModel;
     private GamePlayAdapter inputAdapter,answerAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +23,7 @@ public class SoloModeActivity extends AppCompatActivity {
         binding = ActivitySoloModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new ViewModelProvider(this).get(SoloModeActivityViewModel.class);
+        viewModel = new ViewModelProvider(this).get(SoloModeViewModel.class);
 
         setUpRv();
 

@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.google.firebase.firestore.auth.User;
 import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeActivity;
-import com.nameisknowledge.knowledgebank.Constants.UserConstants;
+import com.nameisknowledge.knowledgebank.Activities.questionsMode.QuestionsModeActivity;
 import com.nameisknowledge.knowledgebank.ViewModelsFactory;
 import com.nameisknowledge.knowledgebank.databinding.ActivityRenderGamePlayBinding;
 
@@ -26,23 +24,35 @@ public class RenderGamePlayActivity extends AppCompatActivity {
 
         String senderName = getIntent().getStringExtra("senderName");
         String senderId = getIntent().getStringExtra("senderId");
+        String mode = getIntent().getStringExtra("mode");
 
-        RenderActivityViewModel viewModel = new ViewModelProvider(this, new ViewModelsFactory(senderName,senderId)).get(RenderActivityViewModel.class);
+        RenderGamePlayViewModel viewModel = new ViewModelProvider(this, new ViewModelsFactory(senderName,senderId,mode)).get(RenderGamePlayViewModel.class);
 
         viewModel.init();
 
         // if the user who is intent to this activity is the sender
-        viewModel.responseListener.observe(this, roomID -> {
-            startActivity(new Intent(this, DuoModeActivity.class)
-                    .putExtra("roomID", roomID));
+        viewModel.responseListener.observe(this, response -> {
+            switch (response.getMode()){
+                case "DuoMode":
+                    startActivity(new Intent(this, DuoModeActivity.class).putExtra("roomID", response.getRoomID()));
+                    break;
+                case "QuestionsMode":
+                    startActivity(new Intent(this, QuestionsModeActivity.class).putExtra("roomID", response.getRoomID()));
+                    break;
+            }
             finish();
         });
 
         // if the user who is intent to this activity is the receiver
-        viewModel.responseObj.observe(this, roomID -> {
-            startActivity(new Intent(this, DuoModeActivity.class)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    .putExtra("roomID", roomID));
+        viewModel.responseObj.observe(this, response -> {
+            switch (response.getMode()){
+                case "DuoMode":
+                    startActivity(new Intent(this, DuoModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("roomID", response.getRoomID()));
+                    break;
+                case "QuestionsMode":
+                    startActivity(new Intent(this, QuestionsModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("roomID", response.getRoomID()));
+                    break;
+            }
             finish();
         });
 

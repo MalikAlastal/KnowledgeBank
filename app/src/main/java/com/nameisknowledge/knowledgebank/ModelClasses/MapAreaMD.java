@@ -1,5 +1,7 @@
 package com.nameisknowledge.knowledgebank.ModelClasses;
 
+import com.nameisknowledge.knowledgebank.ModelClasses.questions.MapFireBaseQuestionMD;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class MapAreaMD implements Serializable {
     UserMD ownerUser ;
     int ownerAnsweredQuestionsCount =0 ;
 
-    List<MapQuestionMD> questionList ;
+    List<MapFireBaseQuestionMD> questionList ;
 
     public String getAreaName() {
         return areaName;
@@ -19,7 +21,7 @@ public class MapAreaMD implements Serializable {
     public MapAreaMD() {
     }
 
-    public MapAreaMD(String areaName, double areaLng, double areaLat, UserMD ownerUser, int ownerAnsweredQuestionsCount, List<MapQuestionMD> questionList) {
+    public MapAreaMD(String areaName, double areaLng, double areaLat, UserMD ownerUser, int ownerAnsweredQuestionsCount, List<MapFireBaseQuestionMD> questionList) {
         this.areaName = areaName;
         this.areaLng = areaLng;
         this.areaLat = areaLat;
@@ -64,11 +66,11 @@ public class MapAreaMD implements Serializable {
         this.areaLat = areaLat;
     }
 
-    public List<MapQuestionMD> getQuestionList() {
+    public List<MapFireBaseQuestionMD> getQuestionList() {
         return questionList;
     }
 
-    public void setQuestionList(List<MapQuestionMD> questionList) {
+    public void setQuestionList(List<MapFireBaseQuestionMD> questionList) {
         this.questionList = questionList;
     }
 }

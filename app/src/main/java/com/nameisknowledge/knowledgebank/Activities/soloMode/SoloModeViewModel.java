@@ -1,10 +1,12 @@
 package com.nameisknowledge.knowledgebank.Activities.soloMode;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.nameisknowledge.knowledgebank.FireBaseRepository;
-import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.questions.FireBaseQuestionMD;
 
 import java.util.Random;
 
@@ -13,7 +15,7 @@ import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-public class SoloModeActivityViewModel extends ViewModel {
+public class SoloModeViewModel extends ViewModel {
     private final String[] letters = {
             "أ", "ب", "ت", "ث", "ج", "ح","خ", "د","ذ","ر","ز","س","ش", "ص", "ض", "ط","ظ","ع", "غ","ف", "ق","م","ل","ك","ن", "ه","و","ي"
     };
@@ -25,7 +27,7 @@ public class SoloModeActivityViewModel extends ViewModel {
     public final MutableLiveData<String> emptyAnswer = new MutableLiveData<>();
 
 
-    public SoloModeActivityViewModel() {
+    public SoloModeViewModel() {
         this.fireBaseRepository = FireBaseRepository.getInstance();
         fireBaseRepository.generateRandomQuestionObservable().subscribe(generateRandomQuestionObserver());
     }
@@ -37,19 +39,20 @@ public class SoloModeActivityViewModel extends ViewModel {
     }
 
 
-    private SingleObserver<QuestionMD> generateRandomQuestionObserver(){
-        return new SingleObserver<QuestionMD>() {
+    private SingleObserver<FireBaseQuestionMD> generateRandomQuestionObserver(){
+        return new SingleObserver<FireBaseQuestionMD>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
                 compositeDisposable.add(d);
             }
 
             @Override
-            public void onSuccess(@NonNull QuestionMD questionMD) {
-                question.setValue(questionMD.getQuestion());
-                realAnswer.setValue(clearAnswerSpaces(questionMD.getAnswer()));
-                longAnswer.setValue(makeAnswerLonger(clearAnswerSpaces(questionMD.getAnswer())));
-                emptyAnswer.setValue(makeStringEmpty(clearAnswerSpaces(questionMD.getAnswer())));
+            public void onSuccess(@NonNull FireBaseQuestionMD fireBaseQuestionMD) {
+                Log.d("abood",fireBaseQuestionMD.getQuestion());
+                question.setValue(fireBaseQuestionMD.getQuestion());
+                realAnswer.setValue(clearAnswerSpaces(fireBaseQuestionMD.getAnswer()));
+                longAnswer.setValue(makeAnswerLonger(clearAnswerSpaces(fireBaseQuestionMD.getAnswer())));
+                emptyAnswer.setValue(makeStringEmpty(clearAnswerSpaces(fireBaseQuestionMD.getAnswer())));
             }
 
             @Override

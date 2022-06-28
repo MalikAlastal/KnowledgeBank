@@ -13,6 +13,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeActivity;
+import com.nameisknowledge.knowledgebank.Activities.questionsMode.QuestionsModeActivity;
 import com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity;
 import com.nameisknowledge.knowledgebank.Activities.soloMode.SoloModeActivity;
 import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
@@ -42,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     ToastMethods toastMethods;
     List<UserMD> userMDs;
     UsersAdapter usersAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,9 +73,8 @@ public class MainActivity extends AppCompatActivity {
         userMDs = new ArrayList<>();
 
 
-        usersAdapter = new UsersAdapter(userMDs, userMD -> {
-            sendMessage(new NotificationMD(userMD.getNotificationToken(),UserConstants.getCurrentUser(this).getUsername(),UserConstants.getCurrentUser(this).getUid(),"DuoMode"));
-            startActivity(new Intent(getApplicationContext(), RenderGamePlayActivity.class));
+        usersAdapter = new UsersAdapter(userMD -> {
+
         });
 
         binding.rvUsers.setAdapter(usersAdapter);
@@ -124,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
                                 case 1:
                                     duoModeListener();
                                     break;
+                                case 3:
+                                    questionsModeListener();
+                                    break;
                                 case 2:
                                     mapModeListener();
                                     break;
@@ -138,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
         modes.add(new ModeMD(R.string.mode_solo, R.drawable.ic_solo_mode, getResources().getColor(R.color.dark_main_color)));
         modes.add(new ModeMD(R.string.duo_mode, R.drawable.ic_duo_mode, getResources().getColor(R.color.dark_main_color)));
         modes.add(new ModeMD(R.string.map_mode, R.drawable.ic_map_mode, getResources().getColor(R.color.dark_main_color)));
+        modes.add(new ModeMD(R.string.questions_mode, R.drawable.ic_duo_mode, getResources().getColor(R.color.dark_main_color)));
 
         binding.bvpModes.create(modes);
 
@@ -150,7 +153,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void duoModeListener() {
-        Intent goSoloActivity = new Intent(this, DuoModeActivity.class);
+        Intent goSoloActivity = new Intent(this, SendPlayRequestActivity.class).putExtra("mode","DuoMode");
+        startActivity(goSoloActivity);
+    }
+
+    private void questionsModeListener() {
+        Intent goSoloActivity = new Intent(this, SendPlayRequestActivity.class).putExtra("mode","QuestionsMode");
         startActivity(goSoloActivity);
     }
 

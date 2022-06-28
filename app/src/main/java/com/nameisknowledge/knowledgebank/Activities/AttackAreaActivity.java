@@ -39,7 +39,7 @@ import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.MapQuestionMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.questions.MapFireBaseQuestionMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.InputsMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
@@ -58,7 +58,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
     private MapAreaMD area ;
     ToastMethods toastMethods ;
 
-    List<MapQuestionMD> questionList ;
+    List<MapFireBaseQuestionMD> questionList ;
     GamePlayAdapter inputAdapter ;
     GamePlayAdapter answerAdapter ;
 
@@ -109,7 +109,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
         isActivityVisible = true ;
 
-        for (MapQuestionMD question: questionList) {
+        for (MapFireBaseQuestionMD question: questionList) {
             question.setAnswer(clearAnswerSpaces(question.getAnswer()));
         }
 

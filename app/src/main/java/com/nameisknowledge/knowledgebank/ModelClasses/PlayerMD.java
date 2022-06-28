@@ -4,12 +4,10 @@ import java.io.Serializable;
 
 public class PlayerMD implements Serializable {
     private String playerName,playerID;
-    private int playerScore;
 
-    public PlayerMD(String playerName, String playerID, int playerScore) {
+    public PlayerMD(String playerName, String playerID) {
         this.playerName = playerName;
         this.playerID = playerID;
-        this.playerScore = playerScore;
     }
 
     public PlayerMD() {
@@ -29,13 +27,5 @@ public class PlayerMD implements Serializable {
 
     public void setPlayerID(String playerID) {
         this.playerID = playerID;
-    }
-
-    public int getPlayerScore() {
-        return playerScore;
-    }
-
-    public void setPlayerScore(int playerScore) {
-        this.playerScore = playerScore;
     }
 }

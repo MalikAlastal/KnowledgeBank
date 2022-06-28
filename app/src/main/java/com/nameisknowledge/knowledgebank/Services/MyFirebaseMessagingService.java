@@ -49,7 +49,7 @@ import java.util.Objects;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
-    private String senderName,senderId;
+    private String senderName,senderId,mode;
 
     /**
      * Called when message is received.
@@ -83,6 +83,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (remoteMessage.getData().size() > 0) {
             senderName = remoteMessage.getData().get("senderName");
             senderId = remoteMessage.getData().get("senderId");
+            mode = remoteMessage.getData().get("mode");
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use WorkManager.
                 scheduleJob();
@@ -216,10 +217,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new RemoteViews(getApplicationContext().getPackageName() , R.layout.notification_layout) ;
         //اذا بدك تبعت بيانات لما تضغط على الاشعار للاكتيفتي الي رايح الها الاشعار
         Intent notificationIntent = new Intent(getApplicationContext(), RenderGamePlayActivity.class);
-        Log.d(TAG, "Message data payload: " + senderName);
         Bundle bundle = new Bundle();
         bundle.putString("senderName",senderName);
         bundle.putString("senderId",senderId);
+        bundle.putString("mode",mode);
         notificationIntent.putExtras(bundle);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
