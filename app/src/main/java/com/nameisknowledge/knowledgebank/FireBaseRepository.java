@@ -2,18 +2,22 @@ package com.nameisknowledge.knowledgebank;
 
 
 import android.preference.PreferenceManager;
-import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
-import com.nameisknowledge.knowledgebank.ModelClasses.EmitterQuestion;
-import com.nameisknowledge.knowledgebank.ModelClasses.gamePlay.GamePlay;
-import com.nameisknowledge.knowledgebank.ModelClasses.gamePlay.QuestionsModeGamePlayMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.gamePlay.DuoModeGamePlayMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.PlayerMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.questions.FireBaseQuestionMD;
-import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
+import com.google.firebase.firestore.Query;
+import com.nameisknowledge.knowledgebank.constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.modelClasses.EmitterQuestion;
+import com.nameisknowledge.knowledgebank.modelClasses.MapAreaMD;
+import com.nameisknowledge.knowledgebank.modelClasses.PlayerScoreMD;
+import com.nameisknowledge.knowledgebank.modelClasses.UserMD;
+import com.nameisknowledge.knowledgebank.modelClasses.gamePlay.GamePlay;
+import com.nameisknowledge.knowledgebank.modelClasses.gamePlay.QuestionsModeGamePlayMD;
+import com.nameisknowledge.knowledgebank.modelClasses.gamePlay.DuoModeGamePlayMD;
+import com.nameisknowledge.knowledgebank.modelClasses.PlayerMD;
+import com.nameisknowledge.knowledgebank.modelClasses.questions.FireBaseQuestionMD;
+import com.nameisknowledge.knowledgebank.modelClasses.ResponseMD;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +34,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class FireBaseRepository {
     private static FireBaseRepository instance;
-    public static FireBaseRepository getInstance() {
+    public synchronized static FireBaseRepository getInstance() {
         if (instance == null) {
             instance = new FireBaseRepository();
         }
@@ -44,20 +48,27 @@ public class FireBaseRepository {
                 .update("winner", winner);
     }
 
+    public void setFinalPlayerScore(String mode,String playerID){
+        FirebaseFirestore.getInstance()
+                .collection(FirebaseConstants.SCORES_COLLECTION)
+                .document(playerID)
+                .update(mode,FieldValue.increment(1));
+    }
+
     public void setTheScore(String playerName,String roomID,String gamePlayCollection) {
         FirebaseFirestore.getInstance().collection(gamePlayCollection)
                 .document(roomID)
-                .update("scores"+"."+playerName, FieldValue.increment(10));
+                .update("scores"+"."+playerName, FieldValue.increment(1));
     }
 
-    public Single<String> finishTheGameObservable(String player,String enemy,String roomID,String gamePlayCollection) {
-        return Single.create((SingleOnSubscribe<String>) emitter -> {
+    public Single<PlayerMD> finishTheGameObservable(PlayerMD player,PlayerMD enemy,String roomID,String gamePlayCollection) {
+        return Single.create((SingleOnSubscribe<PlayerMD>) emitter -> {
             FirebaseFirestore.getInstance().collection(gamePlayCollection)
                     .document(roomID)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
-                        long playerScore = (long) documentSnapshot.get("scores" + "." + player);
-                        long enemyScore = (long) documentSnapshot.get("scores" + "." + enemy);
+                        long playerScore = (long) documentSnapshot.get("scores" + "." + player.getPlayerName());
+                        long enemyScore = (long) documentSnapshot.get("scores" + "." + enemy.getPlayerName());
                         if (playerScore > enemyScore) {
                             emitter.onSuccess(player);
                         } else {
@@ -188,12 +199,12 @@ public class FireBaseRepository {
     }
     // ********************************************************************* //
 
+    //************SoloMode stuff*******************************************//
     public Single<FireBaseQuestionMD> generateRandomQuestionObservable(){
         return Single.create((SingleOnSubscribe<FireBaseQuestionMD>) emitter->{
             String[] levels = {"Hard","Easy","Medium"};
-            int levelIndex = new Random().nextInt(levels.length+1);
-            int questionIndex = new Random().nextInt(PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getInt(levels[levelIndex],0)+1);
-            Log.d("abood","index "+questionIndex+" level "+levels[levelIndex]);
+            int levelIndex = new Random().nextInt(levels.length);
+            int questionIndex = new Random().nextInt(PreferenceManager.getDefaultSharedPreferences(MyApplication.getContext()).getInt(levels[levelIndex],0));
             FirebaseFirestore.getInstance()
                     .collection(FirebaseConstants.QUESTIONS_COLLECTION)
                     .document(levels[levelIndex])
@@ -205,5 +216,170 @@ public class FireBaseRepository {
                     });
         }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io());
     }
+    // ********************************************************************* //
 
+    //************Main Activity stuff*******************************************//
+    public Observable<String> getHighRankedPlayers(String mode) {
+        return Observable.create((ObservableOnSubscribe<List<PlayerScoreMD>>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.SCORES_COLLECTION)
+                    .orderBy(mode, Query.Direction.DESCENDING)
+                    .limit(3)
+                    .get()
+                    .addOnSuccessListener(documentSnapshots -> {
+                        emitter.onNext(documentSnapshots.toObjects(PlayerScoreMD.class));
+                        emitter.onComplete();
+                    })
+                    .addOnFailureListener(emitter::onError);
+        }).flatMap(Observable::fromIterable).map(PlayerScoreMD::getId);
+    }
+
+    public Single<UserMD> getUserById(String id) {
+        return Single.create((SingleOnSubscribe<UserMD>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(id)
+                    .get()
+                    .addOnSuccessListener(documentSnapshots -> {
+                        emitter.onSuccess(documentSnapshots.toObject(UserMD.class));
+                    })
+                    .addOnFailureListener(emitter::onError);
+        }).subscribeOn(Schedulers.io());
+    }
+
+    // to get High ranked player (because i have to check playersList size = 3)
+    public Observable<UserMD> getUserById(String id,int size) {
+        return Observable.create((ObservableOnSubscribe<UserMD>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(id)
+                    .get()
+                    .addOnSuccessListener(documentSnapshots -> {
+                        emitter.onNext(documentSnapshots.toObject(UserMD.class));
+                        if (size == 3){
+                            emitter.onComplete();
+                        }
+                    })
+                    .addOnFailureListener(emitter::onError);
+        }).subscribeOn(Schedulers.io());
+    }
+
+    // ********************************************************************* //
+    //************ Login Activity stuff *******************************************//
+
+    public Single<UserMD> loginObservable(String email,String pass){
+        return Single.create((SingleOnSubscribe<String>) emitter -> {
+            FirebaseAuth.getInstance()
+            .signInWithEmailAndPassword(email,pass)
+            .addOnSuccessListener(authResult -> emitter.onSuccess(Objects.requireNonNull(authResult.getUser()).getUid()))
+            .addOnFailureListener(emitter::onError);
+        }).flatMap(this::getUserById).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<String> registerObservable(UserMD userMD){
+        return Single.create((SingleOnSubscribe<UserMD>) emitter -> {
+            FirebaseAuth.getInstance()
+                    .createUserWithEmailAndPassword(userMD.getEmail(),userMD.getPassword())
+                    .addOnSuccessListener(authResult -> {
+                        userMD.setUid(Objects.requireNonNull(authResult.getUser()).getUid());
+                        emitter.onSuccess(userMD);
+                    })
+                    .addOnFailureListener(emitter::onError);
+        }).flatMap(this::addNewUser).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io());
+    }
+
+    public void updateToken(String token){
+        FirebaseFirestore.getInstance()
+                .collection(FirebaseConstants.USERS_COLLECTION)
+                .document(Objects.requireNonNull(FirebaseAuth.getInstance().getUid()))
+                .update("notificationToken", token);
+    }
+
+    public Single<String> addNewUser(UserMD userMD){
+        return Single.create((SingleOnSubscribe<String>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(userMD.getUid())
+                    .set(userMD)
+                    .addOnSuccessListener(us->emitter.onSuccess(userMD.getUid()))
+                    .addOnFailureListener(emitter::onError);
+        }).subscribeOn(Schedulers.io()).subscribeOn(AndroidSchedulers.mainThread());
+    }
+
+    public void setDefaultPlayerScore(String id){
+        FirebaseFirestore.getInstance()
+                .collection(FirebaseConstants.SCORES_COLLECTION)
+                .document(id)
+                .set(new PlayerScoreMD(id,0,0,0));
+    }
+
+    public void setDefaultResponse(String id){
+        FirebaseFirestore.getInstance()
+                .collection(FirebaseConstants.RESPONSES_COLLECTION)
+                .document(id)
+                .collection(FirebaseConstants.CONTAINER_COLLECTION)
+                .add(new ResponseMD("",""));
+    }
+
+    // ********************************************************************* //
+    //************ Map Mode Activity stuff *******************************************//
+
+    public Single<List<MapAreaMD>> getMapAreasObservable(){
+        return Single.create((SingleOnSubscribe<List<MapAreaMD>>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.MAP_AREAS_COLLECTION)
+                    .get()
+                    .addOnSuccessListener(documentSnapshots -> emitter.onSuccess(documentSnapshots.toObjects(MapAreaMD.class)))
+                    .addOnFailureListener(emitter::onError);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<UserMD> updateAreaAttackPoints(String id,int points){
+        return Single.create((SingleOnSubscribe<String>) emitter->{
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(id)
+                    .update("areaAttackPoints",FieldValue.increment(points))
+                    .addOnSuccessListener(unused -> emitter.onSuccess(id))
+                    .addOnFailureListener(emitter::onError);
+        }).flatMap(this::getUserById).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<UserMD> updateAreaAttackPointsV2(String id,int points){
+        return Single.create((SingleOnSubscribe<String>) emitter->{
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(id)
+                    .update("areaAttackPoints",points)
+                    .addOnSuccessListener(unused -> emitter.onSuccess(id))
+                    .addOnFailureListener(emitter::onError);
+        }).flatMap(this::getUserById).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<Integer> getAreaAttackPointsObservable(String id){
+        return Single.create((SingleOnSubscribe<Integer>) emitter->{
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.USERS_COLLECTION)
+                    .document(id)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot ->{
+                        emitter.onSuccess(Objects.requireNonNull(documentSnapshot.toObject(UserMD.class)).getAreaAttackPoints());
+                    })
+                    .addOnFailureListener(emitter::onError);
+        }).observeOn(AndroidSchedulers.mainThread());
+    }
+
+    // ********************************************************************* //
+    //************ Attack Activity stuff *******************************************//
+
+    public Single<UserMD> setAreaOwner(String areaName,UserMD user,int ownerAnsweredQuestionsCount){
+        return Single.create((SingleOnSubscribe<UserMD>) emitter -> {
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.MAP_AREAS_COLLECTION)
+                    .document(areaName)
+                    .update("ownerUser",user,"ownerAnsweredQuestionsCount",ownerAnsweredQuestionsCount)
+                    .addOnSuccessListener(unused->emitter.onSuccess(user))
+                    .addOnFailureListener(emitter::onError);
+        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread());
+    }
 }
