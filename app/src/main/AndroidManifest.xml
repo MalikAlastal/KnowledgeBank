@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KnowledgeBank">
         <activity
-            android:name="com.nameisknowledge.knowledgebank.Activities.SendPlayRequestActivity"
+            android:name="com.nameisknowledge.knowledgebank.ui.SendPlayRequestActivity"
             android:exported="false" />
 
         <meta-data
@@ -21,17 +21,19 @@
             android:value="ca-app-pub-2571963362996797~4761517646" />
 
         <activity
-            android:name="com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity"
+            android:name="com.nameisknowledge.knowledgebank.ui.renderGamePlay.RenderGamePlayActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.AttackAreaActivity"
+            android:name=".ui.attackArea.AttackAreaActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.questionsMode.QuestionsModeActivity"
-            android:exported="true"></activity>
+            android:name=".ui.questionsMode.QuestionsModeActivity"
+            android:exported="true">
+
+        </activity>
 
         <service
-            android:name=".Services.MyFirebaseMessagingService"
+            android:name=".services.MyFirebaseMessagingService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -40,16 +42,23 @@
         </service>
 
         <activity
-            android:name=".Activities.duoMode.DuoModeActivity"
-            android:exported="true"></activity>
+            android:name=".ui.duoMode.DuoModeActivity"
+            android:exported="true">
+
+        </activity>
         <activity
-            android:name=".Activities.soloMode.SoloModeActivity"
+            android:name=".ui.soloMode.SoloModeActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.MapModeActivity"
-            android:exported="false" />
+            android:name=".ui.mapMode.MapModeActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="OPEN_ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
-            android:name=".Activities.LoginActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -58,7 +67,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".Activities.MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true" />
     </application>
 
