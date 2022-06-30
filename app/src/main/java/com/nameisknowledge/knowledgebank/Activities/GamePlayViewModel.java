@@ -22,6 +22,7 @@ public abstract class GamePlayViewModel extends ViewModel {
             "أ", "ب", "ت", "ث", "ج", "ح","خ", "د","ذ","ر","ز","س","ش", "ص", "ض", "ط","ظ","ع", "غ","ف", "ق","م","ل","ك","ن", "ه","و","ي"
     };
     private PlayerMD player;
+    private final String mode;
     private PlayerMD enemy;
     private final String roomID,gamePlayCollection;
     private final FireBaseRepository fireBaseRepository;
@@ -36,8 +37,9 @@ public abstract class GamePlayViewModel extends ViewModel {
     public MutableLiveData<String> enemyName = new MutableLiveData<>();
     public MutableLiveData<String> playerName = new MutableLiveData<>();
 
-    public GamePlayViewModel(String roomID,String gamePlayCollection) {
+    public GamePlayViewModel(String roomID,String gamePlayCollection,String mode) {
         this.roomID = roomID;
+        this.mode = mode;
         this.gamePlayCollection  = gamePlayCollection;
         this.fireBaseRepository = FireBaseRepository.getInstance();
     }
@@ -56,6 +58,10 @@ public abstract class GamePlayViewModel extends ViewModel {
 
     public void setEmptyAnswer(String answer){
         emptyAnswer.setValue(makeStringEmpty(clearAnswerSpaces(answer)));
+    }
+
+    public String getMode() {
+        return mode;
     }
 
     public String getGamePlayCollection(){

@@ -34,10 +34,10 @@ public class RenderGamePlayActivity extends AppCompatActivity {
         viewModel.responseListener.observe(this, response -> {
             switch (response.getMode()){
                 case "DuoMode":
-                    startActivity(new Intent(this, DuoModeActivity.class).putExtra("roomID", response.getRoomID()));
+                    startActivity(new Intent(this, DuoModeActivity.class).putExtra("roomID", response.getRoomID()).putExtra("mode",response.getMode()));
                     break;
                 case "QuestionsMode":
-                    startActivity(new Intent(this, QuestionsModeActivity.class).putExtra("roomID", response.getRoomID()));
+                    startActivity(new Intent(this, QuestionsModeActivity.class).putExtra("roomID", response.getRoomID()).putExtra("mode",response.getMode()));
                     break;
             }
             finish();
@@ -47,10 +47,10 @@ public class RenderGamePlayActivity extends AppCompatActivity {
         viewModel.responseObj.observe(this, response -> {
             switch (response.getMode()){
                 case "DuoMode":
-                    startActivity(new Intent(this, DuoModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("roomID", response.getRoomID()));
+                    startActivity(new Intent(this, DuoModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("roomID", response.getRoomID()).putExtra("mode",response.getMode()));
                     break;
                 case "QuestionsMode":
-                    startActivity(new Intent(this, QuestionsModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("roomID", response.getRoomID()));
+                    startActivity(new Intent(this, QuestionsModeActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK).putExtra("roomID", response.getRoomID()).putExtra("mode",response.getMode()));
                     break;
             }
             finish();

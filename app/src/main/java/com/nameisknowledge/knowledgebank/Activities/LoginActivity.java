@@ -32,6 +32,7 @@ import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.AvatarMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.PlayerScoreMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
@@ -150,6 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(AuthResult authResult) {
                             user.setUid(Objects.requireNonNull(authResult.getUser()).getUid());
+                            firestore.collection(FirebaseConstants.SCORES_COLLECTION).document(user.getUid()).set(new PlayerScoreMD());
                             firestore.collection(FirebaseConstants.RESPONSES_COLLECTION).document(user.getUid()).collection(FirebaseConstants.CONTAINER_COLLECTION).add(new ResponseMD("",""));
                             firestore.collection(FirebaseConstants.USERS_COLLECTION)
                                     .document(user.getUid())

@@ -32,8 +32,8 @@ public class QuestionsModeViewModel extends GamePlayViewModel {
     private ListenerRegistration gameFlowListenerRegistration;
     private Disposable gamePlayDisposable;
 
-    public QuestionsModeViewModel(String roomID,String gamePlayCollection) {
-        super(roomID,gamePlayCollection);
+    public QuestionsModeViewModel(String roomID,String gamePlayCollection,String mode) {
+        super(roomID,gamePlayCollection,mode);
     }
 
     public void start(){

@@ -38,8 +38,8 @@ public class DuoModeViewModel extends GamePlayViewModel {
     private ListenerRegistration gameFlowListenerRegistration;
     private Disposable gamePlayDisposable;
 
-    public DuoModeViewModel(String roomID, String gamePlayCollection) {
-        super(roomID, gamePlayCollection);
+    public DuoModeViewModel(String roomID, String gamePlayCollection,String mode) {
+        super(roomID, gamePlayCollection,mode);
         getFireBaseRepository().getGamePlayObservable(roomID, gamePlayCollection).subscribe(getGamePlayObserver());
     }
 

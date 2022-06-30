@@ -48,7 +48,6 @@ public class SoloModeViewModel extends ViewModel {
 
             @Override
             public void onSuccess(@NonNull FireBaseQuestionMD fireBaseQuestionMD) {
-                Log.d("abood",fireBaseQuestionMD.getQuestion());
                 question.setValue(fireBaseQuestionMD.getQuestion());
                 realAnswer.setValue(clearAnswerSpaces(fireBaseQuestionMD.getAnswer()));
                 longAnswer.setValue(makeAnswerLonger(clearAnswerSpaces(fireBaseQuestionMD.getAnswer())));
@@ -99,7 +98,6 @@ public class SoloModeViewModel extends ViewModel {
         }
         return randomTheAnswer(finalAnswer.toString());
     }
-
 
     @Override
     protected void onCleared() {

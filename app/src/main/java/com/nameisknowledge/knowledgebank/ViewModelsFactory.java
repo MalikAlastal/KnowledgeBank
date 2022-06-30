@@ -24,14 +24,18 @@ public class ViewModelsFactory implements ViewModelProvider.Factory {
         this.senderId = senderId;
     }
 
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(DuoModeViewModel.class)){
-            return (T) new DuoModeViewModel(roomID,gamePlayCollection);
+            return (T) new DuoModeViewModel(roomID,gamePlayCollection,mode);
         }else if (modelClass.isAssignableFrom(RenderGamePlayViewModel.class)){
             return (T) new RenderGamePlayViewModel(senderName,senderId,mode);
         }else if (modelClass.isAssignableFrom(QuestionsModeViewModel.class)){
-            return (T) new QuestionsModeViewModel(roomID,gamePlayCollection);
+            return (T) new QuestionsModeViewModel(roomID,gamePlayCollection,mode);
         }
         return null;
     }

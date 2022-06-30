@@ -45,10 +45,13 @@ public class QuestionsModeActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         String roomID = getIntent().getStringExtra("roomID");
+        String mode = getIntent().getStringExtra("mode");
 
         setUpRv();
+        ViewModelsFactory viewModelsFactory = new ViewModelsFactory(roomID, FirebaseConstants.GAME_PLAY_2_COLLECTION);
+        viewModelsFactory.setMode(mode);
 
-        viewModel = new ViewModelProvider(this,new ViewModelsFactory(roomID, FirebaseConstants.GAME_PLAY_2_COLLECTION)).get(QuestionsModeViewModel.class);
+        viewModel = new ViewModelProvider(this,viewModelsFactory).get(QuestionsModeViewModel.class);
 
         AddQuestionDialog.newInstance(roomID).show(getSupportFragmentManager(),"Add Questions Dialog");
 

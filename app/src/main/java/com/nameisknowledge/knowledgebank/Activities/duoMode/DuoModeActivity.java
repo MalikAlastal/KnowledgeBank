@@ -1,17 +1,32 @@
 package com.nameisknowledge.knowledgebank.Activities.duoMode;
 
+import android.animation.Animator;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.daimajia.androidanimations.library.YoYo;
 import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
+import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Dialogs.WinnerDialog;
+import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ViewModelsFactory;
 import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
+
+import java.util.Observable;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.CompletableEmitter;
+import io.reactivex.rxjava3.core.CompletableOnSubscribe;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class DuoModeActivity extends AppCompatActivity {
     private final String TAG = "DuoModeActivity";
@@ -26,9 +41,13 @@ public class DuoModeActivity extends AppCompatActivity {
         ViewMethods.setLocale(this , "ar");
         setContentView(binding.getRoot());
 
+        String mode = getIntent().getStringExtra("mode");
         String roomID = getIntent().getStringExtra("roomID");
 
-        viewModel = new ViewModelProvider(this,new ViewModelsFactory(roomID, FirebaseConstants.GAME_PLAY_COLLECTION)).get(DuoModeViewModel.class);
+        ViewModelsFactory viewModelsFactory = new ViewModelsFactory(roomID, FirebaseConstants.GAME_PLAY_COLLECTION);
+        viewModelsFactory.setMode(mode);
+
+        viewModel = new ViewModelProvider(this,viewModelsFactory).get(DuoModeViewModel.class);
 
         setUpRv();
 
