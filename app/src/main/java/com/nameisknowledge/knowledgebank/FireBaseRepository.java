@@ -38,8 +38,8 @@ public class FireBaseRepository {
     }
 
     // *************** DuoModeActivity stuff *************** ////
-    public void setTheWinner(String winner,String roomID) {
-        FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION)
+    public void setTheWinner(String winner,String roomID,String gamePlayCollection) {
+        FirebaseFirestore.getInstance().collection(gamePlayCollection)
                 .document(roomID)
                 .update("winner", winner);
     }

@@ -50,7 +50,7 @@ public class QuestionsModeViewModel extends GamePlayViewModel {
 
     @Override
     public void setTheWinner(String winnerName) {
-        getFireBaseRepository().setTheWinner(winnerName,getRoomID());
+        getFireBaseRepository().setTheWinner(winnerName,getRoomID(),getGamePlayCollection());
     }
 
     @Override
