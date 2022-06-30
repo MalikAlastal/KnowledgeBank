@@ -14,14 +14,17 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
-import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.ModelClasses.questions.LocalQuestionMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.CustomDialogAddQuestionBinding;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AddQuestionDialog extends DialogFragment {
     private CustomDialogAddQuestionBinding binding;
     private String roomID;
+    private final List<LocalQuestionMD> questions = new ArrayList<>();
     private int questionCount;
 
     public AddQuestionDialog() {
@@ -60,25 +63,29 @@ public class AddQuestionDialog extends DialogFragment {
         binding.btnAdd.setOnClickListener(view1 -> {
             String question = binding.edQuestion.getText().toString();
             String answer = binding.edAnswer.getText().toString();
-
-            FirebaseFirestore.getInstance()
-                    .collection(FirebaseConstants.GAME_PLAY_2_COLLECTION)
-                    .document(roomID)
-                    .update("questions"+"."+ UserConstants.getCurrentUser(requireContext()).getUid(),FieldValue.arrayUnion(new LocalQuestionMD(question,answer)))
-                    .addOnSuccessListener(unused -> {
-                        questionCount++;
-                        if (questionCount == 3){
-                            FirebaseFirestore.getInstance()
-                                    .collection(FirebaseConstants.GAME_PLAY_2_COLLECTION)
-                                    .document(roomID)
-                                    .update("isQuestionsAdded",FieldValue.increment(1));
-                            dismiss();
-                        }
-                    })
-                    .addOnFailureListener(e->{
-                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+            questions.add(new LocalQuestionMD(question,answer));
+            questionCount++;
+            if (questionCount == 3){
+                done();
+            }
         });
     }
 
+    private void done(){
+        FirebaseFirestore.getInstance()
+                .collection(FirebaseConstants.GAME_PLAY_2_COLLECTION)
+                .document(roomID)
+                .update("questions"+"."+ UserConstants.getCurrentUser(requireContext()).getUid(),questions)
+                .addOnSuccessListener(unused -> {
+                        FirebaseFirestore.getInstance()
+                                .collection(FirebaseConstants.GAME_PLAY_2_COLLECTION)
+                                .document(roomID)
+                                .update("isQuestionsAdded",FieldValue.increment(1));
+                        dismiss();
+
+                })
+                .addOnFailureListener(e->{
+                    Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
 }
