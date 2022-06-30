@@ -1,34 +1,29 @@
-package com.nameisknowledge.knowledgebank.Activities.duoMode;
+package com.nameisknowledge.knowledgebank.Activities.soloMode;
 
-import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
-import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
-import com.nameisknowledge.knowledgebank.Dialogs.WinnerDialog;
-import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
-import com.nameisknowledge.knowledgebank.ViewModelsFactory;
-import com.nameisknowledge.knowledgebank.databinding.ActivityDuoModeBinding;
+import android.os.Bundle;
 
-public class DuoModeActivity extends AppCompatActivity {
-    private final String TAG = "DuoModeActivity";
+import com.nameisknowledge.knowledgebank.Adapters.GamePlayAdapter;
+import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
+import com.nameisknowledge.knowledgebank.databinding.ActivitySoloModeBinding;
+
+public class SoloModeActivity extends AppCompatActivity {
+    private ActivitySoloModeBinding binding;
     private String currentQuestionAnswer;
-    private ActivityDuoModeBinding binding;
+    private SoloModeViewModel viewModel;
     private GamePlayAdapter inputAdapter,answerAdapter;
-    private DuoModeViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityDuoModeBinding.inflate(getLayoutInflater());
         ViewMethods.setLocale(this , "ar");
+        binding = ActivitySoloModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String roomID = getIntent().getStringExtra("roomID");
-
-        viewModel = new ViewModelProvider(this,new ViewModelsFactory(roomID, FirebaseConstants.GAME_PLAY_COLLECTION)).get(DuoModeViewModel.class);
+        viewModel = new ViewModelProvider(this).get(SoloModeViewModel.class);
 
         setUpRv();
 
@@ -36,7 +31,7 @@ public class DuoModeActivity extends AppCompatActivity {
             binding.tvQuestion.setText(question);
         });
 
-        viewModel.realAnswer.observe(this,answer->{
+        viewModel.realAnswer.observe(this,answer ->{
             this.currentQuestionAnswer = answer;
         });
 
@@ -50,26 +45,7 @@ public class DuoModeActivity extends AppCompatActivity {
             answerAdapter.setAnswer(emptyAnswer);
         });
 
-        viewModel.playerScore.observe(this,score->{
-            binding.playerScoreTxt.setText(score);
-        });
 
-        viewModel.enemyScore.observe(this,score->{
-            binding.enemyScoreTxt.setText(score);
-        });
-
-        viewModel.playerName.observe(this,name->{
-            binding.playerNameTxt.setText(name);
-        });
-
-        viewModel.enemyName.observe(this,name->{
-            binding.enemyNameTxt.setText(name);
-        });
-
-        viewModel.winnerName.observe(this,winner->{
-            viewModel.setTheWinner(winner);
-            WinnerDialog.newInstance(winner).show(getSupportFragmentManager(), "Winner Dialog");
-        });
     }
 
     private void setUpRv(){
@@ -88,11 +64,10 @@ public class DuoModeActivity extends AppCompatActivity {
                 inputAdapter.setEmpty(inputsMD.getIndex(), inputsMD);
                 answerAdapter.addChar(inputsMD);
             }
-            viewModel.submitAnswer(currentQuestionAnswer,answerAdapter.getAnswer());
+            viewModel.submit(currentQuestionAnswer,answerAdapter.getAnswer());
         }));
 
         binding.rvAnswer.setAdapter(answerAdapter);
         binding.rvInput.setAdapter(inputAdapter);
     }
-
 }

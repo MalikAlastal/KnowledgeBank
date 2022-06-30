@@ -1,7 +1,6 @@
 package com.nameisknowledge.knowledgebank.Dialogs;
 
 import android.os.Bundle;
-import android.provider.SyncStateContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,37 +10,29 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
-import com.nameisknowledge.knowledgebank.ModelClasses.QuestionMD;
+import com.nameisknowledge.knowledgebank.ModelClasses.questions.LocalQuestionMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.CustomDialogAddQuestionBinding;
-import com.nameisknowledge.knowledgebank.databinding.CustomDialogWinnerBinding;
-
-import java.util.List;
 
 public class AddQuestionDialog extends DialogFragment {
     private CustomDialogAddQuestionBinding binding;
-    private static GenericListener<List<QuestionMD>> Listener;
-    private String gamePlay,senderId;
+    private String roomID;
+    private int questionCount;
 
     public AddQuestionDialog() {
         // Required empty public constructor
     }
 
 
-    public static AddQuestionDialog newInstance(String senderId,String gamePlay,GenericListener<List<QuestionMD>> genericListener) {
+    public static AddQuestionDialog newInstance(String roomID) {
         AddQuestionDialog fragment = new AddQuestionDialog();
         Bundle args = new Bundle();
-        Listener = genericListener;
-        args.putString("gamePlay",gamePlay);
-        args.putString("senderId",senderId);
+        args.putString("roomID",roomID);
         fragment.setArguments(args);
         return fragment;
     }
@@ -50,8 +41,7 @@ public class AddQuestionDialog extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments()!=null){
-            gamePlay = getArguments().getString("gamePlay");
-            senderId = getArguments().getString("senderId");
+            roomID = getArguments().getString("roomID");
         }
     }
 
@@ -67,45 +57,27 @@ public class AddQuestionDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
         binding = CustomDialogAddQuestionBinding.bind(view);
 
-//        binding.btnAdd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                String question = binding.edQuestion.getText().toString();
-//                String answer = binding.edAnswer.getText().toString();
-//                FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(gamePlay).update(
-//                        "data."+FirebaseAuth.getInstance().getUid(), FieldValue.arrayUnion(new QuestionMD(question,answer))
-//                ).addOnSuccessListener(new OnSuccessListener<Void>() {
-//                    @Override
-//                    public void onSuccess(Void unused) {
-//                        Toast.makeText(requireContext(), "done!", Toast.LENGTH_SHORT).show();
-//                    }
-//                }).addOnFailureListener(new OnFailureListener() {
-//                    @Override
-//                    public void onFailure(@NonNull Exception e) {
-//
-//                    }
-//                });
-//            }
-//        });
+        binding.btnAdd.setOnClickListener(view1 -> {
+            String question = binding.edQuestion.getText().toString();
+            String answer = binding.edAnswer.getText().toString();
 
-        binding.txtCounter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    FirebaseFirestore.getInstance().collection(FirebaseConstants.GAME_PLAY_COLLECTION).document(gamePlay)
-                            .get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    Listener.getData((List<QuestionMD>) documentSnapshot.get("data."+senderId));
-                                    dismiss();
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
+            FirebaseFirestore.getInstance()
+                    .collection(FirebaseConstants.GAME_PLAY_2_COLLECTION)
+                    .document(roomID)
+                    .update("questions"+"."+ UserConstants.getCurrentUser(requireContext()).getUid(),FieldValue.arrayUnion(new LocalQuestionMD(question,answer)))
+                    .addOnSuccessListener(unused -> {
+                        questionCount++;
+                        if (questionCount == 3){
+                            FirebaseFirestore.getInstance()
+                                    .collection(FirebaseConstants.GAME_PLAY_2_COLLECTION)
+                                    .document(roomID)
+                                    .update("isQuestionsAdded",FieldValue.increment(1));
+                            dismiss();
                         }
+                    })
+                    .addOnFailureListener(e->{
+                        Toast.makeText(requireContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
-            }
         });
     }
 

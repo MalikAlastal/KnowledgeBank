@@ -36,7 +36,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     <LinearLayout
-        android:id="@+id/owner_progress_linear"
+        android:id="@+id/players"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_25sdp"
         android:orientation="horizontal"
@@ -47,83 +47,53 @@
         android:layout_marginEnd="@dimen/_8sdp"
         android:layout_marginTop="@dimen/_5sdp"
         >
-
-        <ImageView
-            android:id="@+id/img_owner"
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            android:src="@drawable/avatar_man_1"
-            />
-
-        <com.daimajia.numberprogressbar.NumberProgressBar
-            android:id="@+id/owner_progress_line"
+            android:layout_weight="1">
+            <TextView
+                android:gravity="center"
+                android:id="@+id/player_name_txt"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                tools:ignore="NestedWeights" />
+            <TextView
+                android:text="0"
+                android:gravity="center"
+                android:id="@+id/player_score_txt"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="0dp"
-            android:layout_weight="7"
-            android:layout_height="@dimen/_25sdp"
-
-            app:progress_unreached_color="@color/progress_blue"
-            app:progress_reached_color="@color/progress_red"
-
-            app:progress_unreached_bar_height="1.5dp"
-            app:progress_reached_bar_height="1.5dp"
-
-            app:progress_text_size="10sp"
-            app:progress_text_color="@color/progress_red"
-            app:progress_text_offset="1dp"
-            app:progress_text_visibility="visible"
-
-            app:progress_max="100"
-            app:progress_current="0"
-            />
-    </LinearLayout>
-    <LinearLayout
-        android:id="@+id/enemy_progress_linear"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_25sdp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@id/card_question"
-        app:layout_constraintStart_toStartOf="@id/card_question"
-        app:layout_constraintTop_toBottomOf="@id/owner_progress_linear"
-        android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
-        android:layout_marginTop="@dimen/_5sdp"
-        >
-        <com.daimajia.numberprogressbar.NumberProgressBar
-            android:id="@+id/enemy_progress_line"
-            android:layout_width="0dp"
-            android:layout_weight="7"
-            android:layout_height="@dimen/_25sdp"
-
-            app:progress_unreached_color="@color/progress_red"
-            app:progress_reached_color="@color/progress_blue"
-
-            app:progress_unreached_bar_height="1.5dp"
-            app:progress_reached_bar_height="1.5dp"
-
-            app:progress_text_size="10sp"
-            app:progress_text_color="@color/progress_blue"
-            app:progress_text_offset="1dp"
-            app:progress_text_visibility="visible"
-
-            app:progress_max="100"
-            app:progress_current="0"
-            />
-        <ImageView
-            android:id="@+id/img_enemy"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            android:src="@drawable/avatar_man_1"
-            />
+            android:layout_weight="1">
+            <TextView
+                android:gravity="center"
+                android:id="@+id/enemy_name_txt"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                tools:ignore="NestedWeights" />
+            <TextView
+                android:text="0"
+                android:gravity="center"
+                android:id="@+id/enemy_score_txt"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"/>
+        </LinearLayout>
     </LinearLayout>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/card_question"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/enemy_progress_linear"
+        app:layout_constraintTop_toBottomOf="@id/players"
         app:cardBackgroundColor="@color/dark_main_color"
         android:layout_marginTop="@dimen/_2sdp"
         android:layout_marginStart="@dimen/_2sdp"

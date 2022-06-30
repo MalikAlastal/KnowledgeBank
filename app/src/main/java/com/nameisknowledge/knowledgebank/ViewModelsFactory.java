@@ -4,21 +4,34 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoActivityViewModel;
-import com.nameisknowledge.knowledgebank.ModelClasses.ResponseMD;
+import com.nameisknowledge.knowledgebank.Activities.GamePlayViewModel;
+import com.nameisknowledge.knowledgebank.Activities.questionsMode.QuestionsModeViewModel;
+import com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayViewModel;
+import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeViewModel;
+import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 
 public class ViewModelsFactory implements ViewModelProvider.Factory {
-    private ResponseMD responseMD;
-    private String playerName;
-    public ViewModelsFactory(ResponseMD responseMD,String playerName) {
-        this.responseMD = responseMD;
-        this.playerName = playerName;
+    private String roomID,senderName,senderId,mode,gamePlayCollection;
+
+    public ViewModelsFactory(String roomID,String gamePlayCollection) {
+        this.roomID = roomID;
+        this.gamePlayCollection = gamePlayCollection;
+    }
+
+    public ViewModelsFactory(String senderName,String senderId,String mode) {
+        this.senderName = senderName;
+        this.mode = mode;
+        this.senderId = senderId;
     }
 
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(DuoActivityViewModel.class)){
-            return (T) new DuoActivityViewModel(responseMD,playerName);
+        if (modelClass.isAssignableFrom(DuoModeViewModel.class)){
+            return (T) new DuoModeViewModel(roomID,gamePlayCollection);
+        }else if (modelClass.isAssignableFrom(RenderGamePlayViewModel.class)){
+            return (T) new RenderGamePlayViewModel(senderName,senderId,mode);
+        }else if (modelClass.isAssignableFrom(QuestionsModeViewModel.class)){
+            return (T) new QuestionsModeViewModel(roomID,gamePlayCollection);
         }
         return null;
     }
