@@ -13,14 +13,14 @@ import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.CustomItemUserBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
-    private List<UserMD> users;
+    private List<UserMD> users = new ArrayList<>();
     private GenericListener<UserMD> listener;
 
-    public UsersAdapter(List<UserMD> users, GenericListener<UserMD> listener) {
-        this.users = users;
+    public UsersAdapter(GenericListener<UserMD> listener) {
         this.listener = listener;
     }
 

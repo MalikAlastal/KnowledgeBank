@@ -21,21 +21,5 @@ import io.reactivex.rxjava3.core.Observable;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ExampleUnitTest {
-//    TestClass2 testClass2;
-//    @Mock
-//    TestClass testClass;
-//    @Before
-//    public void setUp(){
-//        testClass2 = new TestClass2(testClass);
-//    }
-//    @Test
-//    public void test(){
-//        when(testClass.add(1,2)).thenReturn(3);
-//        assertEquals(3,testClass2.perform(1,2));
-//        verify(testClass,times(1)).add(1,2);
-//
-//        when(testClass.convertToString(1)).thenReturn(Observable.just("2"));
-//        testClass2.convert(1).test().assertValue("1");
-//    }
 
 }

@@ -16,28 +16,21 @@
 
 package com.nameisknowledge.knowledgebank.Services;
 
-import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.nameisknowledge.knowledgebank.Activities.MainActivity;
-import com.nameisknowledge.knowledgebank.Activities.RenderGamePlayActivity;
+import com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity;
 import com.nameisknowledge.knowledgebank.R;
 
 import java.util.Objects;
@@ -56,7 +49,7 @@ import java.util.Objects;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
-    private String senderName;
+    private String senderName,senderId,mode;
 
     /**
      * Called when message is received.
@@ -89,6 +82,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             senderName = remoteMessage.getData().get("senderName");
+            senderId = remoteMessage.getData().get("senderId");
+            mode = remoteMessage.getData().get("mode");
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use WorkManager.
                 scheduleJob();
@@ -206,7 +201,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this , channelId)
                 .setSmallIcon(R.drawable.ic_timer)
                 .setAutoCancel(true)
-                .setContent(getMyLayout(Objects.requireNonNull(remoteMessage.getNotification()).getTitle()));
+                .setContent(getMyLayout(Objects.requireNonNull(remoteMessage.getNotification()).getTitle()+" "+remoteMessage.getNotification().getBody()));
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) ;
         if (Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
@@ -222,9 +217,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 new RemoteViews(getApplicationContext().getPackageName() , R.layout.notification_layout) ;
         //اذا بدك تبعت بيانات لما تضغط على الاشعار للاكتيفتي الي رايح الها الاشعار
         Intent notificationIntent = new Intent(getApplicationContext(), RenderGamePlayActivity.class);
-        Log.d(TAG, "Message data payload: " + senderName);
         Bundle bundle = new Bundle();
         bundle.putString("senderName",senderName);
+        bundle.putString("senderId",senderId);
+        bundle.putString("mode",mode);
         notificationIntent.putExtras(bundle);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
