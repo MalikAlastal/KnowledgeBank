@@ -53,7 +53,7 @@ public class DuoModeViewModel extends GamePlayViewModel {
 
     @Override
     public void setTheWinner(String winnerName) {
-        getFireBaseRepository().setTheWinner(winnerName, getRoomID());
+        getFireBaseRepository().setTheWinner(winnerName, getRoomID(),getGamePlayCollection());
     }
 
     public void getTheQuestionByIndex(int index) {
