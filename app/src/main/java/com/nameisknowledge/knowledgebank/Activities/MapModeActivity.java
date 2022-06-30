@@ -42,6 +42,7 @@ import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
 import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
+import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ModelClasses.MapAreaMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.R;
@@ -80,9 +81,10 @@ public class MapModeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMapModeBinding.inflate(getLayoutInflater());
         getWindow().setStatusBarColor(getResources().getColor(R.color.map_gray));
+        ViewMethods.setLocale(this  , "en");
         setContentView(binding.getRoot());
 
-        prepareActivity();
+         prepareActivity();
     }
 
     private void prepareActivity(){
@@ -90,7 +92,7 @@ public class MapModeActivity extends AppCompatActivity {
 
         locationProvider = LocationServices.getFusedLocationProviderClient(this);
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        toastMethods = new ToastMethods(this);
+        toastMethods = new ToastMethods();
         firestore = FirebaseFirestore.getInstance() ;
         areas = new ArrayList<>();
         isLocationFound = false ;
@@ -242,6 +244,9 @@ public class MapModeActivity extends AppCompatActivity {
             annotationBinding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    if(area.getQuestionList().size()==0){
+                        return;
+                    }
                     int buttonsVisibility = annotationBinding.buttonsLayout.getVisibility();
 
                     if (buttonsVisibility == View.VISIBLE){
@@ -257,9 +262,12 @@ public class MapModeActivity extends AppCompatActivity {
 
             annotationBinding.btnAttack.setOnClickListener(getAttackClickListener(area));
             if (area.getOwnerUser()!=null){
-                annotationBinding.ownerInfoLayout.setVisibility(View.VISIBLE);
-              //  annotationBinding.ivUserImage.setImageResource(Integer.parseInt(area.getOwnerUser().getAvatarRes()));
-                annotationBinding.tvUserUsername.setText(area.getOwnerUser().getUsername());
+                try {
+                    annotationBinding.ownerInfoLayout.setVisibility(View.VISIBLE);
+                    annotationBinding.ivUserImage.setImageResource(Integer.parseInt(area.getOwnerUser().getAvatarRes()));
+                    annotationBinding.tvUserUsername.setText(area.getOwnerUser().getUsername());
+                }catch (Exception e){}
+
             }
     }
 

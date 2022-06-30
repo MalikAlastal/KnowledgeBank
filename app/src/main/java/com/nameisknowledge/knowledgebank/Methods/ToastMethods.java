@@ -1,11 +1,9 @@
 package com.nameisknowledge.knowledgebank.Methods;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.view.Gravity;
 import android.widget.Toast;
 
-import com.nameisknowledge.knowledgebank.R;
+import com.nameisknowledge.knowledgebank.MyApplication;
 
 import es.dmoral.toasty.Toasty;
 
@@ -15,7 +13,8 @@ public class ToastMethods {
     private Toast toast ;
     private Context context ;
 
-    public ToastMethods(Context context){
+    public ToastMethods(){
+        context = MyApplication.getContext();
         toast = new Toast(context);
         this.context = context ;
     }

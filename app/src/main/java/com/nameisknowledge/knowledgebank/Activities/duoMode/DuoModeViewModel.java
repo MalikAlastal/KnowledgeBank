@@ -1,34 +1,21 @@
 package com.nameisknowledge.knowledgebank.Activities.duoMode;
 
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.nameisknowledge.knowledgebank.Activities.GamePlayViewModel;
-import com.nameisknowledge.knowledgebank.Constants.UserConstants;
-import com.nameisknowledge.knowledgebank.FireBaseRepository;
-import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
-
 import com.nameisknowledge.knowledgebank.ModelClasses.gamePlay.DuoModeGamePlayMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.gamePlay.GamePlay;
-import com.nameisknowledge.knowledgebank.ModelClasses.PlayerMD;
 import com.nameisknowledge.knowledgebank.ModelClasses.questions.FireBaseQuestionMD;
-import com.nameisknowledge.knowledgebank.MyApplication;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.core.Observer;
 import io.reactivex.rxjava3.core.SingleObserver;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
@@ -49,6 +36,8 @@ public class DuoModeViewModel extends GamePlayViewModel {
             getFireBaseRepository().setTheScore(getPlayer().getPlayerName(), getRoomID(), getGamePlayCollection());
             getFireBaseRepository().questionAnsweredObservable(2, getRoomID(), getGamePlayCollection()).subscribe();
         }
+
+
     }
 
     @Override

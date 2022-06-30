@@ -93,7 +93,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
     private void prepareActivity(){
         area = (MapAreaMD) getIntent().getSerializableExtra(AREA_KEY);
-        toastMethods = new ToastMethods(this);
+        toastMethods = new ToastMethods();
 
         toastMethods.info(area.getAreaName());
         questionList = area.getQuestionList();
@@ -109,10 +109,11 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
         isActivityVisible = true ;
 
+        toastMethods.info(questionList.get(0).getCategory());
+
         for (MapFireBaseQuestionMD question: questionList) {
             question.setAnswer(clearAnswerSpaces(question.getAnswer()));
         }
-
 
         changeProgress(binding.playerProgressLine,0);
         changeProgress(binding.ownerProgressLine,(int) (((double)area.getOwnerAnsweredQuestionsCount()/(double)questionList.size()) *100.00));

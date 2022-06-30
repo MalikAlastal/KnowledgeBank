@@ -160,7 +160,7 @@ public class AreaAttackedDialog extends DialogFragment {
                             @Override
                             public void call(Animator animator) {
                                 //AnimationMethods.flash(DurationConstants.DURATION_SO_SHORT,0 ,binding.cardUser);
-                                binding.tvYou.setTypedText(getString(R.string.you_are_the_king));
+                                binding.tvYou.setTypedText(getString(R.string.you_are_the_king)+"  ");
                             }
                         }, binding.cardUser);
                     }

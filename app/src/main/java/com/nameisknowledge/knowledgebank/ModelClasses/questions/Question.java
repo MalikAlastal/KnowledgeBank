@@ -1,6 +1,8 @@
 package com.nameisknowledge.knowledgebank.ModelClasses.questions;
 
-public abstract class Question {
+import java.io.Serializable;
+
+public abstract class Question implements Serializable {
     private String question,answer;
 
     public Question(String question, String answer) {

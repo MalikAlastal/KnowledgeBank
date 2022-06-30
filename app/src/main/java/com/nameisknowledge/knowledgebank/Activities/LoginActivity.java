@@ -5,19 +5,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.addisonelliott.segmentedbutton.SegmentedButtonGroup;
 import com.daimajia.androidanimations.library.YoYo;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -27,7 +23,6 @@ import com.nameisknowledge.knowledgebank.Adapters.AvatarsBannerAdapter;
 import com.nameisknowledge.knowledgebank.Constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.Constants.FirebaseConstants;
 import com.nameisknowledge.knowledgebank.Constants.UserConstants;
-import com.nameisknowledge.knowledgebank.Listeners.GenericListener;
 import com.nameisknowledge.knowledgebank.Methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.Methods.ToastMethods;
 import com.nameisknowledge.knowledgebank.Methods.ViewMethods;
@@ -217,7 +212,7 @@ public class LoginActivity extends AppCompatActivity {
         binding.dpBirthdate.setMaxDate(calendar.getTime());
 
 
-        toastMethods = new ToastMethods(this);
+        toastMethods = new ToastMethods();
         avatars = new ArrayList<>();
         bannerAdapter = new AvatarsBannerAdapter();
 

@@ -1,20 +1,17 @@
 package com.nameisknowledge.knowledgebank.Activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.nameisknowledge.knowledgebank.Activities.duoMode.DuoModeActivity;
-import com.nameisknowledge.knowledgebank.Activities.questionsMode.QuestionsModeActivity;
-import com.nameisknowledge.knowledgebank.Activities.renderGamePlay.RenderGamePlayActivity;
 import com.nameisknowledge.knowledgebank.Activities.soloMode.SoloModeActivity;
 import com.nameisknowledge.knowledgebank.Adapters.ModesBannerAdapter;
 import com.nameisknowledge.knowledgebank.Adapters.UsersAdapter;
@@ -69,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         binding.rvUsers.setHasFixedSize(true);
         binding.rvUsers.setLayoutManager(new LinearLayoutManager(this));
 
-        toastMethods = new ToastMethods(this);
+        toastMethods = new ToastMethods();
         userMDs = new ArrayList<>();
 
 
