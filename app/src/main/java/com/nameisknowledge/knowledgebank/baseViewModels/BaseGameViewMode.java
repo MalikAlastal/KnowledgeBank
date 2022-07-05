@@ -1,5 +1,7 @@
 package com.nameisknowledge.knowledgebank.baseViewModels;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 

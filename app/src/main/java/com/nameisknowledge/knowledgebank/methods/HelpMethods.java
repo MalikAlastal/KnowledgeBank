@@ -36,11 +36,11 @@ public class HelpMethods {
         }
     }
 
-    public static void showHint(int points,String hint,GenericListener<String> listener){
+    public static void showHint(int points,GenericListener<String> listener){
         if (points < 5){
             listener.getData("لقد نفذت مساعداتك");
         }else {
-            listener.getData(hint);
+            listener.getData("");
         }
     }
 

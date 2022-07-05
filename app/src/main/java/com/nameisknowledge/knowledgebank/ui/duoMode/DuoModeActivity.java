@@ -86,14 +86,14 @@ public class DuoModeActivity extends AppCompatActivity {
         });
 
         binding.hint.setOnClickListener(view -> {
-            HelpMethods.showHint(viewModel.getPoints(),hint,hint->{
-                if (hint.isEmpty()){
+            HelpMethods.showHint(viewModel.getPoints(),s->{
+                if (s.isEmpty()){
                     isHintUsed = true;
                     WinnerDialog.newInstance(hint).show(getSupportFragmentManager(), " ");
                     viewModel.updatePoints("hint");
                     binding.hint.setEnabled(false);
                 }else {
-                    Toast.makeText(this,hint,Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,s,Toast.LENGTH_SHORT).show();
                     binding.showChar.setEnabled(false);
                 }
             });
