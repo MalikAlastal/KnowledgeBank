@@ -11,6 +11,10 @@ public class StringFactory {
     private static final char[] letters = {
             'أ', 'ب', 'ت', 'ث', 'ج', 'ح','خ', 'د','ذ','ر','ز','س','ش', 'ص', 'ض', 'ط','ظ','ع', 'غ','ف', 'ق','م','ل','ك','ن', 'ه','و','ي'
     };
+
+    private static final char[] numbers = {
+            '0','1','2','3','4','5','6','7','8','9'
+    };
     public static char[] makeStringEmpty(String s) {
         char[] array = s.toCharArray();
         for (int i = 0; i < s.length(); i++) {
@@ -55,7 +59,11 @@ public class StringFactory {
     public static List<InputsMD> makeAnswerLonger(String answer) {
         List<InputsMD> list = cutString(answer);
         for (int i = list.size(); i < answer.length() + 4; i++) {
-            list.add(new InputsMD(letters[new Random().nextInt(letters.length - 1)],i,true));
+            if (Character.isDigit(answer.charAt(0))){
+                list.add(new InputsMD(numbers[new Random().nextInt(numbers.length - 1)],i,true));
+            }else {
+                list.add(new InputsMD(letters[new Random().nextInt(letters.length - 1)],i,true));
+            }
         }
         return randomTheAnswer(list);
     }

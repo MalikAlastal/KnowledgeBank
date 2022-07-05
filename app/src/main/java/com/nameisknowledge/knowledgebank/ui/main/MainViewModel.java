@@ -12,31 +12,40 @@ import java.util.List;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.SingleObserver;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Function;
 
 public class MainViewModel extends ViewModel {
     private final FireBaseRepository fireBaseRepository;
-    private final List<UserMD> list = new ArrayList<>();
+    private List<UserMD> list = new ArrayList<>();
     public final MutableLiveData<List<UserMD>> users = new MutableLiveData<>();
-    private Disposable disposable;
-
+    public final MutableLiveData<UserMD> user = new MutableLiveData<>();
+    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     public MainViewModel() {
         fireBaseRepository = FireBaseRepository.getInstance();
     }
 
     public void getPlayers(String mode){
+        list = new ArrayList<>();
         fireBaseRepository.getHighRankedPlayers(mode)
-                .flatMap((Function<String, ObservableSource<UserMD>>) id -> fireBaseRepository.getUserById(id,list.size()))
+                .flatMap((Function<String, ObservableSource<UserMD>>) id -> fireBaseRepository.getUserById(id,3))
                 .subscribe(getHighRankedPlayers());
+    }
+
+    public void getUser(String id){
+        fireBaseRepository.getUserById(id)
+                .subscribe(getUserByIdObserver());
     }
 
     private Observer<UserMD> getHighRankedPlayers(){
         return new Observer<UserMD>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-                disposable = d;
+                compositeDisposable.add(d);
             }
 
             @Override
@@ -52,8 +61,32 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onComplete() {
                 users.setValue(list);
-                disposable.dispose();
             }
         };
+    }
+
+    private SingleObserver<UserMD> getUserByIdObserver(){
+        return new SingleObserver<UserMD>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+                compositeDisposable.add(d);
+            }
+
+            @Override
+            public void onSuccess(@NonNull UserMD userMD) {
+                user.setValue(userMD);
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                //
+            }
+        };
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        compositeDisposable.dispose();
     }
 }

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.Holder>{
     private List<UserMD> users = new ArrayList<>();
-    private GenericListener<UserMD> listener;
+    private final GenericListener<UserMD> listener;
 
     public UsersAdapter(GenericListener<UserMD> listener) {
         this.listener = listener;

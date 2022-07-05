@@ -9,18 +9,21 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.nameisknowledge.knowledgebank.adapters.GamePlayAdapter;
 import com.nameisknowledge.knowledgebank.constants.DurationConstants;
 import com.nameisknowledge.knowledgebank.constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.constants.IntentConstants;
+import com.nameisknowledge.knowledgebank.constants.UserConstants;
 import com.nameisknowledge.knowledgebank.dialogs.AddQuestionDialog;
 import com.nameisknowledge.knowledgebank.dialogs.WinnerDialog;
 import com.nameisknowledge.knowledgebank.methods.AnimationMethods;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.ViewModelsFactory;
 import com.nameisknowledge.knowledgebank.databinding.ActivityQuastionsModeBinding;
-
-import io.reactivex.rxjava3.disposables.Disposable;
+import com.nameisknowledge.knowledgebank.methods.HelpMethods;
+import com.nameisknowledge.knowledgebank.modelClasses.questions.Question;
 
 public class QuestionsModeActivity extends AppCompatActivity {
     private static final String TAG = "QuestionsModeActivity";
@@ -28,7 +31,6 @@ public class QuestionsModeActivity extends AppCompatActivity {
     private GamePlayAdapter inputAdapter,answerAdapter;
     private QuestionsModeViewModel viewModel;
     private String currentQuestionAnswer;
-    private Disposable disposable;
     MediaPlayer clickSound;
     MediaPlayer swingSound;
     MediaPlayer popSound;
@@ -38,8 +40,8 @@ public class QuestionsModeActivity extends AppCompatActivity {
         binding = ActivityQuastionsModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String roomID = getIntent().getStringExtra("roomID");
-        String mode = getIntent().getStringExtra("mode");
+        String roomID = getIntent().getStringExtra(IntentConstants.ROOM_ID_KEY);
+        String mode = getIntent().getStringExtra(IntentConstants.MODE_KEY);
 
         clickSound = MediaPlayer.create(this, R.raw.button_clicked);
         swingSound = MediaPlayer.create(this, R.raw.swing);
@@ -47,27 +49,21 @@ public class QuestionsModeActivity extends AppCompatActivity {
 
         setUpRv();
 
-        ViewModelsFactory viewModelsFactory = new ViewModelsFactory(roomID, FirebaseConstants.GAME_PLAY_2_COLLECTION);
+        ViewModelsFactory viewModelsFactory = new ViewModelsFactory(roomID,FirebaseConstants.GAME_PLAY_2_COLLECTION);
         viewModelsFactory.setMode(mode);
 
         viewModel = new ViewModelProvider(this,viewModelsFactory).get(QuestionsModeViewModel.class);
 
+        viewModel.setPoints(UserConstants.getCurrentUser(this).getAreaAttackPoints());
+
         AddQuestionDialog.newInstance(roomID).show(getSupportFragmentManager(),"Add Questions Dialog");
 
-        disposable = viewModel.isQuestionsAdded().subscribe(()->{
+        viewModel.isQuestionsAdded.observe(this,done->{
             binding.prg.setVisibility(View.GONE);
             viewModel.start();
         });
 
-        viewModel.question.observe(this, question -> {
-            binding.tvQuestion.setText(question.getQuestion());
-            this.currentQuestionAnswer = clearAnswerSpaces(question.getAnswer());
-            changeQuestionAnimation();
-            inputAdapter.clearArray();
-            inputAdapter.setAnswer(makeAnswerLonger(clearAnswerSpaces(question.getAnswer())));
-            answerAdapter.clearArray();
-            answerAdapter.setAnswer(toInputsList(makeStringEmpty(clearAnswerSpaces(question.getAnswer()))));
-        });
+        viewModel.question.observe(this,this::setDataForUi);
 
         viewModel.playerScore.observe(this,score->{
             binding.playerScoreTxt.setText(score);
@@ -77,17 +73,35 @@ public class QuestionsModeActivity extends AppCompatActivity {
             binding.enemyScoreTxt.setText(score);
         });
 
-        viewModel.playerName.observe(this,name->{
-            binding.playerNameTxt.setText(name);
+        viewModel.userPoints.observe(this, points -> {
+            binding.pointsTxt.setText(String.valueOf(points));
+        });
+        binding.delete.setOnClickListener(view -> {
+            HelpMethods.deleteChar(viewModel.getPoints(),inputAdapter, answer->{
+                if (answer.isEmpty()){
+                    viewModel.updatePoints("delete");
+                }else {
+                    Toast.makeText(this, answer, Toast.LENGTH_SHORT).show();
+                    binding.delete.setEnabled(false);
+                }
+            });
         });
 
-        viewModel.enemyName.observe(this,name->{
-            binding.enemyNameTxt.setText(name);
+        binding.showChar.setOnClickListener(view -> {
+            HelpMethods.showChar(viewModel.getPoints(),inputAdapter,answerAdapter,currentQuestionAnswer,answer->{
+                if (answer.isEmpty()){
+                    viewModel.updatePoints("showChar");
+                    viewModel.submitAnswer(currentQuestionAnswer,answerAdapter.getAnswer());
+                }else {
+                    Toast.makeText(this, answer, Toast.LENGTH_SHORT).show();
+                    binding.showChar.setEnabled(false);
+                }
+            });
         });
+
 
         viewModel.winner.observe(this,winner->{
-            viewModel.setTheWinner(winner);
-            WinnerDialog.newInstance(winner.getPlayerName()).show(getSupportFragmentManager(), "Winner Dialog");
+            WinnerDialog.newInstance(winner).show(getSupportFragmentManager(), "Winner Dialog");
         });
     }
 
@@ -131,9 +145,21 @@ public class QuestionsModeActivity extends AppCompatActivity {
         }
     }
 
+    private void setDataForUi(Question question){
+        binding.tvQuestion.setText(question.getQuestion());
+        currentQuestionAnswer = clearAnswerSpaces(question.getAnswer());
+        binding.playerNameTxt.setText(viewModel.getPlayer().getPlayerName());
+        binding.enemyNameTxt.setText(viewModel.getEnemy().getPlayerName());
+        changeQuestionAnimation();
+        inputAdapter.clearArray();
+        inputAdapter.setAnswer(makeAnswerLonger(clearAnswerSpaces(question.getAnswer())));
+        answerAdapter.clearArray();
+        answerAdapter.setAnswer(toInputsList(makeStringEmpty(clearAnswerSpaces(question.getAnswer()))));
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        disposable.dispose();
+        if (!viewModel.isGameFinished()) viewModel.setTheWinner(viewModel.getEnemy());
     }
 }

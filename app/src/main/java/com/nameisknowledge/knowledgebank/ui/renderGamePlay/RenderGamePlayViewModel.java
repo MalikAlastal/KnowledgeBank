@@ -8,6 +8,7 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.nameisknowledge.knowledgebank.constants.FirebaseConstants;
+import com.nameisknowledge.knowledgebank.constants.IntentConstants;
 import com.nameisknowledge.knowledgebank.constants.UserConstants;
 import com.nameisknowledge.knowledgebank.FireBaseRepository;
 import com.nameisknowledge.knowledgebank.modelClasses.EmitterQuestion;
@@ -53,10 +54,10 @@ public class RenderGamePlayViewModel extends ViewModel {
     public void init(){
         if (senderName!=null){
             switch (mode){
-                case "DuoMode":
+                case IntentConstants.DUO_MODE_KEY:
                     fireBaseRepository.generateEmitterQuestionsObservable().subscribe(generateEmitterQuestionsObserver());
                     break;
-                case "QuestionsMode":
+                case IntentConstants.QUESTIONS_MODE_KEY:
                     String playerName = UserConstants.getCurrentUser(MyApplication.getContext()).getUsername();
                     String playerId = UserConstants.getCurrentUser(MyApplication.getContext()).getUid();
                     fireBaseRepository.generateGamePlay2Observable(new PlayerMD(playerName,playerId),new PlayerMD(senderName,senderId)).subscribe(generateGamePlayObserve());

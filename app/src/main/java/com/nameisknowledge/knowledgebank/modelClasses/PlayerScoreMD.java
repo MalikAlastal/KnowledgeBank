@@ -1,13 +1,14 @@
 package com.nameisknowledge.knowledgebank.modelClasses;
 
 public class PlayerScoreMD {
-    private int DuoMode,QuestionsMode,SoloMode;
+    private int duoMode,questionsMode,soloMode,mapsMode;
     private String id;
 
-    public PlayerScoreMD(String id,int DuoMode, int QuestionsMode, int SoloMode) {
-        this.DuoMode = DuoMode;
-        this.QuestionsMode = QuestionsMode;
-        this.SoloMode = SoloMode;
+    public PlayerScoreMD(String id,int duoMode, int questionsMode, int soloMode, int mapsMode) {
+        this.duoMode = duoMode;
+        this.questionsMode = questionsMode;
+        this.soloMode = soloMode;
+        this.mapsMode = mapsMode;
         this.id = id;
     }
 
@@ -15,27 +16,35 @@ public class PlayerScoreMD {
     }
 
     public int getDuoMode() {
-        return DuoMode;
+        return duoMode;
     }
 
     public void setDuoMode(int duoMode) {
-        DuoMode = duoMode;
+        this.duoMode = duoMode;
     }
 
     public int getQuestionsMode() {
-        return QuestionsMode;
+        return questionsMode;
     }
 
     public void setQuestionsMode(int questionsMode) {
-        QuestionsMode = questionsMode;
+        this.questionsMode = questionsMode;
     }
 
     public int getSoloMode() {
-        return SoloMode;
+        return soloMode;
     }
 
     public void setSoloMode(int soloMode) {
-        SoloMode = soloMode;
+        this.soloMode = soloMode;
+    }
+
+    public int getMapsMode() {
+        return mapsMode;
+    }
+
+    public void setMapsMode(int mapsMode) {
+        this.mapsMode = mapsMode;
     }
 
     public String getId() {

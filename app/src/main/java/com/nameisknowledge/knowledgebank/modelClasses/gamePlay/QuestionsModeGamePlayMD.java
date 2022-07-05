@@ -2,6 +2,7 @@ package com.nameisknowledge.knowledgebank.modelClasses.gamePlay;
 
 import com.nameisknowledge.knowledgebank.modelClasses.PlayerMD;
 import com.nameisknowledge.knowledgebank.modelClasses.questions.FireBaseQuestionMD;
+import com.nameisknowledge.knowledgebank.modelClasses.questions.LocalQuestionMD;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.Map;
 
 public class QuestionsModeGamePlayMD extends GamePlay {
     private int isQuestionsAdded;
-    private final Map<String,List<FireBaseQuestionMD>> questions = new HashMap<>();
+    private final Map<String,List<LocalQuestionMD>> questions = new HashMap<>();
 
     public QuestionsModeGamePlayMD(PlayerMD player, PlayerMD enemy) {
         super(player, enemy);
@@ -29,7 +30,7 @@ public class QuestionsModeGamePlayMD extends GamePlay {
         this.isQuestionsAdded = isQuestionsAdded;
     }
 
-    public Map<String, List<FireBaseQuestionMD>> getQuestions() {
+    public Map<String, List<LocalQuestionMD>> getQuestions() {
         return questions;
     }
 }

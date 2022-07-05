@@ -2,13 +2,19 @@ package com.nameisknowledge.knowledgebank.ui.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.firebase.firestore.auth.User;
+import com.nameisknowledge.knowledgebank.constants.IntentConstants;
 import com.nameisknowledge.knowledgebank.databinding.ActivityMainBinding;
+import com.nameisknowledge.knowledgebank.methods.ViewMethods;
 import com.nameisknowledge.knowledgebank.ui.mapMode.MapModeActivity;
 import com.nameisknowledge.knowledgebank.ui.SendPlayRequestActivity;
 import com.nameisknowledge.knowledgebank.ui.soloMode.SoloModeActivity;
@@ -32,10 +38,10 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
-    ActivityMainBinding binding;
-    String mode;
-    UsersAdapter usersAdapter;
-    MainViewModel viewModel;
+    private ActivityMainBinding binding;
+    private String mode;
+    private UsersAdapter usersAdapter;
+    private MainViewModel viewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,11 +53,19 @@ public class MainActivity extends AppCompatActivity {
         viewModel.users.observe(this,users->{
             usersAdapter.setUsers(users);
         });
+
+        viewModel.user.observe(this,user->{
+            setUserData(user);
+            UserConstants.setCurrentUser(user,this);
+        });
+
     }
 
     private void prepareActivity() {
+
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        viewModel.getPlayers(mode);
+
+        viewModel.getUser(UserConstants.getCurrentUser(this).getUid());
 
         binding.rvUsers.setHasFixedSize(true);
         binding.rvUsers.setLayoutManager(new LinearLayoutManager(this));
@@ -67,8 +81,6 @@ public class MainActivity extends AppCompatActivity {
         prepareModes();
 
         binding.ivUserImage.setMinimumWidth(binding.layoutUserDetails.getMinimumWidth());
-
-        setUserData();
     }
 
     private void prepareModes() {
@@ -80,6 +92,13 @@ public class MainActivity extends AppCompatActivity {
                 .setScrollDuration(DurationConstants.DURATION_SO_SHORT)
                 .setRevealWidth(5, 5)
                 .setPageMargin(getResources().getDimensionPixelOffset(R.dimen._85sdp))
+                .registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        mode = getMode(position);
+                       viewModel.getPlayers(mode);
+                    }
+                })
                 .setAutoPlay(false)
                 .setCanLoop(false)
                 .setIndicatorVisibility(View.GONE)
@@ -120,23 +139,42 @@ public class MainActivity extends AppCompatActivity {
         binding.bvpModes.setCurrentItem(1, false);
     }
 
+    private String getMode(int position) {
+        String mode = "";
+        switch (position){
+            case 0:
+                mode = IntentConstants.SOLO_MODE_KEY;
+                break;
+            case 1:
+                mode = IntentConstants.DUO_MODE_KEY;
+                break;
+            case 2:
+                mode = IntentConstants.MAPS_MODE_KEY;
+                break;
+            case 3:
+                mode = IntentConstants.QUESTIONS_MODE_KEY;
+                break;
+        }
+        return mode;
+    }
+
     private void soloModeListener() {
-        Intent goSoloActivity = new Intent(this, SoloModeActivity.class);
+        Intent goSoloActivity = new Intent(this, SoloModeActivity.class).putExtra(IntentConstants.MODE_KEY,IntentConstants.SOLO_MODE_KEY);
         startActivity(goSoloActivity);
     }
 
     private void duoModeListener() {
-        Intent goSoloActivity = new Intent(this, SendPlayRequestActivity.class).putExtra("mode","DuoMode");
+        Intent goSoloActivity = new Intent(this, SendPlayRequestActivity.class).putExtra(IntentConstants.MODE_KEY,IntentConstants.DUO_MODE_KEY);
         startActivity(goSoloActivity);
     }
 
     private void questionsModeListener() {
-        Intent goSoloActivity = new Intent(this, SendPlayRequestActivity.class).putExtra("mode","QuestionsMode");
+        Intent goSoloActivity = new Intent(this, SendPlayRequestActivity.class).putExtra(IntentConstants.MODE_KEY,IntentConstants.QUESTIONS_MODE_KEY);
         startActivity(goSoloActivity);
     }
 
     private void mapModeListener() {
-        Intent goSoloActivity = new Intent(this, MapModeActivity.class);
+        Intent goSoloActivity = new Intent(this, MapModeActivity.class).putExtra(IntentConstants.MODE_KEY,IntentConstants.MAPS_MODE_KEY);
         startActivity(goSoloActivity);
     }
 
@@ -147,8 +185,7 @@ public class MainActivity extends AppCompatActivity {
         RetrofitInstance.getInstance().sentNot(pushNotification);
     }
 
-    private void setUserData(){
-        UserMD user = UserConstants.getCurrentUser(this);
+    private void setUserData(UserMD user){
         binding.tvUserEmail.setText(user.getEmail());
         binding.tvUserUsername.setText(user.getUsername());
         if (user.getAvatarRes() != null && !user.getAvatarRes().equals("")) {
@@ -160,6 +197,13 @@ public class MainActivity extends AppCompatActivity {
             else if (userGender.equals(UserConstants.GENDER_FEMALE))
                 binding.ivUserImage.setImageResource(R.drawable.avatar_woman_1);
         }
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        viewModel.getUser(UserConstants.getCurrentUser(this).getUid());
     }
 
 }

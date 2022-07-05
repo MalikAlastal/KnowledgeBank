@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.nameisknowledge.knowledgebank.constants.IntentConstants;
 import com.nameisknowledge.knowledgebank.databinding.ActivitySendPlayRequestBinding;
 import com.nameisknowledge.knowledgebank.ui.renderGamePlay.RenderGamePlayActivity;
 import com.nameisknowledge.knowledgebank.adapters.UsersAdapter;
@@ -20,6 +21,8 @@ import com.nameisknowledge.knowledgebank.retroift.NotificationData;
 import com.nameisknowledge.knowledgebank.retroift.PushNotification;
 import com.nameisknowledge.knowledgebank.retroift.RetrofitInstance;
 
+import java.util.List;
+
 public class SendPlayRequestActivity extends AppCompatActivity {
     ActivitySendPlayRequestBinding binding;
     @Override
@@ -28,9 +31,11 @@ public class SendPlayRequestActivity extends AppCompatActivity {
         binding = ActivitySendPlayRequestBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        String mode = getIntent().getStringExtra("mode");
+        String mode = getIntent().getStringExtra(IntentConstants.MODE_KEY);
         String senderId = UserConstants.getCurrentUser(this).getUid();
         String senderName = UserConstants.getCurrentUser(this).getUsername();
+
+        Toast.makeText(this, mode, Toast.LENGTH_SHORT).show();
 
         UsersAdapter adapter = new UsersAdapter(user -> {
             sendMessage(new NotificationMD(user.getNotificationToken(),senderName,senderId,mode));

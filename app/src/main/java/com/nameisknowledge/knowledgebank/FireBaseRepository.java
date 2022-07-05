@@ -42,28 +42,30 @@ public class FireBaseRepository {
     }
 
     // *************** DuoModeActivity stuff *************** ////
-    public void setTheWinner(String winner,String roomID,String gamePlayCollection) {
+    public void setTheWinner(PlayerMD winner,String roomID,String gamePlayCollection) {
         FirebaseFirestore.getInstance().collection(gamePlayCollection)
                 .document(roomID)
-                .update("winner", winner);
+                .update("winner", winner.getPlayerName());
     }
 
-    public void setFinalPlayerScore(String mode,String playerID){
+    public void setFinalPlayerScore(String mode,String playerID,int points){
         FirebaseFirestore.getInstance()
                 .collection(FirebaseConstants.SCORES_COLLECTION)
                 .document(playerID)
-                .update(mode,FieldValue.increment(1));
+                .update(mode,FieldValue.increment(points));
     }
 
-    public void setTheScore(String playerName,String roomID,String gamePlayCollection) {
-        FirebaseFirestore.getInstance().collection(gamePlayCollection)
+    public void updateUserScore(String playerName, String roomID, String gamePlayCollection) {
+        FirebaseFirestore.getInstance()
+                .collection(gamePlayCollection)
                 .document(roomID)
                 .update("scores"+"."+playerName, FieldValue.increment(1));
     }
 
     public Single<PlayerMD> finishTheGameObservable(PlayerMD player,PlayerMD enemy,String roomID,String gamePlayCollection) {
         return Single.create((SingleOnSubscribe<PlayerMD>) emitter -> {
-            FirebaseFirestore.getInstance().collection(gamePlayCollection)
+            FirebaseFirestore.getInstance()
+                    .collection(gamePlayCollection)
                     .document(roomID)
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
@@ -78,7 +80,7 @@ public class FireBaseRepository {
         }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io());
     }
 
-    public Completable questionAnsweredObservable(int number,String roomID,String gamePlayCollection) {
+    public Completable currentQuestionAnsweredObservable(int number, String roomID, String gamePlayCollection) {
         return Completable.create(emitter -> {
             FirebaseFirestore.getInstance()
                     .collection(gamePlayCollection)
@@ -310,7 +312,7 @@ public class FireBaseRepository {
         FirebaseFirestore.getInstance()
                 .collection(FirebaseConstants.SCORES_COLLECTION)
                 .document(id)
-                .set(new PlayerScoreMD(id,0,0,0));
+                .set(new PlayerScoreMD(id,0,0,0,0));
     }
 
     public void setDefaultResponse(String id){
@@ -335,17 +337,6 @@ public class FireBaseRepository {
     }
 
     public Single<UserMD> updateAreaAttackPoints(String id,int points){
-        return Single.create((SingleOnSubscribe<String>) emitter->{
-            FirebaseFirestore.getInstance()
-                    .collection(FirebaseConstants.USERS_COLLECTION)
-                    .document(id)
-                    .update("areaAttackPoints",FieldValue.increment(points))
-                    .addOnSuccessListener(unused -> emitter.onSuccess(id))
-                    .addOnFailureListener(emitter::onError);
-        }).flatMap(this::getUserById).observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Single<UserMD> updateAreaAttackPointsV2(String id,int points){
         return Single.create((SingleOnSubscribe<String>) emitter->{
             FirebaseFirestore.getInstance()
                     .collection(FirebaseConstants.USERS_COLLECTION)

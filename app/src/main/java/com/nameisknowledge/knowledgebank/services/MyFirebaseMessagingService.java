@@ -30,6 +30,7 @@ import androidx.core.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.nameisknowledge.knowledgebank.constants.IntentConstants;
 import com.nameisknowledge.knowledgebank.ui.renderGamePlay.RenderGamePlayActivity;
 import com.nameisknowledge.knowledgebank.R;
 
@@ -81,9 +82,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            senderName = remoteMessage.getData().get("senderName");
-            senderId = remoteMessage.getData().get("senderId");
-            mode = remoteMessage.getData().get("mode");
+            senderName = remoteMessage.getData().get(IntentConstants.SENDER_NAME_KEY);
+            senderId = remoteMessage.getData().get(IntentConstants.SENDER_ID_KEY);
+            mode = remoteMessage.getData().get(IntentConstants.MODE_KEY);
             if (/* Check if data needs to be processed by long running job */ true) {
                 // For long-running tasks (10 seconds or more) use WorkManager.
                 scheduleJob();
@@ -205,7 +206,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE) ;
         if (Build.VERSION.SDK_INT>Build.VERSION_CODES.O){
-            NotificationChannel channel = new NotificationChannel(channelId , "GamePlay Channel" , NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channel = new NotificationChannel(channelId , "Channel human readable title" , NotificationManager.IMPORTANCE_HIGH);
             manager.createNotificationChannel(channel);
         }
 
@@ -218,9 +219,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         //اذا بدك تبعت بيانات لما تضغط على الاشعار للاكتيفتي الي رايح الها الاشعار
         Intent notificationIntent = new Intent(getApplicationContext(), RenderGamePlayActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putString("senderName",senderName);
-        bundle.putString("senderId",senderId);
-        bundle.putString("mode",mode);
+        bundle.putString(IntentConstants.SENDER_NAME_KEY,senderName);
+        bundle.putString(IntentConstants.SENDER_ID_KEY,senderId);
+        bundle.putString(IntentConstants.MODE_KEY,mode);
         notificationIntent.putExtras(bundle);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);

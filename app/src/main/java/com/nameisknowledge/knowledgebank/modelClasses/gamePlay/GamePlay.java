@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-abstract public class GamePlay {
+public class GamePlay {
     private String winner;
     private final List<PlayerMD> players = new ArrayList<>();
     private final Map<String,Integer> scores = new HashMap<>();

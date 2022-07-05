@@ -1,73 +1,53 @@
 package com.nameisknowledge.knowledgebank.ui.soloMode;
 
 
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-
-import com.nameisknowledge.knowledgebank.FireBaseRepository;
-import com.nameisknowledge.knowledgebank.modelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.modelClasses.questions.FireBaseQuestionMD;
+import com.nameisknowledge.knowledgebank.baseViewModels.BaseGameViewMode;
 
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.SingleObserver;
-import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-public class SoloModeViewModel extends ViewModel {
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
-    private final FireBaseRepository fireBaseRepository;
-    public final MutableLiveData<FireBaseQuestionMD> question = new MutableLiveData<>();
-    public final MutableLiveData<Integer> userPoints = new MutableLiveData<>();
-    public final MutableLiveData<UserMD> updatedUser = new MutableLiveData<>();
-    private int points;
+public class SoloModeViewModel extends BaseGameViewMode<FireBaseQuestionMD> {
+    private int answeredQuestionsCount;
+    public boolean gameFinished;
+    private final String userId;
 
-
-    public SoloModeViewModel() {
-        this.fireBaseRepository = FireBaseRepository.getInstance();
-        fireBaseRepository.generateRandomQuestionObservable().subscribe(generateRandomQuestionObserver());
+    public SoloModeViewModel(String mode, String userId) {
+        super(mode);
+        this.userId = userId;
+        getFireBaseRepository().generateRandomQuestionObservable().subscribe(generateRandomQuestionObserver());
     }
 
-    public void submit(String answer,String input){
-        if (answer.equals(input)){
-            fireBaseRepository.generateRandomQuestionObservable().subscribe(generateRandomQuestionObserver());
+    @Override
+    public void submitAnswer(String realAnswer, String input) {
+        if (realAnswer.equals(input)){
+            nextQuestion();
         }
     }
 
-    public void updatePoints(String type){
-        if (points!=0){
-            switch (type){
-                case "hint":
-                    points = points-5;
-                    userPoints.setValue(points);
-                    break;
-                case "showChar":
-                    points = points-2;
-                    userPoints.setValue(points);
-                    break;
-                case "delete":
-                    points = points-1;
-                    userPoints.setValue(points);
-                    break;
-            }
-        }else {
-            userPoints.setValue(points);
-        }
+    @Override
+    public void nextQuestion() {
+        answeredQuestionsCount++;
+        getFireBaseRepository().generateRandomQuestionObservable().subscribe(generateRandomQuestionObserver());
     }
 
-    public void setThePoints(int points){
-        this.points =+ points;
-        userPoints.setValue(points);
+    @Override
+    public boolean isGameFinished() {
+        return gameFinished;
     }
 
-    public void finishTheGame(String id){
-        fireBaseRepository.updateAreaAttackPointsV2(id,points).subscribe(updateAreaAttackPointsObserver());
+    @Override
+    public void finishTheGame() {
+        updateUserAttackPoints(userId);
+        updateUserModeScore(userId,answeredQuestionsCount);
     }
 
     private SingleObserver<FireBaseQuestionMD> generateRandomQuestionObserver(){
         return new SingleObserver<FireBaseQuestionMD>() {
             @Override
             public void onSubscribe(@NonNull Disposable d) {
-                compositeDisposable.add(d);
+                getCompositeDisposable().add(d);
             }
 
             @Override
@@ -82,28 +62,9 @@ public class SoloModeViewModel extends ViewModel {
         };
     }
 
-    private SingleObserver<UserMD> updateAreaAttackPointsObserver(){
-        return new SingleObserver<UserMD>() {
-            @Override
-            public void onSubscribe(@NonNull Disposable d) {
-                compositeDisposable.add(d);
-            }
-
-            @Override
-            public void onSuccess(@NonNull UserMD userMD) {
-                updatedUser.setValue(userMD);
-            }
-
-            @Override
-            public void onError(@NonNull Throwable e) {
-                //
-            }
-        };
-    }
-
     @Override
     protected void onCleared() {
         super.onCleared();
-        compositeDisposable.dispose();
+        getCompositeDisposable().dispose();
     }
 }

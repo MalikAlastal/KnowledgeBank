@@ -9,42 +9,28 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
+import com.nameisknowledge.knowledgebank.ViewModelsFactory;
 import com.nameisknowledge.knowledgebank.adapters.GamePlayAdapter;
 import com.nameisknowledge.knowledgebank.constants.DurationConstants;
+import com.nameisknowledge.knowledgebank.constants.IntentConstants;
 import com.nameisknowledge.knowledgebank.constants.UserConstants;
 import com.nameisknowledge.knowledgebank.dialogs.WinnerDialog;
 import com.nameisknowledge.knowledgebank.methods.AnimationMethods;
+import com.nameisknowledge.knowledgebank.methods.HelpMethods;
 import com.nameisknowledge.knowledgebank.methods.ViewMethods;
-import com.nameisknowledge.knowledgebank.modelClasses.InputsMD;
-import com.nameisknowledge.knowledgebank.modelClasses.UserMD;
 import com.nameisknowledge.knowledgebank.modelClasses.questions.FireBaseQuestionMD;
 import com.nameisknowledge.knowledgebank.R;
 import com.nameisknowledge.knowledgebank.databinding.ActivitySoloModeBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.functions.Action;
-
 public class SoloModeActivity extends AppCompatActivity {
     private ActivitySoloModeBinding binding;
-    private String currentQuestionAnswer;
+    private String currentQuestionAnswer, hint;
     private SoloModeViewModel viewModel;
     private GamePlayAdapter inputAdapter, answerAdapter;
-    private List<String> hints = new ArrayList<>();
-    private final List<Integer> repeatedCharsIndexes = new ArrayList<>();
-    private int repeatedCharsCurrentIndex, hintsIndex;
-    MediaPlayer clickSound;
-    MediaPlayer swingSound;
-    MediaPlayer popSound;
-    private Disposable disposable;
+    private MediaPlayer clickSound,swingSound,popSound;
+    private boolean isHintUsed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +39,14 @@ public class SoloModeActivity extends AppCompatActivity {
         binding = ActivitySoloModeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new ViewModelProvider(this).get(SoloModeViewModel.class);
+        String mode = getIntent().getStringExtra(IntentConstants.MODE_KEY);
 
-        UserMD userMD = UserConstants.getCurrentUser(this);
+        ViewModelsFactory viewModelsFactory = new ViewModelsFactory(UserConstants.getCurrentUser(this).getUid());
+        viewModelsFactory.setMode(mode);
 
-        viewModel.setThePoints(userMD.getAreaAttackPoints());
+        viewModel = new ViewModelProvider(this,viewModelsFactory).get(SoloModeViewModel.class);
+
+        viewModel.setPoints(UserConstants.getCurrentUser(this).getAreaAttackPoints());
 
         clickSound = MediaPlayer.create(this, R.raw.button_clicked);
         swingSound = MediaPlayer.create(this, R.raw.swing);
@@ -69,34 +58,60 @@ public class SoloModeActivity extends AppCompatActivity {
         viewModel.question.observe(this, this::setUiData);
 
         viewModel.userPoints.observe(this, points -> {
-            enableHelpMethods(points != 0);
             binding.pointsTxt.setText(String.valueOf(points));
+            if (!isHintUsed) binding.hint.setEnabled(points>=5);
         });
 
         binding.delete.setOnClickListener(view -> {
-            deleteChar();
-            viewModel.updatePoints("delete");
+            HelpMethods.deleteChar(viewModel.getPoints(),inputAdapter, answer->{
+                if (answer.isEmpty()){
+                    viewModel.updatePoints("delete");
+                }else {
+                    Toast.makeText(this, answer, Toast.LENGTH_SHORT).show();
+                    binding.delete.setEnabled(false);
+                }
+            });
         });
 
         binding.hint.setOnClickListener(view -> {
-            showHint();
-            viewModel.updatePoints("hint");
+            HelpMethods.showHint(viewModel.getPoints(),s->{
+                if (s.isEmpty()){
+                    isHintUsed = true;
+                    WinnerDialog.newInstance(hint).show(getSupportFragmentManager(), " ");
+                    viewModel.updatePoints("hint");
+                    binding.hint.setEnabled(false);
+                }else {
+                    Toast.makeText(this,s,Toast.LENGTH_SHORT).show();
+                    binding.showChar.setEnabled(false);
+                }
+            });
         });
 
         binding.showChar.setOnClickListener(view -> {
-            showChar();
-            viewModel.updatePoints("showChar");
+            HelpMethods.showChar(viewModel.getPoints(),inputAdapter,answerAdapter,currentQuestionAnswer,answer->{
+                if (answer.isEmpty()){
+                    viewModel.updatePoints("showChar");
+                    viewModel.submitAnswer(currentQuestionAnswer,answerAdapter.getAnswer());
+                }else {
+                    Toast.makeText(this, answer, Toast.LENGTH_SHORT).show();
+                    binding.showChar.setEnabled(false);
+                }
+            });
         });
 
         binding.btnEndGame.setOnClickListener(view -> {
-            viewModel.finishTheGame(userMD.getUid());
-        });
-
-        viewModel.updatedUser.observe(this, user -> {
-            UserConstants.setCurrentUser(user, this);
+            viewModel.gameFinished = true;
+            viewModel.finishTheGame();
             finish();
         });
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        HelpMethods.emptyValues();
+        if (!viewModel.isGameFinished()) viewModel.finishTheGame();
     }
 
     private void setUpRv() {
@@ -117,7 +132,7 @@ public class SoloModeActivity extends AppCompatActivity {
                     inputAdapter.setEmpty(inputsMD.getIndex(), inputsMD);
                     answerAdapter.addChar(inputsMD);
                 }
-                viewModel.submit(currentQuestionAnswer, answerAdapter.getAnswer());
+                viewModel.submitAnswer(currentQuestionAnswer, answerAdapter.getAnswer());
                 buttonClickedSound();
             });
         });
@@ -127,7 +142,7 @@ public class SoloModeActivity extends AppCompatActivity {
     }
 
     private void setUiData(FireBaseQuestionMD question) {
-        this.hints = question.getHints();
+        this.hint = question.getHint();
         binding.tvQuestion.setText(question.getQuestion());
         this.currentQuestionAnswer = clearAnswerSpaces(question.getAnswer());
         changeQuestionAnimation();
@@ -135,73 +150,6 @@ public class SoloModeActivity extends AppCompatActivity {
         inputAdapter.setAnswer(makeAnswerLonger(clearAnswerSpaces(question.getAnswer())));
         answerAdapter.clearArray();
         answerAdapter.setAnswer(toInputsList(makeStringEmpty(clearAnswerSpaces(question.getAnswer()))));
-    }
-
-    private void deleteChar() {
-        for (InputsMD inputsMD : inputAdapter.getMyList()) {
-            if (inputsMD.isAdded()) {
-                inputAdapter.setEmpty(inputsMD.getIndex(), inputsMD);
-                break;
-            }
-        }
-    }
-
-    private void showChar() {
-        for (int i = 0; i < inputAdapter.getMyList().size(); i++) {
-            // to check if the char is NotAdded;
-            if (!inputAdapter.getMyList().get(i).isAdded() && inputAdapter.getMyList().get(i).getLetter() != ' ') {
-                // to check if the char is exists in real answer (answerArray)
-                if (toCharList(answerAdapter.getMyList()).contains(inputAdapter.getMyList().get(i).getLetter())) {
-                    // if If it is twice in the answer
-                    if (getCountOfChar(inputAdapter.getMyList().get(i).getLetter()) > 1) {
-                        // then get the last index
-                        int index = repeatedCharsIndexes.get(repeatedCharsCurrentIndex);
-                        inputAdapter.setEmpty(inputAdapter.getMyList().get(i).getIndex(), inputAdapter.getMyList().get(i));
-                        answerAdapter.setChar(new InputsMD(currentQuestionAnswer.charAt(index), index).setShown(true));
-                        repeatedCharsCurrentIndex++;
-                    }
-                } else {
-                    // then get the first index
-                    int index = toCharList(cutString(currentQuestionAnswer)).indexOf(inputAdapter.getMyList().get(i).getLetter());
-                    inputAdapter.setEmpty(inputAdapter.getMyList().get(i).getIndex(), inputAdapter.getMyList().get(i));
-                    answerAdapter.setChar(new InputsMD(currentQuestionAnswer.charAt(index), index).setShown(true));
-                }
-                break;
-            }
-        }
-        viewModel.submit(currentQuestionAnswer, answerAdapter.getAnswer());
-    }
-
-    private int getCountOfChar(char chr) {
-        int count = 0;
-        for (int i = 0; i < currentQuestionAnswer.length(); i++) {
-            if (currentQuestionAnswer.charAt(i) == chr) {
-                if (count > 0) {
-                    repeatedCharsIndexes.add(i);
-                }
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private List<Character> toCharList(List<InputsMD> list) {
-        List<Character> characterList = new ArrayList<>();
-        for (InputsMD inputsMD : list) {
-            characterList.add(inputsMD.getLetter());
-        }
-        return characterList;
-    }
-
-    private void showHint() {
-        if (hintsIndex != hints.size() - 1) {
-            if (hints.get(hintsIndex) != null) {
-                WinnerDialog.newInstance(hints.get(hintsIndex)).show(getSupportFragmentManager(), " ");
-                hintsIndex++;
-            }
-        } else {
-            Toast.makeText(this, "no hints", Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void changeQuestionAnimation() {
@@ -219,28 +167,4 @@ public class SoloModeActivity extends AppCompatActivity {
         }
     }
 
-    private void enableHelpMethods(boolean enable) {
-        enableItems(false);
-        if (enable){
-            disposable = Completable.timer(1, TimeUnit.SECONDS)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(() -> {
-                        Toast.makeText(this, "يمكنك استعمال مساعدة مرة اخرى", Toast.LENGTH_SHORT).show();
-                        enableItems(true);
-                    });
-        }
-    }
-
-    private void enableItems(boolean enable){
-        binding.hint.setEnabled(enable);
-        binding.showChar.setEnabled(enable);
-        binding.delete.setEnabled(enable);
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (disposable != null) {
-            disposable.dispose();
-        }
-    }
 }
