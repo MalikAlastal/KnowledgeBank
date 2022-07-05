@@ -86,6 +86,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
         viewModel.allQuestionsAnswered.observe(this,user->{
             endGame(area,UserConstants.getCurrentUser(this),true);
+            viewModel.setOwner(area.getAreaName(),UserConstants.getCurrentUser(this),answeredQuestionsCount);
         });
 
         binding.btnEndGame.setOnClickListener(view -> {
@@ -137,7 +138,7 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
 
         prepareRecyclers();
         prepareAds();
-        viewModel.updatedAttackPoints(UserConstants.getCurrentUser(this).getUid(),-1);
+        viewModel.updatedAttackPoints(UserConstants.getCurrentUser(this).getUid(),(UserConstants.getCurrentUser(this).getAreaAttackPoints()-1));
     }
 
     private void prepareAds(){
@@ -231,11 +232,11 @@ public class AttackAreaActivity extends AppCompatActivity implements GenericList
         rewardedAd.show(this, new OnUserEarnedRewardListener() {
             @Override
             public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                viewModel.updatedAttackPoints(UserConstants.getCurrentUser(getBaseContext()).getUid(),UserConstants.DOUBLE_REWARD_AREA_ATTACK_POINTS);
+                viewModel.updatedAttackPoints(UserConstants.getCurrentUser(getBaseContext()).getUid(),(UserConstants.getCurrentUser(getApplicationContext()).getAreaAttackPoints()+UserConstants.DOUBLE_REWARD_AREA_ATTACK_POINTS));
             }
         });
         }else {
-            //interstitialAd.show(this);
+            interstitialAd.show(this);
         }
         finish();
     }

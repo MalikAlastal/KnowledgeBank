@@ -94,10 +94,11 @@ public class MapModeActivity extends AppCompatActivity {
         binding.cardPointsRequest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (rewardedAd!=null)
                 rewardedAd.show(activity, new OnUserEarnedRewardListener() {
                     @Override
                     public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                        viewModel.updatedAttackPoints(UserConstants.getCurrentUser(getBaseContext()).getUid(), UserConstants.REWARD_AREA_ATTACK_POINTS);
+                        viewModel.updatedAttackPoints(UserConstants.getCurrentUser(getBaseContext()).getUid(), (UserConstants.getCurrentUser(getApplicationContext()).getAreaAttackPoints()+UserConstants.REWARD_AREA_ATTACK_POINTS));
                     }
                 });
             }
@@ -158,6 +159,7 @@ public class MapModeActivity extends AppCompatActivity {
                 addAreaView(area);
             }
         });
+        
         binding.tvAreaAttackPoints.setText(String.valueOf(UserConstants.getCurrentUser(this).getAreaAttackPoints()));
         isLocationFound = false;
     }
