@@ -74,7 +74,7 @@ public class SoloModeActivity extends AppCompatActivity {
         });
 
         binding.hint.setOnClickListener(view -> {
-            HelpMethods.showHint(viewModel.getPoints(),hint,hint->{
+            HelpMethods.showHint(viewModel.getPoints(),s->{
                 if (hint.isEmpty()){
                     isHintUsed = true;
                     WinnerDialog.newInstance(hint).show(getSupportFragmentManager(), " ");
