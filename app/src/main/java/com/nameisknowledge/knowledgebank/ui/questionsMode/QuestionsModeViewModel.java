@@ -17,12 +17,12 @@ import io.reactivex.rxjava3.core.CompletableObserver;
 import io.reactivex.rxjava3.core.SingleObserver;
 import io.reactivex.rxjava3.disposables.Disposable;
 
-public class QuestionsModeGameViewModel extends MultiPlayersGameViewModel<LocalQuestionMD,LocalQuestionMD> {
+public class QuestionsModeViewModel extends MultiPlayersGameViewModel<LocalQuestionMD,LocalQuestionMD> {
 
     private ListenerRegistration isQuestionsAddedRegistration;
     public final MutableLiveData<String> isQuestionsAdded = new MutableLiveData<>();
 
-    public QuestionsModeGameViewModel(String mode, String roomID, String gamePlayCollection) {
+    public QuestionsModeViewModel(String mode, String roomID, String gamePlayCollection) {
         super(mode, roomID, gamePlayCollection);
         isQuestionsAddedObservable().subscribe(isQuestionsAddedObserver());
     }

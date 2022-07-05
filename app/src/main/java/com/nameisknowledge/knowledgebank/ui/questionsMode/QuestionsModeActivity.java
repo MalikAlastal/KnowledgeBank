@@ -29,7 +29,7 @@ public class QuestionsModeActivity extends AppCompatActivity {
     private static final String TAG = "QuestionsModeActivity";
     private ActivityQuastionsModeBinding binding;
     private GamePlayAdapter inputAdapter,answerAdapter;
-    private QuestionsModeGameViewModel viewModel;
+    private QuestionsModeViewModel viewModel;
     private String currentQuestionAnswer;
     MediaPlayer clickSound;
     MediaPlayer swingSound;
@@ -52,7 +52,7 @@ public class QuestionsModeActivity extends AppCompatActivity {
         ViewModelsFactory viewModelsFactory = new ViewModelsFactory(roomID,FirebaseConstants.GAME_PLAY_2_COLLECTION);
         viewModelsFactory.setMode(mode);
 
-        viewModel = new ViewModelProvider(this,viewModelsFactory).get(QuestionsModeGameViewModel.class);
+        viewModel = new ViewModelProvider(this,viewModelsFactory).get(QuestionsModeViewModel.class);
 
         viewModel.setPoints(UserConstants.getCurrentUser(this).getAreaAttackPoints());
 

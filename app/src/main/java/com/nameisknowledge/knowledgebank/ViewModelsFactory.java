@@ -9,7 +9,7 @@ import com.nameisknowledge.knowledgebank.modelClasses.MapAreaMD;
 import com.nameisknowledge.knowledgebank.ui.attackArea.AttackAreaViewModel;
 import com.nameisknowledge.knowledgebank.ui.renderGamePlay.RenderGamePlayViewModel;
 import com.nameisknowledge.knowledgebank.ui.duoMode.DuoModeViewModel;
-import com.nameisknowledge.knowledgebank.ui.questionsMode.QuestionsModeGameViewModel;
+import com.nameisknowledge.knowledgebank.ui.questionsMode.QuestionsModeViewModel;
 import com.nameisknowledge.knowledgebank.ui.soloMode.SoloModeViewModel;
 
 public class ViewModelsFactory implements ViewModelProvider.Factory {
@@ -48,8 +48,8 @@ public class ViewModelsFactory implements ViewModelProvider.Factory {
             return (T) new RenderGamePlayViewModel(senderName,senderId,mode);
         }else if (modelClass.isAssignableFrom(AttackAreaViewModel.class)){
             return (T) new AttackAreaViewModel(mapArea);
-        }else if (modelClass.isAssignableFrom(QuestionsModeGameViewModel.class)){
-            return (T) new QuestionsModeGameViewModel(mode,roomID,gamePlayCollection);
+        }else if (modelClass.isAssignableFrom(QuestionsModeViewModel.class)){
+            return (T) new QuestionsModeViewModel(mode,roomID,gamePlayCollection);
         }else if (modelClass.isAssignableFrom(SoloModeViewModel.class)){
             return (T) new SoloModeViewModel(mode,soloModeUserId);
         }
